@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS images
+(
+    id
+    UUID
+    NOT
+    NULL
+    PRIMARY
+    KEY,
+    file_name
+    TEXT
+    NOT
+    NULL,
+    type
+    TEXT
+    NOT
+    NULL,
+    alt
+    TEXT,
+    created_at
+    TIMESTAMP
+    NOT
+    NULL
+);

@@ -1,0 +1,44 @@
+[versions]
+jooq-version = "3.20.2"
+koin-version = "3.5.6"
+kotlin-version = "2.1.20"
+ktor-version = "3.1.1"
+logback-version = "1.4.14"
+r2dbc-migrate-version = "3.2.0"
+r2dbc-pool-version = "1.0.2.RELEASE"
+r2dbc-postgresql-version = "1.0.7.RELEASE"
+r2dbc-h2-version = "1.0.0.RELEASE"
+testcontainers-version = "1.20.6"
+kotest-version = "5.9.1"
+
+[libraries]
+jooq = { module = "org.jooq:jooq", version.ref = "jooq-version" }
+jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq-version" }
+jooq-kotlin-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "jooq-version" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin-version" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin-version" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor-version" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor-version" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-version" }
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor-version" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor-version" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-version" }
+r2dbc-migrate = { module = "name.nkonev.r2dbc-migrate:r2dbc-migrate-core", version.ref = "r2dbc-migrate-version" }
+r2dbc-migrate-resource-reader = { module = "name.nkonev.r2dbc-migrate:r2dbc-migrate-resource-reader-reflections", version.ref = "r2dbc-migrate-version" }
+r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool-version" }
+r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql-version" }
+r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2-version" }
+kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version = "1.10.1" }
+
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
+
+kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
+kotest-assertions = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
