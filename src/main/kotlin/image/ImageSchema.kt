@@ -1,5 +1,6 @@
 package io.image
 
+import io.image.store.ImageStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
@@ -8,12 +9,16 @@ import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
+import java.io.ByteArrayInputStream
+import java.net.URLConnection
 import java.time.LocalDateTime
 import java.util.*
 
 data class Image(
     val id: UUID = UUID.randomUUID(),
-    val fileName: String?,
+    val bucket: String,
+    val storeKey: String?,
+    val url: String,
     val type: String,
     val alt: String?,
     val createdAt: LocalDateTime = LocalDateTime.now()
@@ -21,7 +26,9 @@ data class Image(
     companion object {
         fun from(record: Record): Image = Image(
             id = record.getValue("id", UUID::class.java),
-            fileName = record.getValue("file_name", String::class.java),
+            bucket = record.getValue("bucket", String::class.java),
+            storeKey = record.getValue("store_key", String::class.java),
+            url = record.getValue("url", String::class.java),
             type = record.getValue("type", String::class.java),
             alt = record.getValue("alt", String::class.java),
             createdAt = record.getValue("created_at", LocalDateTime::class.java)
@@ -30,7 +37,8 @@ data class Image(
 
     fun toResponse(): ImageResponse = ImageResponse(
         id = id,
-        fileName = fileName,
+        bucket = bucket,
+        storeKey = storeKey,
         type = type,
         alt = alt,
         createdAt = createdAt
@@ -38,28 +46,39 @@ data class Image(
 }
 
 interface ImageService {
-    suspend fun createImage(image: StoreImageRequest): Image
+    suspend fun storeImage(data: StoreImageRequest, content: ByteArray): Image
     suspend fun fetchImage(id: UUID): Image?
 }
 
-class ImageServiceImpl(private val dslContext: DSLContext) : ImageService {
+class ImageServiceImpl(
+    private val dslContext: DSLContext,
+    private val imageStore: ImageStore
+) : ImageService {
 
-    override suspend fun createImage(image: StoreImageRequest) = withContext(Dispatchers.IO) {
+    override suspend fun storeImage(data: StoreImageRequest, content: ByteArray) = withContext(Dispatchers.IO) {
+        if (!validateImage(content)) {
+            throw InvalidImageException("Not an image type")
+        }
+        val persistResult = imageStore.persist(data, content)
         dslContext.insertInto(table("images"))
             .columns(
                 field("id"),
-                field("file_name"),
+                field("bucket"),
+                field("store_key"),
+                field("url"),
                 field("type"),
                 field("alt"),
                 field("created_at")
             ).values(
-                image.id,
-                image.fileName,
-                image.type,
-                image.alt,
-                image.createdAt
+                data.id,
+                persistResult.bucket,
+                persistResult.key,
+                persistResult.url,
+                data.type,
+                data.alt,
+                data.createdAt
             ).awaitFirst()
-        val result = fetchImage(image.id)!!
+        val result = fetchImage(data.id)!!
 
         result
     }
@@ -71,5 +90,10 @@ class ImageServiceImpl(private val dslContext: DSLContext) : ImageService {
             .awaitFirstOrNull()?.let {
                 Image.from(it)
             }
+    }
+
+    private fun validateImage(image: ByteArray): Boolean {
+        return URLConnection.guessContentTypeFromStream(ByteArrayInputStream(image))
+            ?.startsWith("image/") == true
     }
 }

@@ -6,7 +6,15 @@ CREATE TABLE IF NOT EXISTS images
     NULL
     PRIMARY
     KEY,
-    file_name
+    bucket
+    TEXT
+    NOT
+    NULL,
+    url
+    TEXT
+    NOT
+    NULL,
+    store_key
     TEXT
     NOT
     NULL,

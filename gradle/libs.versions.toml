@@ -24,6 +24,7 @@ ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor-
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-version" }
 ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor-version" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor-version" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor-version" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-version" }
 r2dbc-migrate = { module = "name.nkonev.r2dbc-migrate:r2dbc-migrate-core", version.ref = "r2dbc-migrate-version" }
 r2dbc-migrate-resource-reader = { module = "name.nkonev.r2dbc-migrate:r2dbc-migrate-resource-reader-reflections", version.ref = "r2dbc-migrate-version" }
@@ -34,6 +35,7 @@ kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
+testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers-version" }
 
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
 kotest-assertions = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }

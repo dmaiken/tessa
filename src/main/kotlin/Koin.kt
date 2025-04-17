@@ -1,7 +1,10 @@
 package io
 
+import aws.sdk.kotlin.services.s3.S3Client
 import io.image.ImageService
 import io.image.ImageServiceImpl
+import io.image.S3Service
+import io.image.store.ImageStore
 import io.ktor.server.application.*
 import io.r2dbc.spi.ConnectionFactory
 import org.jooq.DSLContext
@@ -9,10 +12,13 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
-fun Application.configureKoin(connectionFactory: ConnectionFactory) {
+fun Application.configureKoin(
+    connectionFactory: ConnectionFactory,
+    localstackProperties: LocalstackProperties? = null
+) {
     val appModule = module {
         single<ImageService> {
-            ImageServiceImpl(get())
+            ImageServiceImpl(get(), get())
         }
     }
     val dbModule = module {
@@ -24,8 +30,30 @@ fun Application.configureKoin(connectionFactory: ConnectionFactory) {
             configureJOOQ(get())
         }
     }
+
+    val awsModule = module {
+        single<S3Client> {
+            val useMock = environment.config.propertyOrNull("aws.mock")?.getString().toBoolean() ?: false
+            if (useMock) {
+                s3Client(
+                    LocalstackProperties(
+                        region = environment.config.property("localstack.region").getString(),
+                        accessKey = environment.config.property("localstack.accessKey").getString(),
+                        secretKey = environment.config.property("localstack.secretKey").getString(),
+                        endpointUrl = environment.config.property("localstack.endpointUrl").getString()
+                    )
+                )
+            } else {
+                s3Client()
+            }
+        }
+        single<ImageStore> {
+            S3Service(get(), environment.config.propertyOrNull("localstack.region")?.getString() ?: "us-east-1") // TODO
+        }
+    }
+
     install(Koin) {
         slf4jLogger()
-        modules(appModule, dbModule)
+        modules(appModule, dbModule, awsModule)
     }
 }

@@ -21,4 +21,6 @@ class PostgresTestContainerManager {
     }
 
     fun getPort(): Int = postgres.getMappedPort(5432)
+
+    fun stop() = postgres.stop()
 }

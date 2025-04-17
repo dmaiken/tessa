@@ -1,6 +1,5 @@
 package io
 
-import com.typesafe.config.ConfigFactory
 import io.image.ImageResponse
 import io.image.StoreImageRequest
 import io.kotest.matchers.shouldBe
@@ -8,52 +7,48 @@ import io.kotest.matchers.shouldNotBe
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.config.*
-import io.ktor.server.testing.*
-import org.junit.jupiter.api.BeforeAll
+import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.*
 
-class ApplicationTest {
-
-    companion object {
-
-        lateinit var postgres: PostgresTestContainerManager
-
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            postgres = PostgresTestContainerManager()
-        }
-    }
+class ApplicationTest : BaseTest() {
 
     @Test
-    fun `can create and get image`() = testApplication {
-        environment {
-            config = HoconApplicationConfig(ConfigFactory.load()).mergeWith(
-                MapApplicationConfig(
-                    "postgres.port" to postgres.getPort().toString()
-                )
-            )
-        }
+    fun `can create and get image`() = testWithTestcontainers(postgres, localstack) {
         val client = createClient {
             install(ContentNegotiation) {
                 json()
             }
         }
+        val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val id = UUID.randomUUID()
+        val request = StoreImageRequest(
+            id = id,
+            fileName = "filename.jpeg",
+            type = "image/png",
+            alt = "an image",
+            createdAt = LocalDateTime.now(),
+        )
+        var storeImageResponse: ImageResponse? = null
         client.post("/images") {
-            contentType(ContentType.Application.Json)
+            contentType(ContentType.MultiPart.FormData)
             setBody(
-                StoreImageRequest(
-                    id = id,
-                    fileName = "filename.jpeg",
-                    type = "image/jpeg",
-                    alt = "an image",
-                    createdAt = LocalDateTime.now(),
+                MultiPartFormDataContent(
+                    formData {
+                        append("metadata", Json.encodeToString<StoreImageRequest>(request), Headers.build {
+                            append(HttpHeaders.ContentType, "application/json")
+                        })
+                        append("file", image, Headers.build {
+                            append(HttpHeaders.ContentType, "image/png")
+                            append(HttpHeaders.ContentDisposition, "filename=\"ktor_logo.png\"")
+                        })
+                    },
+                    BOUNDARY,
+                    ContentType.MultiPart.FormData.withParameter("boundary", BOUNDARY)
                 )
             )
         }.apply {
@@ -61,21 +56,74 @@ class ApplicationTest {
             body<ImageResponse>().apply {
                 this.id shouldBe id
                 createdAt shouldNotBe null
-                fileName shouldBe "filename.jpeg"
-                type shouldBe "image/jpeg"
+                bucket shouldBe "images"
+                storeKey shouldNotBe null
+                type shouldBe "image/png"
                 alt shouldBe "an image"
+            }.also {
+                storeImageResponse = it
             }
         }
-        client.get("/images/$id").apply {
+        client.get("/images/$id/info").apply {
             status shouldBe HttpStatusCode.OK
-            body<ImageResponse>().apply {
-                this.id shouldBe id
-                createdAt shouldNotBe null
-                fileName shouldBe "filename.jpeg"
-                type shouldBe "image/jpeg"
-                alt shouldBe "an image"
-            }
+            body<ImageResponse>() shouldBe storeImageResponse
         }
     }
 
+    @Test
+    fun `uploading something not an image will return bad request`() = testWithTestcontainers(postgres, localstack) {
+        val client = createClient {
+            install(ContentNegotiation) { json() }
+        }
+        val image = "I am not an image".toByteArray()
+        val id = UUID.randomUUID()
+        val request = StoreImageRequest(
+            id = id,
+            fileName = "filename.jpeg",
+            type = "image/png",
+            alt = "an image",
+            createdAt = LocalDateTime.now(),
+        )
+        client.post("/images") {
+            contentType(ContentType.MultiPart.FormData)
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append("metadata", Json.encodeToString<StoreImageRequest>(request), Headers.build {
+                            append(HttpHeaders.ContentType, "application/json")
+                        })
+                        append("file", image, Headers.build {
+                            append(HttpHeaders.ContentType, "image/png")
+                            append(HttpHeaders.ContentDisposition, "filename=\"ktor_logo.png\"")
+                        })
+                    },
+                    BOUNDARY,
+                    ContentType.MultiPart.FormData.withParameter("boundary", BOUNDARY)
+                )
+            )
+        }.apply {
+            status shouldBe HttpStatusCode.BadRequest
+        }
+    }
+
+    @Test
+    fun `fetching image info of image that does not exist returns not found`() =
+        testWithTestcontainers(postgres, localstack) {
+            val client = createClient {
+                install(ContentNegotiation) { json() }
+            }
+            client.get("/images/${UUID.randomUUID()}/info").apply {
+                status shouldBe HttpStatusCode.NotFound
+            }
+        }
+
+    @Test
+    fun `fetching image that does not exist returns not found`() = testWithTestcontainers(postgres, localstack) {
+        val client = createClient {
+            install(ContentNegotiation) { json() }
+        }
+        client.get("/images/${UUID.randomUUID()}").apply {
+            status shouldBe HttpStatusCode.NotFound
+        }
+    }
 }

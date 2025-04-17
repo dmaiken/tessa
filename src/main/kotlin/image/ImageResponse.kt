@@ -10,7 +10,8 @@ import java.util.*
 data class ImageResponse(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val fileName: String?,
+    val bucket: String,
+    val storeKey: String?,
     val type: String,
     val alt: String?,
     @Serializable(with = LocalDateSerializer::class)

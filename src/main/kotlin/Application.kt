@@ -11,4 +11,5 @@ fun Application.module() {
     configureKoin(connectionFactory)
     configureContentNegotiation()
     configureRouting()
+    configureStatusPages()
 }
