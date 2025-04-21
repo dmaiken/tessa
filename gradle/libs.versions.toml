@@ -10,6 +10,7 @@ r2dbc-postgresql-version = "1.0.7.RELEASE"
 r2dbc-h2-version = "1.0.0.RELEASE"
 testcontainers-version = "1.20.6"
 kotest-version = "5.9.1"
+photofix-libvips-version = "1.5.2"
 
 [libraries]
 jooq = { module = "org.jooq:jooq", version.ref = "jooq-version" }
@@ -40,6 +41,8 @@ testcontainers-localstack = { module = "org.testcontainers:localstack", version.
 
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
 kotest-assertions = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
+
+libvips-ffm = { module = "app.photofox.vips-ffm:vips-ffm-core", version.ref = "photofix-libvips-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }

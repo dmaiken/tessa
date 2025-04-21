@@ -1,4 +1,4 @@
-package io
+package io.config
 
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName

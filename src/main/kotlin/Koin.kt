@@ -1,9 +1,16 @@
 package io
 
 import aws.sdk.kotlin.services.s3.S3Client
-import io.image.AssetService
-import io.image.AssetServiceImpl
-import io.image.S3Service
+import io.asset.AssetService
+import io.asset.AssetServiceImpl
+import io.asset.MimeTypeDetector
+import io.asset.TikaMimeTypeDetector
+import io.asset.store.AWSProperties
+import io.asset.store.S3Service
+import io.image.ImageProcessor
+import io.image.ImageProperties
+import io.image.PreProcessingProperties
+import io.image.VipsImageProcessor
 import io.image.store.ObjectStore
 import io.ktor.server.application.*
 import io.r2dbc.spi.ConnectionFactory
@@ -14,11 +21,26 @@ import org.koin.logger.slf4jLogger
 
 fun Application.configureKoin(
     connectionFactory: ConnectionFactory,
-    localstackProperties: LocalstackProperties? = null
 ) {
     val appModule = module {
+        single<MimeTypeDetector> {
+            TikaMimeTypeDetector()
+        }
         single<AssetService> {
-            AssetServiceImpl(get(), get())
+            AssetServiceImpl(get(), get(), get(), get())
+        }
+        single<ImageProcessor> {
+            VipsImageProcessor(get())
+        }
+        single<ImageProperties> {
+            ImageProperties(
+                preProcessing = PreProcessingProperties(
+                    enabled = environment.config.propertyOrNull("image.preprocessing.enabled")?.getString()?.toBoolean()
+                        ?: false,
+                    maxWidth = environment.config.propertyOrNull("image.preprocessing.maxWidth")?.getString()?.toInt()
+                        ?: 1000,
+                ),
+            )
         }
     }
     val dbModule = module {
@@ -32,12 +54,13 @@ fun Application.configureKoin(
     }
 
     val awsModule = module {
+        val useMock = environment.config.propertyOrNull("aws.mock")?.getString().toBoolean()
+        val region = environment.config.propertyOrNull("localstack.region")?.getString() ?: "us-east-1" // TODO
         single<S3Client> {
-            val useMock = environment.config.propertyOrNull("aws.mock")?.getString().toBoolean() ?: false
             if (useMock) {
                 s3Client(
                     LocalstackProperties(
-                        region = environment.config.property("localstack.region").getString(),
+                        region = region,
                         accessKey = environment.config.property("localstack.accessKey").getString(),
                         secretKey = environment.config.property("localstack.secretKey").getString(),
                         endpointUrl = environment.config.property("localstack.endpointUrl").getString()
@@ -48,7 +71,12 @@ fun Application.configureKoin(
             }
         }
         single<ObjectStore> {
-            S3Service(get(), environment.config.propertyOrNull("localstack.region")?.getString() ?: "us-east-1") // TODO
+            val port = environment.config.property("localstack.port").getString().toInt()
+            val awsProperties = AWSProperties(
+                host = if (useMock) "localhost:$port" else "s3-$region.amazonaws.com",
+                region = region,
+            )
+            S3Service(get(), awsProperties)
         }
     }
 

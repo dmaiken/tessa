@@ -1,6 +1,6 @@
 package io
 
-import io.image.AssetService
+import io.asset.AssetService
 import io.image.StoreAssetRequest
 import io.ktor.http.*
 import io.ktor.http.content.*

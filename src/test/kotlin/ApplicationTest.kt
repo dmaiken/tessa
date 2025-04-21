@@ -1,5 +1,6 @@
 package io
 
+import io.config.testWithTestcontainers
 import io.image.AssetResponse
 import io.image.StoreAssetRequest
 import io.kotest.matchers.shouldBe

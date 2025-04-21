@@ -9,5 +9,7 @@ CREATE TABLE IF NOT EXISTS asset_tree
     store_key  TEXT      NOT NULL,
     mime_type  TEXT      NOT NULL,
     alt        TEXT,
+    height INT NOT NULL,
+    width  INT NOT NULL,
     created_at TIMESTAMP NOT NULL
 );

@@ -1,13 +1,17 @@
-package io.image
+package io.asset.store
 
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
+import io.image.StoreAssetRequest
 import io.image.store.ObjectStore
 import io.image.store.PersistResult
 import java.util.*
 
-class S3Service(private val s3Client: S3Client, private val region: String) : ObjectStore {
+class S3Service(
+    private val s3Client: S3Client,
+    private val awsProperties: AWSProperties
+) : ObjectStore {
 
     companion object {
         const val BUCKET = "assets"
@@ -26,9 +30,10 @@ class S3Service(private val s3Client: S3Client, private val region: String) : Ob
         return PersistResult(
             key = key,
             bucket = BUCKET,
-            url = createS3Url(region, key)
+            url = createS3Url(key)
         )
+
     }
 
-    private fun createS3Url(region: String, key: String) = "https://$BUCKET.s3.$region.amazonaws.com/$key"
+    private fun createS3Url(key: String) = "https://${awsProperties.host}/$BUCKET/$key"
 }

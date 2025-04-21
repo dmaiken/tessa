@@ -1,5 +1,7 @@
 package io
 
+import io.config.LocalstackContainerManager
+import io.config.PostgresTestContainerManager
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 

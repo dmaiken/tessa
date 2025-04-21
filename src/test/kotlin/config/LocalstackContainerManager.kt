@@ -1,4 +1,4 @@
-package io
+package io.config
 
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.utility.DockerImageName
@@ -21,5 +21,6 @@ class LocalstackContainerManager {
     fun getSecretKey(): String = localstack.secretKey
     fun getRegion(): String = localstack.region
     fun getEndpointUrl(): String = localstack.endpoint.toURL().toString()
+    fun getPort(): Int = localstack.firstMappedPort
     fun stop() = localstack.stop()
 }
