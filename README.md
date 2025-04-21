@@ -30,10 +30,10 @@ To build or run the project, use one of the following tasks:
 | `./gradlew test`              | Run the tests                                                        |
 | `./gradlew build`             | Build everything                                                     |
 | `buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                  | Build the docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry` | Publish the docker image locally                                     |
+| `buildImage`                  | Build the docker asset to use with the fat JAR                       |
+| `publishImageToLocalRegistry` | Publish the docker asset locally                                     |
 | `run`                         | Run the server                                                       |
-| `runDocker`                   | Run using the local docker image                                     |
+| `runDocker`                   | Run using the local docker asset                                     |
 
 If the server starts successfully, you'll see the following output:
 

@@ -1,10 +1,10 @@
 package io
 
 import aws.sdk.kotlin.services.s3.S3Client
-import io.image.ImageService
-import io.image.ImageServiceImpl
+import io.image.AssetService
+import io.image.AssetServiceImpl
 import io.image.S3Service
-import io.image.store.ImageStore
+import io.image.store.ObjectStore
 import io.ktor.server.application.*
 import io.r2dbc.spi.ConnectionFactory
 import org.jooq.DSLContext
@@ -17,8 +17,8 @@ fun Application.configureKoin(
     localstackProperties: LocalstackProperties? = null
 ) {
     val appModule = module {
-        single<ImageService> {
-            ImageServiceImpl(get(), get())
+        single<AssetService> {
+            AssetServiceImpl(get(), get())
         }
     }
     val dbModule = module {
@@ -47,7 +47,7 @@ fun Application.configureKoin(
                 s3Client()
             }
         }
-        single<ImageStore> {
+        single<ObjectStore> {
             S3Service(get(), environment.config.propertyOrNull("localstack.region")?.getString() ?: "us-east-1") // TODO
         }
     }

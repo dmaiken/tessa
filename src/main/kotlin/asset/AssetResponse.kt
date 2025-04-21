@@ -7,12 +7,13 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Serializable
-data class StoreImageRequest(
+data class AssetResponse(
     @Serializable(with = UUIDSerializer::class)
-    val id: UUID = UUID.randomUUID(),
-    val fileName: String?,
+    val id: UUID,
+    val bucket: String,
+    val storeKey: String?,
     val type: String,
     val alt: String?,
     @Serializable(with = LocalDateSerializer::class)
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime
 )

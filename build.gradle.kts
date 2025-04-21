@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.jooq)
     implementation(libs.jooq.kotlin)
     implementation(libs.jooq.kotlin.coroutines)
+    implementation(libs.jooq.postgres.extensions)
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
     implementation(libs.ktor.server.core)

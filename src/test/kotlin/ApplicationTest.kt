@@ -1,7 +1,7 @@
 package io
 
-import io.image.ImageResponse
-import io.image.StoreImageRequest
+import io.image.AssetResponse
+import io.image.StoreAssetRequest
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.ktor.client.call.*
@@ -26,20 +26,20 @@ class ApplicationTest : BaseTest() {
         }
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val id = UUID.randomUUID()
-        val request = StoreImageRequest(
+        val request = StoreAssetRequest(
             id = id,
             fileName = "filename.jpeg",
             type = "image/png",
             alt = "an image",
             createdAt = LocalDateTime.now(),
         )
-        var storeImageResponse: ImageResponse? = null
-        client.post("/images") {
+        var storeAssetResponse: AssetResponse? = null
+        client.post("/assets") {
             contentType(ContentType.MultiPart.FormData)
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("metadata", Json.encodeToString<StoreImageRequest>(request), Headers.build {
+                        append("metadata", Json.encodeToString<StoreAssetRequest>(request), Headers.build {
                             append(HttpHeaders.ContentType, "application/json")
                         })
                         append("file", image, Headers.build {
@@ -53,20 +53,20 @@ class ApplicationTest : BaseTest() {
             )
         }.apply {
             status shouldBe HttpStatusCode.Created
-            body<ImageResponse>().apply {
+            body<AssetResponse>().apply {
                 this.id shouldBe id
                 createdAt shouldNotBe null
-                bucket shouldBe "images"
+                bucket shouldBe "assets"
                 storeKey shouldNotBe null
                 type shouldBe "image/png"
                 alt shouldBe "an image"
             }.also {
-                storeImageResponse = it
+                storeAssetResponse = it
             }
         }
-        client.get("/images/$id/info").apply {
+        client.get("/assets/$id/info").apply {
             status shouldBe HttpStatusCode.OK
-            body<ImageResponse>() shouldBe storeImageResponse
+            body<AssetResponse>() shouldBe storeAssetResponse
         }
     }
 
@@ -77,19 +77,19 @@ class ApplicationTest : BaseTest() {
         }
         val image = "I am not an image".toByteArray()
         val id = UUID.randomUUID()
-        val request = StoreImageRequest(
+        val request = StoreAssetRequest(
             id = id,
             fileName = "filename.jpeg",
             type = "image/png",
             alt = "an image",
             createdAt = LocalDateTime.now(),
         )
-        client.post("/images") {
+        client.post("/assets") {
             contentType(ContentType.MultiPart.FormData)
             setBody(
                 MultiPartFormDataContent(
                     formData {
-                        append("metadata", Json.encodeToString<StoreImageRequest>(request), Headers.build {
+                        append("metadata", Json.encodeToString<StoreAssetRequest>(request), Headers.build {
                             append(HttpHeaders.ContentType, "application/json")
                         })
                         append("file", image, Headers.build {
@@ -112,7 +112,7 @@ class ApplicationTest : BaseTest() {
             val client = createClient {
                 install(ContentNegotiation) { json() }
             }
-            client.get("/images/${UUID.randomUUID()}/info").apply {
+            client.get("/assets/${UUID.randomUUID()}/info").apply {
                 status shouldBe HttpStatusCode.NotFound
             }
         }
@@ -122,7 +122,7 @@ class ApplicationTest : BaseTest() {
         val client = createClient {
             install(ContentNegotiation) { json() }
         }
-        client.get("/images/${UUID.randomUUID()}").apply {
+        client.get("/assets/${UUID.randomUUID()}").apply {
             status shouldBe HttpStatusCode.NotFound
         }
     }

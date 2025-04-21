@@ -1,7 +1,7 @@
 package io
 
-import io.image.ImageService
-import io.image.StoreImageRequest
+import io.image.AssetService
+import io.image.StoreAssetRequest
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -15,50 +15,50 @@ import java.util.*
 
 fun Application.configureRouting() {
 
-    val imageService by inject<ImageService>()
+    val assetService by inject<AssetService>()
 
     routing {
-        post("/images") {
-            var imageData: StoreImageRequest? = null
-            var imageContent: ByteArray? = null
+        post("/assets") {
+            var assetData: StoreAssetRequest? = null
+            var assetContent: ByteArray? = null
             val multipart = call.receiveMultipart()
             multipart.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         if (part.name == "metadata") {
-                            imageData = Json.decodeFromString(part.value)
+                            assetData = Json.decodeFromString(part.value)
                         }
                     }
 
                     is PartData.FileItem -> {
-                        imageContent = part.provider().toByteArray()
+                        assetContent = part.provider().toByteArray()
                     }
 
                     else -> {}
                 }
                 part.dispose()
             }
-            if (imageData == null) {
-                throw IllegalArgumentException("No image metadata supplied")
+            if (assetData == null) {
+                throw IllegalArgumentException("No asset metadata supplied")
             }
-            if (imageContent == null) {
-                throw IllegalArgumentException("No image content supplied")
+            if (assetContent == null) {
+                throw IllegalArgumentException("No asset content supplied")
             }
-            val created = imageService.storeImage(checkNotNull(imageData), checkNotNull(imageContent)).toResponse()
+            val created = assetService.store(checkNotNull(assetData), checkNotNull(assetContent)).toResponse()
             call.respond(HttpStatusCode.Created, created)
         }
 
-        get("/images/{id}") {
+        get("/assets/{id}") {
             val id = call.parameters["id"]
-            imageService.fetchImage(UUID.fromString(id))?.let { image ->
+            assetService.fetch(UUID.fromString(id))?.let { image ->
                 call.response.headers.append(HttpHeaders.Location, image.url)
                 call.respond(HttpStatusCode.TemporaryRedirect)
             } ?: call.respond(HttpStatusCode.NotFound)
         }
 
-        get("/images/{id}/info") {
+        get("/assets/{id}/info") {
             val id = call.parameters["id"]
-            imageService.fetchImage(UUID.fromString(id))?.let {
+            assetService.fetch(UUID.fromString(id))?.let {
                 call.respond(HttpStatusCode.OK, it.toResponse())
             } ?: call.respond(HttpStatusCode.NotFound)
         }

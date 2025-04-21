@@ -3,17 +3,17 @@ package io.image
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
-import io.image.store.ImageStore
+import io.image.store.ObjectStore
 import io.image.store.PersistResult
 import java.util.*
 
-class S3Service(private val s3Client: S3Client, private val region: String) : ImageStore {
+class S3Service(private val s3Client: S3Client, private val region: String) : ObjectStore {
 
     companion object {
-        const val BUCKET = "images"
+        const val BUCKET = "assets"
     }
 
-    override suspend fun persist(data: StoreImageRequest, image: ByteArray): PersistResult {
+    override suspend fun persist(data: StoreAssetRequest, image: ByteArray): PersistResult {
         val key = UUID.randomUUID().toString()
         s3Client.putObject(
             input = PutObjectRequest {

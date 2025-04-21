@@ -5,6 +5,7 @@ import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.CreateBucketRequest
 import aws.smithy.kotlin.runtime.auth.awscredentials.Credentials
 import aws.smithy.kotlin.runtime.net.url.Url
+import io.image.S3Service.Companion.BUCKET
 import io.ktor.util.logging.*
 import kotlinx.coroutines.runBlocking
 
@@ -32,7 +33,7 @@ fun s3Client(
 
 private fun createImageBucket(s3Client: S3Client) = runBlocking {
     s3Client.createBucket(CreateBucketRequest {
-        bucket = "images"
+        bucket = BUCKET
     })
 }
 

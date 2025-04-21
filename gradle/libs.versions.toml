@@ -1,5 +1,5 @@
 [versions]
-jooq-version = "3.20.2"
+jooq-version = "3.20.3"
 koin-version = "3.5.6"
 kotlin-version = "2.1.20"
 ktor-version = "3.1.1"
@@ -15,6 +15,7 @@ kotest-version = "5.9.1"
 jooq = { module = "org.jooq:jooq", version.ref = "jooq-version" }
 jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq-version" }
 jooq-kotlin-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "jooq-version" }
+jooq-postgres-extensions = { module = "org.jooq:jooq-postgres-extensions", version.ref = "jooq-version" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin-version" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin-version" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
