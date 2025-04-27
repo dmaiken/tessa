@@ -1,10 +1,7 @@
 package io
 
 import aws.sdk.kotlin.services.s3.S3Client
-import io.asset.AssetService
-import io.asset.AssetServiceImpl
-import io.asset.MimeTypeDetector
-import io.asset.TikaMimeTypeDetector
+import io.asset.*
 import io.asset.store.AWSProperties
 import io.asset.store.S3Service
 import io.image.ImageProcessor
@@ -23,11 +20,17 @@ fun Application.configureKoin(
     connectionFactory: ConnectionFactory,
 ) {
     val appModule = module {
+        single<PathAdapter> {
+            PathAdapter()
+        }
+        single<AssetHandler> {
+            AssetHandler(get(), get(), get())
+        }
         single<MimeTypeDetector> {
             TikaMimeTypeDetector()
         }
         single<AssetService> {
-            AssetServiceImpl(get(), get(), get(), get())
+            AssetServiceImpl(get(), get(), get())
         }
         single<ImageProcessor> {
             VipsImageProcessor(get())

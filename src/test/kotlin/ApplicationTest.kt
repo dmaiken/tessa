@@ -1,8 +1,8 @@
 package io
 
+import asset.StoreAssetRequest
 import io.config.testWithTestcontainers
 import io.image.AssetResponse
-import io.image.StoreAssetRequest
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.ktor.client.call.*
@@ -21,21 +21,17 @@ class ApplicationTest : BaseTest() {
     @Test
     fun `can create and get image`() = testWithTestcontainers(postgres, localstack) {
         val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
+            install(ContentNegotiation) { json() }
         }
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
-        val id = UUID.randomUUID()
         val request = StoreAssetRequest(
-            id = id,
             fileName = "filename.jpeg",
             type = "image/png",
             alt = "an image",
             createdAt = LocalDateTime.now(),
         )
-        var storeAssetResponse: AssetResponse? = null
-        client.post("/assets") {
+        var storeAssetResponse: AssetResponse?
+        client.post("/assets/profile") {
             contentType(ContentType.MultiPart.FormData)
             setBody(
                 MultiPartFormDataContent(
@@ -55,7 +51,7 @@ class ApplicationTest : BaseTest() {
         }.apply {
             status shouldBe HttpStatusCode.Created
             body<AssetResponse>().apply {
-                this.id shouldBe id
+                id shouldNotBe null
                 createdAt shouldNotBe null
                 bucket shouldBe "assets"
                 storeKey shouldNotBe null
@@ -64,8 +60,9 @@ class ApplicationTest : BaseTest() {
             }.also {
                 storeAssetResponse = it
             }
+//            headers.get("location") shouldBe "http://localhost:8080/assets/profile"
         }
-        client.get("/assets/$id/info").apply {
+        client.get("/assets/profile/info").apply {
             status shouldBe HttpStatusCode.OK
             body<AssetResponse>() shouldBe storeAssetResponse
         }
@@ -77,9 +74,7 @@ class ApplicationTest : BaseTest() {
             install(ContentNegotiation) { json() }
         }
         val image = "I am not an image".toByteArray()
-        val id = UUID.randomUUID()
         val request = StoreAssetRequest(
-            id = id,
             fileName = "filename.jpeg",
             type = "image/png",
             alt = "an image",

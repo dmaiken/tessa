@@ -1,8 +1,8 @@
 package io
 
+import asset.StoreAssetRequest
 import io.config.testWithTestcontainers
 import io.image.AssetResponse
-import io.image.StoreAssetRequest
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.ktor.client.call.*
@@ -14,7 +14,6 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.*
 
 class ImagePreProcessingTest : BaseTest() {
 
@@ -31,9 +30,7 @@ class ImagePreProcessingTest : BaseTest() {
             }
         }
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
-        val id = UUID.randomUUID()
         val request = StoreAssetRequest(
-            id = id,
             fileName = "filename.jpeg",
             type = "image/png",
             alt = "an image",
@@ -60,7 +57,7 @@ class ImagePreProcessingTest : BaseTest() {
         }.apply {
             status shouldBe HttpStatusCode.Created
             body<AssetResponse>().apply {
-                this.id shouldBe id
+                id shouldNotBe null
                 createdAt shouldNotBe null
                 bucket shouldBe "assets"
                 storeKey shouldNotBe null

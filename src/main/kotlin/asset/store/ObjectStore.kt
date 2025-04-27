@@ -1,6 +1,6 @@
 package io.image.store
 
-import io.image.StoreAssetRequest
+import asset.StoreAssetRequest
 
 interface ObjectStore {
 

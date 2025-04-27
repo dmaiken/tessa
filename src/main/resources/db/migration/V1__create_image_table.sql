@@ -13,3 +13,5 @@ CREATE TABLE IF NOT EXISTS asset_tree
     width  INT NOT NULL,
     created_at TIMESTAMP NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS asset_path_idx ON asset_tree USING gist (path);

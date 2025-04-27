@@ -1,9 +1,9 @@
 package io.asset.store
 
+import asset.StoreAssetRequest
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
-import io.image.StoreAssetRequest
 import io.image.store.ObjectStore
 import io.image.store.PersistResult
 import java.util.*

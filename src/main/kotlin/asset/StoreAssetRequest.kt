@@ -1,15 +1,11 @@
-package io.image
+package asset
 
 import io.serializers.LocalDateSerializer
-import io.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
-import java.util.*
 
 @Serializable
 data class StoreAssetRequest(
-    @Serializable(with = UUIDSerializer::class)
-    val id: UUID = UUID.randomUUID(),
     val fileName: String?,
     val type: String,
     val alt: String?,
