@@ -13,7 +13,6 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 class ImagePreProcessingTest : BaseTest() {
 
@@ -34,7 +33,6 @@ class ImagePreProcessingTest : BaseTest() {
             fileName = "filename.jpeg",
             type = "image/png",
             alt = "an image",
-            createdAt = LocalDateTime.now(),
         )
         var storeAssetResponse: AssetResponse? = null
         client.post("/assets") {

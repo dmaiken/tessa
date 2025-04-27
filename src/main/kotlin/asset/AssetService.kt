@@ -11,6 +11,7 @@ import org.jooq.impl.DSL.*
 import org.jooq.impl.SQLDataType
 import org.jooq.postgres.extensions.bindings.LtreeBinding
 import org.jooq.postgres.extensions.types.Ltree.ltree
+import java.time.LocalDateTime
 import java.util.*
 
 interface AssetService {
@@ -40,7 +41,7 @@ class AssetServiceImpl(
             .set(field("url"), persistResult.url)
             .set(field("mime_type"), asset.mimeType)
             .set(field("alt"), asset.request.alt)
-            .set(field("created_at"), asset.request.createdAt)
+            .set(field("created_at"), LocalDateTime.now())
             .awaitFirst()
         return fetch(id) ?: throw IllegalStateException("Cannot find persisted image with id: $id")
     }
@@ -62,7 +63,7 @@ class AssetServiceImpl(
                     .cast(String::class.java)
                     .eq(treePath)
             )
-            .orderBy(field("created_at"))
+            .orderBy(field("created_at").desc())
             .limit(1)
             .awaitFirstOrNull()?.let {
                 Asset.from(it)
