@@ -44,6 +44,12 @@ class AssetHandler(
         return assetService.fetchLatestByPath(treePath)
     }
 
+    suspend fun fetchAssetInfoInPath(uriPath: String): List<Asset> {
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
+        logger.info("Fetching asset info in path: $treePath")
+        return assetService.fetchAllByPath(treePath)
+    }
+
     private fun deriveValidMimeType(content: ByteArray): String {
         val mimeType = mimeTypeDetector.detect(content)
         if (!validate(mimeType)) {

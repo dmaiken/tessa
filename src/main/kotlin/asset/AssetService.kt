@@ -6,6 +6,7 @@ import io.image.ImageProcessor
 import io.image.store.ObjectStore
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactive.collect
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.*
 import org.jooq.impl.SQLDataType
@@ -18,6 +19,7 @@ interface AssetService {
     suspend fun store(asset: StoreAssetDto): Asset
     suspend fun fetch(id: UUID): Asset?
     suspend fun fetchLatestByPath(treePath: String): Asset?
+    suspend fun fetchAllByPath(treePath: String): List<Asset>
 }
 
 class AssetServiceImpl(
@@ -68,5 +70,21 @@ class AssetServiceImpl(
             .awaitFirstOrNull()?.let {
                 Asset.from(it)
             }
+    }
+
+    override suspend fun fetchAllByPath(treePath: String): List<Asset> {
+        val assets = mutableListOf<Asset>()
+        dslContext.select()
+            .from(table("asset_tree"))
+            .where(
+                field(name("path"), String::class.java)
+                    .cast(String::class.java)
+                    .eq(treePath)
+            )
+            .orderBy(field("created_at").desc())
+            .collect {
+                assets.add(Asset.from(it))
+            }
+        return assets
     }
 }

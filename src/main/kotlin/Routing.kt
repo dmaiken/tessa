@@ -25,35 +25,30 @@ fun Application.configureRouting() {
         get("/assets/{...}") {
             val route = call.request.path()
             if (route.endsWith("/info")) {
-                logger.info("Navigating to asset info with path: $route")
+                val trimmedRoute = route.removeSuffix("/info/all")
+                logger.info("Navigating to asset info with path: $trimmedRoute")
                 assetHandler.fetchAssetInfoByPath(route)?.let {
-                    logger.info("Found asset info: $it")
+                    logger.info("Found asset info: $it with path: $trimmedRoute")
                     call.respond(HttpStatusCode.OK, it.toResponse())
                 } ?: call.respond(HttpStatusCode.NotFound)
+            } else if (route.endsWith("/info/all")) {
+                val trimmedRoute = route.removeSuffix("/info/all")
+                logger.info("Navigating to asset info of all assets with path: $trimmedRoute")
+                assetHandler.fetchAssetInfoInPath(trimmedRoute).map {
+                    it.toResponse()
+                }.let {
+                    logger.info("Found asset info for ${it.size} assets in path: $trimmedRoute")
+                    call.respond(HttpStatusCode.OK, it)
+                }
             } else {
                 logger.info("Navigating to asset with path: $route")
                 assetHandler.fetchAssetByPath(route)?.let { url ->
-                    logger.info("Found asset with url: $url")
+                    logger.info("Found asset with url: $url and route: $route")
                     call.response.headers.append(HttpHeaders.Location, url)
                     call.respond(HttpStatusCode.TemporaryRedirect)
                 } ?: call.respond(HttpStatusCode.NotFound)
             }
         }
-
-//        get("/assets/{id}") {
-//            val id = call.parameters["id"]
-//            assetService.fetch(UUID.fromString(id))?.let { asset ->
-//                call.response.headers.append(HttpHeaders.Location, asset.url)
-//                call.respond(HttpStatusCode.TemporaryRedirect)
-//            } ?: call.respond(HttpStatusCode.NotFound)
-//        }
-
-//        get("/assets/{id}/info") {
-//            val id = call.parameters["id"]
-//            assetService.fetch(UUID.fromString(id))?.let {
-//                call.respond(HttpStatusCode.OK, it.toResponse())
-//            } ?: call.respond(HttpStatusCode.NotFound)
-//        }
 
         post("/assets") {
             createNewAsset(call, assetHandler)
