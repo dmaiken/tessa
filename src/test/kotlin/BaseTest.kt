@@ -4,6 +4,7 @@ import io.config.LocalstackContainerManager
 import io.config.PostgresTestContainerManager
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 
 open class BaseTest {
 
@@ -27,5 +28,10 @@ open class BaseTest {
         }
 
         const val BOUNDARY = "boundary"
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        postgres.clearTables()
     }
 }

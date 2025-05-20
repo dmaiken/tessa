@@ -23,4 +23,13 @@ class PostgresTestContainerManager {
     fun getPort(): Int = postgres.getMappedPort(5432)
 
     fun stop() = postgres.stop()
+
+    fun clearTables() {
+        postgres.execInContainer(
+            "psql",
+            "-U", postgres.username,
+            "-d", postgres.databaseName,
+            "-c", "TRUNCATE TABLE asset_tree;"
+        )
+    }
 }

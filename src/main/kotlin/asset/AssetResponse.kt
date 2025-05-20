@@ -16,6 +16,7 @@ data class AssetResponse(
     val alt: String?,
     val height: Int,
     val width: Int,
+    val entryId: Int,
     @Serializable(with = LocalDateSerializer::class)
     val createdAt: LocalDateTime
 )
