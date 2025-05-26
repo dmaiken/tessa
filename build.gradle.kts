@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.ktor.server.status.pages)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.mockk)
 
     implementation(libs.r2dbc.migrate)
     implementation(libs.r2dbc.migrate.resource.reader)

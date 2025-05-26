@@ -14,7 +14,7 @@ data class Asset(
     val alt: String?,
     val height: Int,
     val width: Int,
-    val entryId: Int,
+    val entryId: Long,
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {
     companion object {
@@ -27,7 +27,7 @@ data class Asset(
             alt = record.getValue("alt", String::class.java),
             height = record.getValue("height", Int::class.java),
             width = record.getValue("width", Int::class.java),
-            entryId = record.getValue("entry_id", Int::class.java),
+            entryId = record.getValue("entry_id", Long::class.java),
             createdAt = record.getValue("created_at", LocalDateTime::class.java)
         )
     }

@@ -4,11 +4,15 @@ import asset.Asset
 import io.asset.handler.StoreAssetDto
 import io.image.ImageProcessor
 import io.image.store.ObjectStore
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.collect
 import org.jooq.DSLContext
-import org.jooq.impl.DSL.*
+import org.jooq.Record
+import org.jooq.impl.DSL.field
+import org.jooq.impl.DSL.max
+import org.jooq.impl.DSL.name
+import org.jooq.impl.DSL.table
 import org.jooq.impl.SQLDataType
 import org.jooq.kotlin.coroutines.transactionCoroutine
 import org.jooq.postgres.extensions.bindings.LtreeBinding
@@ -19,8 +23,9 @@ import java.util.*
 interface AssetService {
     suspend fun store(asset: StoreAssetDto): Asset
     suspend fun fetch(id: UUID): Asset?
-    suspend fun fetchLatestByPath(treePath: String): Asset?
+    suspend fun fetchLatestByPath(treePath: String, entryId: Long?): Asset?
     suspend fun fetchAllByPath(treePath: String): List<Asset>
+    suspend fun deleteAssetByPath(treePath: String, entryId: Long? = null)
 }
 
 class AssetServiceImpl(
@@ -66,19 +71,10 @@ class AssetServiceImpl(
             }
     }
 
-    override suspend fun fetchLatestByPath(treePath: String): Asset? {
-        return dslContext.select()
-            .from(table("asset_tree"))
-            .where(
-                field(name("path"), String::class.java)
-                    .cast(String::class.java)
-                    .eq(treePath)
-            )
-            .orderBy(field("created_at").desc())
-            .limit(1)
-            .awaitFirstOrNull()?.let {
-                Asset.from(it)
-            }
+    override suspend fun fetchLatestByPath(treePath: String, entryId: Long?): Asset? {
+        return fetch(dslContext, treePath, entryId)?.let {
+            Asset.from(it)
+        }
     }
 
     override suspend fun fetchAllByPath(treePath: String): List<Asset> {
@@ -97,8 +93,28 @@ class AssetServiceImpl(
         return assets
     }
 
-    private suspend fun getNextEntryId(context: DSLContext, treePath: String): Int {
-        val maxField = max(field("entry_id", Int::class.java)).`as`("max_entry")
+    override suspend fun deleteAssetByPath(treePath: String, entryId: Long?) {
+        dslContext.transactionCoroutine { trx ->
+            val asset = fetch(trx.dsl(), treePath, entryId)
+            if (asset == null) {
+                logger.info("Nothing to delete for path: $treePath")
+                return@transactionCoroutine
+            }
+
+            logger.info("Deleting asset with path: $treePath and entry id: ${asset.get("entry_id")}")
+            trx.dsl().deleteFrom(table("asset_tree"))
+                .where(field("id").eq(asset.get("id")))
+                .awaitFirstOrNull()
+
+            objectStore.delete(
+                bucket = asset.get("bucket", String::class.java),
+                key = asset.get("store_key", String::class.java)
+            )
+        }
+    }
+
+    private suspend fun getNextEntryId(context: DSLContext, treePath: String): Long {
+        val maxField = max(field("entry_id", Long::class.java)).`as`("max_entry")
         return context.select(maxField)
             .from(table("asset_tree"))
             .where(
@@ -108,6 +124,24 @@ class AssetServiceImpl(
             )
             .awaitFirstOrNull()
             ?.get(maxField)
-            ?.inc() ?: 0
+            ?.inc() ?: 0L
+    }
+
+    suspend fun fetch(context: DSLContext, treePath: String, entryId: Long?): Record? {
+        return context.select()
+            .from(table("asset_tree"))
+            .where(
+                field(name("path"), String::class.java)
+                    .cast(String::class.java)
+                    .eq(treePath)
+            ).let {
+                if (entryId != null) {
+                    it.and(field("entry_id").eq(entryId))
+                } else {
+                    it.orderBy(field("created_at").desc())
+                }
+            }
+            .limit(1)
+            .awaitFirstOrNull()
     }
 }

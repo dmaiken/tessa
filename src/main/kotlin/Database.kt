@@ -1,9 +1,17 @@
 package io
 
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.log
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
-import io.r2dbc.spi.ConnectionFactoryOptions.*
+import io.r2dbc.spi.ConnectionFactoryOptions.DATABASE
+import io.r2dbc.spi.ConnectionFactoryOptions.DRIVER
+import io.r2dbc.spi.ConnectionFactoryOptions.HOST
+import io.r2dbc.spi.ConnectionFactoryOptions.PASSWORD
+import io.r2dbc.spi.ConnectionFactoryOptions.PORT
+import io.r2dbc.spi.ConnectionFactoryOptions.PROTOCOL
+import io.r2dbc.spi.ConnectionFactoryOptions.USER
+import io.r2dbc.spi.ConnectionFactoryOptions.builder
 import name.nkonev.r2dbc.migrate.core.R2dbcMigrate
 import name.nkonev.r2dbc.migrate.core.R2dbcMigrateProperties
 import name.nkonev.r2dbc.migrate.reader.ReflectionsClasspathResourceReader

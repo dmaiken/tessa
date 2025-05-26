@@ -2,32 +2,40 @@ package io
 
 import asset.StoreAssetRequest
 import io.asset.AssetHandler
-import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.util.logging.*
-import io.ktor.utils.io.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.server.application.Application
+import io.ktor.server.plugins.origin
+import io.ktor.server.request.path
+import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.respond
+import io.ktor.server.routing.RoutingCall
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
+import io.ktor.util.logging.KtorSimpleLogger
+import io.ktor.utils.io.toByteArray
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
+
+private val logger = KtorSimpleLogger("io")
 
 fun Application.configureRouting() {
 
     val assetHandler by inject<AssetHandler>()
 
-    val logger = KtorSimpleLogger("io")
-
     routing {
 
         get("/assets/{...}") {
             val route = call.request.path()
+            val suppliedEntryId = getEntryId(call.request)
             if (route.endsWith("/info")) {
                 val trimmedRoute = route.removeSuffix("/info/all")
                 logger.info("Navigating to asset info with path: $trimmedRoute")
-                assetHandler.fetchAssetInfoByPath(route)?.let {
+                assetHandler.fetchAssetInfoByPath(route, suppliedEntryId)?.let {
                     logger.info("Found asset info: $it with path: $trimmedRoute")
                     call.respond(HttpStatusCode.OK, it.toResponse())
                 } ?: call.respond(HttpStatusCode.NotFound)
@@ -42,7 +50,7 @@ fun Application.configureRouting() {
                 }
             } else {
                 logger.info("Navigating to asset with path: $route")
-                assetHandler.fetchAssetByPath(route)?.let { url ->
+                assetHandler.fetchAssetByPath(route, suppliedEntryId)?.let { url ->
                     logger.info("Found asset with url: $url and route: $route")
                     call.response.headers.append(HttpHeaders.Location, url)
                     call.respond(HttpStatusCode.TemporaryRedirect)
@@ -56,6 +64,12 @@ fun Application.configureRouting() {
 
         post("/assets/{...}") {
             createNewAsset(call, assetHandler)
+        }
+
+        delete("/assets/{...}") {
+            val suppliedEntryId = getEntryId(call.request)
+            assetHandler.deleteAsset(call.request.path(), suppliedEntryId)
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }

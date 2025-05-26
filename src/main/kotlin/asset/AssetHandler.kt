@@ -4,7 +4,7 @@ import asset.Asset
 import asset.StoreAssetRequest
 import io.asset.handler.StoreAssetDto
 import io.image.InvalidImageException
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 
 class AssetHandler(
     private val mimeTypeDetector: MimeTypeDetector,
@@ -32,22 +32,32 @@ class AssetHandler(
         )
     }
 
-    suspend fun fetchAssetByPath(uriPath: String): String? {
+    suspend fun fetchAssetByPath(uriPath: String, entryId: Long?): String? {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset by path: $treePath")
-        return assetService.fetchLatestByPath(treePath)?.url
+        return assetService.fetchLatestByPath(treePath, entryId)?.url
     }
 
-    suspend fun fetchAssetInfoByPath(uriPath: String): Asset? {
+    suspend fun fetchAssetInfoByPath(uriPath: String, entryId: Long?): Asset? {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath.removeSuffix("/info"))
         logger.info("Fetching asset info by path: $treePath")
-        return assetService.fetchLatestByPath(treePath)
+        return assetService.fetchLatestByPath(treePath, entryId)
     }
 
     suspend fun fetchAssetInfoInPath(uriPath: String): List<Asset> {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info in path: $treePath")
         return assetService.fetchAllByPath(treePath)
+    }
+
+    suspend fun deleteAsset(uriPath: String, entryId: Long? = null) {
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
+        if (entryId == null) {
+            logger.info("Deleting asset with path: $treePath")
+        } else {
+            logger.info("Deleting asset with path: $treePath and entry id: $entryId")
+        }
+        assetService.deleteAssetByPath(treePath, entryId)
     }
 
     private fun deriveValidMimeType(content: ByteArray): String {

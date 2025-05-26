@@ -1,7 +1,12 @@
 package io
 
 import aws.sdk.kotlin.services.s3.S3Client
-import io.asset.*
+import io.asset.AssetHandler
+import io.asset.AssetService
+import io.asset.AssetServiceImpl
+import io.asset.MimeTypeDetector
+import io.asset.PathAdapter
+import io.asset.TikaMimeTypeDetector
 import io.asset.store.AWSProperties
 import io.asset.store.S3Service
 import io.image.ImageProcessor
@@ -9,7 +14,8 @@ import io.image.ImageProperties
 import io.image.PreProcessingProperties
 import io.image.VipsImageProcessor
 import io.image.store.ObjectStore
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.r2dbc.spi.ConnectionFactory
 import org.jooq.DSLContext
 import org.koin.dsl.module

@@ -6,11 +6,11 @@ import aws.sdk.kotlin.services.s3.model.CreateBucketRequest
 import aws.smithy.kotlin.runtime.auth.awscredentials.Credentials
 import aws.smithy.kotlin.runtime.net.url.Url
 import io.asset.store.S3Service.Companion.BUCKET
-import io.ktor.util.logging.*
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.runBlocking
 
 
-internal val logger = KtorSimpleLogger("io.image.S3Config")
+private val logger = KtorSimpleLogger("io.image.S3Config")
 
 fun s3Client(
     properties: LocalstackProperties? = null,
