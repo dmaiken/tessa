@@ -42,12 +42,12 @@ fun Application.configureKoin(
             VipsImageProcessor(get())
         }
         single<ImageProperties> {
-            ImageProperties(
-                preProcessing = PreProcessingProperties(
+            ImageProperties.create(
+                preProcessing = PreProcessingProperties.create(
                     enabled = environment.config.propertyOrNull("image.preprocessing.enabled")?.getString()?.toBoolean()
                         ?: false,
-                    maxWidth = environment.config.propertyOrNull("image.preprocessing.maxWidth")?.getString()?.toInt()
-                        ?: 1000,
+                    maxWidth = environment.config.propertyOrNull("image.preprocessing.maxWidth")?.getString()?.toInt(),
+                    maxHeight = environment.config.propertyOrNull("image.preprocessing.maxHeight")?.getString()?.toInt()
                 ),
             )
         }

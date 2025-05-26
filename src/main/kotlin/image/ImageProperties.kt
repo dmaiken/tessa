@@ -1,11 +1,37 @@
 package io.image
 
-data class ImageProperties(
+import io.properties.ValidatedProperties
+import io.properties.validateAndCreate
+
+class ImageProperties private constructor(
     val preProcessing: PreProcessingProperties,
-)
+) : ValidatedProperties {
 
-data class PreProcessingProperties(
-    val enabled: Boolean = false,
-    val maxWidth: Int,
+    override fun validate() {}
 
-    )
+    companion object {
+        fun create(preProcessing: PreProcessingProperties) =
+            validateAndCreate { ImageProperties(preProcessing) }
+    }
+}
+
+class PreProcessingProperties private constructor(
+    val enabled: Boolean,
+    val maxWidth: Int?,
+    val maxHeight: Int?
+) : ValidatedProperties {
+
+    override fun validate() {
+        maxWidth?.let {
+            require(it > 0) { "'maxWidth' must be greater than 0" }
+        }
+        maxHeight?.let {
+            require(it > 0) { "'maxHeight' must be greater than 0" }
+        }
+    }
+
+    companion object {
+        fun create(enabled: Boolean = false, maxWidth: Int?, maxHeight: Int?) =
+            validateAndCreate { PreProcessingProperties(enabled, maxWidth, maxHeight) }
+    }
+}

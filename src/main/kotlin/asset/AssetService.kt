@@ -34,7 +34,7 @@ class AssetServiceImpl(
     private val imageProcessor: ImageProcessor,
 ) : AssetService {
 
-    val logger = KtorSimpleLogger(this::class.qualifiedName!!)
+    private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
     override suspend fun store(asset: StoreAssetDto): Asset {
         val preProcessed = imageProcessor.preprocess(asset.content, asset.mimeType)

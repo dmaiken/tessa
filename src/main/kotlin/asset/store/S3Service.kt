@@ -19,7 +19,7 @@ class S3Service(
         const val BUCKET = "assets"
     }
 
-    val logger = KtorSimpleLogger(this::class.qualifiedName!!)
+    private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
     override suspend fun persist(data: StoreAssetRequest, image: ByteArray): PersistResult {
         val key = UUID.randomUUID().toString()
