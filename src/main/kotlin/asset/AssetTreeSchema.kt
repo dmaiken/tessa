@@ -8,7 +8,7 @@ import java.util.*
 data class Asset(
     val id: UUID = UUID.randomUUID(),
     val bucket: String,
-    val storeKey: String?,
+    val storeKey: String,
     val url: String,
     val mimeType: String,
     val alt: String?,

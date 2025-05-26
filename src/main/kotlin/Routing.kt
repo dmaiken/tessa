@@ -2,6 +2,8 @@ package io
 
 import asset.StoreAssetRequest
 import io.asset.AssetHandler
+import io.asset.AssetReturnFormat
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
@@ -11,6 +13,7 @@ import io.ktor.server.plugins.origin
 import io.ktor.server.request.path
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondOutputStream
 import io.ktor.server.routing.RoutingCall
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
@@ -31,29 +34,42 @@ fun Application.configureRouting() {
 
         get("/assets/{...}") {
             val route = call.request.path()
+            val returnFormat = AssetReturnFormat.fromQueryParam(call.request.queryParameters["format"])
+            val all = call.request.queryParameters["all"]?.toBoolean() ?: false
             val suppliedEntryId = getEntryId(call.request)
-            if (route.endsWith("/info")) {
-                val trimmedRoute = route.removeSuffix("/info/all")
-                logger.info("Navigating to asset info with path: $trimmedRoute")
+
+            if (returnFormat == AssetReturnFormat.METADATA && !all) {
+                logger.info("Navigating to asset info with path: $route")
                 assetHandler.fetchAssetInfoByPath(route, suppliedEntryId)?.let {
-                    logger.info("Found asset info: $it with path: $trimmedRoute")
+                    logger.info("Found asset info: $it with path: $route")
                     call.respond(HttpStatusCode.OK, it.toResponse())
                 } ?: call.respond(HttpStatusCode.NotFound)
-            } else if (route.endsWith("/info/all")) {
-                val trimmedRoute = route.removeSuffix("/info/all")
-                logger.info("Navigating to asset info of all assets with path: $trimmedRoute")
-                assetHandler.fetchAssetInfoInPath(trimmedRoute).map {
+            } else if (returnFormat == AssetReturnFormat.METADATA) {
+                logger.info("Navigating to asset info of all assets with path: $route")
+                assetHandler.fetchAssetInfoInPath(route).map {
                     it.toResponse()
                 }.let {
-                    logger.info("Found asset info for ${it.size} assets in path: $trimmedRoute")
+                    logger.info("Found asset info for ${it.size} assets in path: $route")
                     call.respond(HttpStatusCode.OK, it)
                 }
-            } else {
+            } else if (returnFormat == AssetReturnFormat.REDIRECT) {
                 logger.info("Navigating to asset with path: $route")
                 assetHandler.fetchAssetByPath(route, suppliedEntryId)?.let { url ->
                     logger.info("Found asset with url: $url and route: $route")
                     call.response.headers.append(HttpHeaders.Location, url)
                     call.respond(HttpStatusCode.TemporaryRedirect)
+                } ?: call.respond(HttpStatusCode.NotFound)
+            } else {
+                // Content
+                logger.info("Navigating to asset content with path: $route")
+                assetHandler.fetchAssetInfoByPath(route, suppliedEntryId)?.let { asset ->
+                    logger.info("Found asset content with path: $route")
+                    call.respondOutputStream(
+                        contentType = ContentType.parse(asset.mimeType),
+                        status = HttpStatusCode.OK
+                    ) {
+                        assetHandler.fetchAssetContent(asset.bucket, asset.storeKey, this)
+                    }
                 } ?: call.respond(HttpStatusCode.NotFound)
             }
         }

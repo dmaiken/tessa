@@ -1,9 +1,9 @@
 package io.asset
 
 import asset.Asset
+import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
 import io.image.ImageProcessor
-import io.image.store.ObjectStore
 import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.collect
@@ -23,7 +23,7 @@ import java.util.*
 interface AssetService {
     suspend fun store(asset: StoreAssetDto): Asset
     suspend fun fetch(id: UUID): Asset?
-    suspend fun fetchLatestByPath(treePath: String, entryId: Long?): Asset?
+    suspend fun fetchByPath(treePath: String, entryId: Long?): Asset?
     suspend fun fetchAllByPath(treePath: String): List<Asset>
     suspend fun deleteAssetByPath(treePath: String, entryId: Long? = null)
 }
@@ -71,7 +71,7 @@ class AssetServiceImpl(
             }
     }
 
-    override suspend fun fetchLatestByPath(treePath: String, entryId: Long?): Asset? {
+    override suspend fun fetchByPath(treePath: String, entryId: Long?): Asset? {
         return fetch(dslContext, treePath, entryId)?.let {
             Asset.from(it)
         }

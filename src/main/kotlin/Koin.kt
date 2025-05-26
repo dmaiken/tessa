@@ -1,5 +1,6 @@
 package io
 
+import asset.store.ObjectStore
 import aws.sdk.kotlin.services.s3.S3Client
 import io.asset.AssetHandler
 import io.asset.AssetService
@@ -14,7 +15,6 @@ import io.image.ImageProcessor
 import io.image.ImageProperties
 import io.image.PreProcessingProperties
 import io.image.VipsImageProcessor
-import io.image.store.ObjectStore
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.r2dbc.spi.ConnectionFactory
@@ -31,7 +31,7 @@ fun Application.configureKoin(
             PathAdapter()
         }
         single<AssetHandler> {
-            AssetHandler(get(), get(), get())
+            AssetHandler(get(), get(), get(), get())
         }
         single<MimeTypeDetector> {
             TikaMimeTypeDetector()

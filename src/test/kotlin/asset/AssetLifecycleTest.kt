@@ -33,7 +33,7 @@ class AssetLifecycleTest : BaseTest() {
         storeAssetResponse.type shouldBe "image/png"
         storeAssetResponse.alt shouldBe "an image"
         storeAssetResponse.entryId shouldBe 0
-        client.get("/assets/profile/info").apply {
+        client.get("/assets/profile?format=metadata").apply {
             status shouldBe HttpStatusCode.OK
             body<AssetResponse>() shouldBe storeAssetResponse
         }
@@ -55,7 +55,7 @@ class AssetLifecycleTest : BaseTest() {
                 ids.add(response.id)
             }
             ids shouldHaveSize 2
-            client.get("/assets/profile/info").apply {
+            client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
                     ids[1] shouldBe id

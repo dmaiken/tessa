@@ -1,13 +1,17 @@
 package io.asset.store
 
 import asset.StoreAssetRequest
+import asset.store.FetchResult
+import asset.store.ObjectStore
+import asset.store.PersistResult
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.DeleteObjectRequest
+import aws.sdk.kotlin.services.s3.model.GetObjectRequest
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
-import io.image.store.ObjectStore
-import io.image.store.PersistResult
+import aws.smithy.kotlin.runtime.content.writeToOutputStream
 import io.ktor.util.logging.KtorSimpleLogger
+import java.io.OutputStream
 import java.util.*
 
 class S3Service(
@@ -36,6 +40,20 @@ class S3Service(
             bucket = BUCKET,
             url = createS3Url(key)
         )
+    }
+
+    override suspend fun fetch(bucket: String, key: String, stream: OutputStream): FetchResult {
+        return s3Client.getObject(
+            input = GetObjectRequest {
+                this.bucket = bucket
+                this.key = key
+            }
+        ) {
+            it.body?.let { body ->
+                body.writeToOutputStream(stream)
+                FetchResult.found(requireNotNull(it.contentLength))
+            } ?: FetchResult.notFound()
+        }
     }
 
     override suspend fun delete(bucket: String, key: String) {

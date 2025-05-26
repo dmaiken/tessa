@@ -11,7 +11,7 @@ data class AssetResponse(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
     val bucket: String,
-    val storeKey: String?,
+    val storeKey: String,
     val type: String,
     val alt: String?,
     val height: Int,

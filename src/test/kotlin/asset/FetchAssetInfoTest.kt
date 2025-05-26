@@ -33,14 +33,14 @@ class FetchAssetInfoTest : BaseTest() {
                 }
             }
             ids shouldHaveSize 2
-            client.get("/assets/profile/info").apply {
+            client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
                     ids[1] shouldBe id
                 }
             }
 
-            client.get("/assets/profile/info/all").apply {
+            client.get("/assets/profile?format=metadata&all=true").apply {
                 status shouldBe HttpStatusCode.OK
                 body<List<AssetResponse>>().apply {
                     size shouldBe 2
@@ -54,7 +54,7 @@ class FetchAssetInfoTest : BaseTest() {
     fun `fetching info of asset that does not exist returns not found`() =
         testWithTestcontainers(postgres, localstack) {
             val client = createJsonClient()
-            client.get("/assets/${UUID.randomUUID()}/info").apply {
+            client.get("/assets/${UUID.randomUUID()}?format=metadata").apply {
                 status shouldBe HttpStatusCode.NotFound
             }
         }

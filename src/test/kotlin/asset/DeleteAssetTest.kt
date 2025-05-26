@@ -38,11 +38,11 @@ class DeleteAssetTest : BaseTest() {
         )
         storeAsset(client, image, request, path = "profile")
 
-        client.get("/assets/profile/info").apply {
+        client.get("/assets/profile?format=metadata").apply {
             status shouldBe HttpStatusCode.OK
         }
         client.delete("/assets/profile").status shouldBe HttpStatusCode.NoContent
-        client.get("/assets/profile/info").apply {
+        client.get("/assets/profile?format=metadata").apply {
             status shouldBe HttpStatusCode.NotFound
         }
         client.delete("/assets/profile").status shouldBe HttpStatusCode.NoContent
@@ -61,7 +61,7 @@ class DeleteAssetTest : BaseTest() {
             val firstAsset = storeAsset(client, image, request, path = "profile")
             val secondAsset = storeAsset(client, image, request, path = "profile")
 
-            client.get("/assets/profile/info").apply {
+            client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
                     id shouldBe secondAsset.id
@@ -69,7 +69,7 @@ class DeleteAssetTest : BaseTest() {
                 }
             }
             client.delete("/assets/profile").status shouldBe HttpStatusCode.NoContent
-            client.get("/assets/profile/info").apply {
+            client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
                     id shouldBe firstAsset.id
@@ -91,14 +91,14 @@ class DeleteAssetTest : BaseTest() {
         val secondAsset = storeAsset(client, image, request, path = "profile")
 
         client.delete("/assets/profile?entryId=${firstAsset.entryId}").status shouldBe HttpStatusCode.NoContent
-        client.get("/assets/profile/info").apply {
+        client.get("/assets/profile?format=metadata").apply {
             status shouldBe HttpStatusCode.OK
             body<AssetResponse>().apply {
                 id shouldBe secondAsset.id
                 entryId shouldBe secondAsset.entryId
             }
         }
-        client.get("/assets/profile/info?entryId=${firstAsset.entryId}").apply {
+        client.get("/assets/profile?format=metadata&entryId=${firstAsset.entryId}").apply {
             status shouldBe HttpStatusCode.NotFound
         }
     }

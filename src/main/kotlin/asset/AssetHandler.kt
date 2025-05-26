@@ -2,14 +2,17 @@ package io.asset
 
 import asset.Asset
 import asset.StoreAssetRequest
+import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
 import io.image.InvalidImageException
 import io.ktor.util.logging.KtorSimpleLogger
+import java.io.OutputStream
 
 class AssetHandler(
     private val mimeTypeDetector: MimeTypeDetector,
     private val assetService: AssetService,
-    private val pathGenerator: PathAdapter
+    private val pathGenerator: PathAdapter,
+    private val objectStore: ObjectStore,
 ) {
 
     private val logger = KtorSimpleLogger("io.asset")
@@ -33,21 +36,25 @@ class AssetHandler(
     }
 
     suspend fun fetchAssetByPath(uriPath: String, entryId: Long?): String? {
-        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
-        logger.info("Fetching asset by path: $treePath")
-        return assetService.fetchLatestByPath(treePath, entryId)?.url
+        return fetchAssetInfoByPath(uriPath, entryId)?.url
     }
 
     suspend fun fetchAssetInfoByPath(uriPath: String, entryId: Long?): Asset? {
-        val treePath = pathGenerator.toTreePathFromUriPath(uriPath.removeSuffix("/info"))
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info by path: $treePath")
-        return assetService.fetchLatestByPath(treePath, entryId)
+        return assetService.fetchByPath(treePath, entryId)
     }
 
     suspend fun fetchAssetInfoInPath(uriPath: String): List<Asset> {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info in path: $treePath")
         return assetService.fetchAllByPath(treePath)
+    }
+
+    suspend fun fetchAssetContent(bucket: String, storeKey: String, stream: OutputStream): Long {
+        return objectStore.fetch(bucket, storeKey, stream)
+            .takeIf { it.found }?.contentLength
+            ?: throw IllegalStateException("Asset not found in object store: $bucket/$storeKey")
     }
 
     suspend fun deleteAsset(uriPath: String, entryId: Long? = null) {
