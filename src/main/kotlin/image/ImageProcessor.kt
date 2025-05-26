@@ -7,6 +7,11 @@ import org.apache.commons.io.output.ByteArrayOutputStream
 import kotlin.math.min
 
 interface ImageProcessor {
+
+    /**
+     * Preprocesses the image based on application configuration. Make sure to use the returned properties
+     * since they reflect any changes performed on the image.
+     */
     suspend fun preprocess(image: ByteArray, mimeType: String): ProcessedImage
 }
 
@@ -25,6 +30,7 @@ class VipsImageProcessor(
                 attributes = ImageAttributes(
                     height = sourceImage.height,
                     width = sourceImage.width,
+                    mimeType = mimeType
                 )
                 resizedStream.write(image)
                 return@run
@@ -35,10 +41,12 @@ class VipsImageProcessor(
                 maxWidth = imageProperties.preProcessing.maxWidth,
                 maxHeight = imageProperties.preProcessing.maxHeight
             )
-            resized.writeToStream(resizedStream, ".${mimeType.split("/")[1]}")
+            val newMimeType = determineMimeType(mimeType)
+            resized.writeToStream(resizedStream, ".${ImageFormat.fromMimeType(newMimeType).extension}")
             attributes = ImageAttributes(
                 height = resized.height,
                 width = resized.width,
+                mimeType = newMimeType
             )
         }
         return ProcessedImage(
@@ -72,4 +80,14 @@ class VipsImageProcessor(
 
         return image.resize(scale)
     }
+
+    private fun determineMimeType(originalMimeType: String) =
+        if (imageProperties.preProcessing.imageFormat != null) {
+            if (imageProperties.preProcessing.imageFormat.mimeType != originalMimeType) {
+                logger.info("Converting image from $originalMimeType to ${imageProperties.preProcessing.imageFormat.mimeType}")
+            }
+            imageProperties.preProcessing.imageFormat.mimeType
+        } else {
+            originalMimeType
+        }
 }

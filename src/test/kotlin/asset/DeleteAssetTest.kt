@@ -32,7 +32,7 @@ class DeleteAssetTest : BaseTest() {
         val client = createJsonClient()
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val request = StoreAssetRequest(
-            fileName = "filename.jpeg",
+            fileName = "filename.png",
             type = "image/png",
             alt = "an image",
         )
@@ -54,7 +54,7 @@ class DeleteAssetTest : BaseTest() {
             val client = createJsonClient()
             val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
             val request = StoreAssetRequest(
-                fileName = "filename.jpeg",
+                fileName = "filename.png",
                 type = "image/png",
                 alt = "an image",
             )
@@ -83,7 +83,7 @@ class DeleteAssetTest : BaseTest() {
         val client = createJsonClient()
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val request = StoreAssetRequest(
-            fileName = "filename.jpeg",
+            fileName = "filename.png",
             type = "image/png",
             alt = "an image",
         )

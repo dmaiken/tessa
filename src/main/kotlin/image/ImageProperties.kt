@@ -18,7 +18,8 @@ class ImageProperties private constructor(
 class PreProcessingProperties private constructor(
     val enabled: Boolean,
     val maxWidth: Int?,
-    val maxHeight: Int?
+    val maxHeight: Int?,
+    val imageFormat: ImageFormat?
 ) : ValidatedProperties {
 
     override fun validate() {
@@ -31,7 +32,7 @@ class PreProcessingProperties private constructor(
     }
 
     companion object {
-        fun create(enabled: Boolean = false, maxWidth: Int?, maxHeight: Int?) =
-            validateAndCreate { PreProcessingProperties(enabled, maxWidth, maxHeight) }
+        fun create(enabled: Boolean, maxWidth: Int?, maxHeight: Int?, imageFormat: ImageFormat?) =
+            validateAndCreate { PreProcessingProperties(enabled, maxWidth, maxHeight, imageFormat) }
     }
 }

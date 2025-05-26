@@ -58,6 +58,7 @@ dependencies {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    systemProperty("kotest.extensions.autoscan.disable", "true")
 }
 
 java {

@@ -4,9 +4,15 @@ import asset.StoreAssetRequest
 import io.BaseTest
 import io.config.testWithTestcontainers
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.util.createJsonClient
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
@@ -18,7 +24,7 @@ class StoreAssetTest : BaseTest() {
         val client = createJsonClient()
         val image = "I am not an image".toByteArray()
         val request = StoreAssetRequest(
-            fileName = "filename.jpeg",
+            fileName = "filename.png",
             type = "image/png",
             alt = "an image",
         )

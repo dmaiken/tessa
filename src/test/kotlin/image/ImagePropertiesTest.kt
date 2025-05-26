@@ -14,8 +14,10 @@ class ImagePropertiesTest {
     fun `PreProcessingProperties maxHeight cannot be less than 0`(maxHeight: Int) {
         val exception = shouldThrow<IllegalArgumentException> {
             PreProcessingProperties.create(
+                enabled = true,
                 maxHeight = maxHeight,
-                maxWidth = 100
+                maxWidth = 100,
+                imageFormat = null
             )
         }
 
@@ -27,8 +29,10 @@ class ImagePropertiesTest {
     fun `PreProcessingProperties maxWidth cannot be less than 0`(maxWidth: Int) {
         val exception = shouldThrow<IllegalArgumentException> {
             PreProcessingProperties.create(
+                enabled = true,
                 maxWidth = maxWidth,
-                maxHeight = 100
+                maxHeight = 100,
+                imageFormat = null
             )
         }
 
@@ -39,8 +43,10 @@ class ImagePropertiesTest {
     fun `PreProcessingProperties maxHeight can be null`() {
         shouldNotThrowAny {
             PreProcessingProperties.create(
+                enabled = true,
                 maxWidth = 100,
-                maxHeight = null
+                maxHeight = null,
+                imageFormat = null
             )
         }
     }
@@ -49,8 +55,10 @@ class ImagePropertiesTest {
     fun `PreProcessingProperties maxWidth can be null`() {
         shouldNotThrowAny {
             PreProcessingProperties.create(
+                enabled = true,
                 maxWidth = null,
-                maxHeight = 100
+                maxHeight = 100,
+                imageFormat = null
             )
         }
     }

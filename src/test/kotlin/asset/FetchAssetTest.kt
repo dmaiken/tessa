@@ -3,90 +3,53 @@ package io.asset
 import asset.StoreAssetRequest
 import io.BaseTest
 import io.config.testWithTestcontainers
-import io.image.AssetResponse
-import io.kotest.matchers.collections.shouldHaveSize
+import io.image.byteArrayToImage
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
+import io.kotest.matchers.string.shouldContain
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.HttpStatusCode
+import io.util.createGeneralClient
 import io.util.createJsonClient
-import kotlinx.serialization.json.Json
+import io.util.storeAsset
+import org.apache.tika.Tika
 import org.junit.jupiter.api.Test
 import java.util.*
 
 class FetchAssetTest : BaseTest() {
 
     @Test
-    fun `getting all asset info with path returns all info`() =
-        testWithTestcontainers(postgres, localstack) {
-            val client = createJsonClient()
-            val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
-            val request = StoreAssetRequest(
-                fileName = "filename.jpeg",
-                type = "image/png",
-                alt = "an image",
-            )
-            val ids = mutableListOf<UUID>()
-            repeat(2) {
-                client.post("/assets/profile") {
-                    contentType(ContentType.MultiPart.FormData)
-                    setBody(
-                        MultiPartFormDataContent(
-                            formData {
-                                append("metadata", Json.encodeToString<StoreAssetRequest>(request), Headers.build {
-                                    append(HttpHeaders.ContentType, "application/json")
-                                })
-                                append("file", image, Headers.build {
-                                    append(HttpHeaders.ContentType, "image/png")
-                                    append(HttpHeaders.ContentDisposition, "filename=\"ktor_logo.png\"")
-                                })
-                            },
-                            BOUNDARY,
-                            ContentType.MultiPart.FormData.withParameter("boundary", BOUNDARY)
-                        )
-                    )
-                }.apply {
-                    status shouldBe HttpStatusCode.Created
-                    body<AssetResponse>().apply {
-                        id shouldNotBe null
-                        ids.add(id)
-                    }
-                }
-            }
-            ids shouldHaveSize 2
-            client.get("/assets/profile/info").apply {
-                status shouldBe HttpStatusCode.OK
-                body<AssetResponse>().apply {
-                    ids[1] shouldBe id
-                }
-            }
-
-            client.get("/assets/profile/info/all").apply {
-                status shouldBe HttpStatusCode.OK
-                body<List<AssetResponse>>().apply {
-                    size shouldBe 2
-                    get(0).id shouldBe ids[1]
-                    get(1).id shouldBe ids[0]
-                }
-            }
-        }
-
-    @Test
-    fun `fetching image info of image that does not exist returns not found`() =
-        testWithTestcontainers(postgres, localstack) {
-            val client = createJsonClient()
-            client.get("/assets/${UUID.randomUUID()}/info").apply {
-                status shouldBe HttpStatusCode.NotFound
-            }
-        }
-
-    @Test
-    fun `fetching image that does not exist returns not found`() = testWithTestcontainers(postgres, localstack) {
+    fun `fetching asset that does not exist returns not found`() = testWithTestcontainers(postgres, localstack) {
         val client = createJsonClient()
         client.get("/assets/${UUID.randomUUID()}").apply {
             status shouldBe HttpStatusCode.NotFound
+        }
+    }
+
+    @Test
+    fun `can fetch asset and render`() = testWithTestcontainers(postgres, localstack) {
+        val client = createJsonClient(followRedirects = false)
+        val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+        val bufferedImage = byteArrayToImage(image)
+        val request = StoreAssetRequest(
+            fileName = "filename.png",
+            type = "image/png",
+            alt = "an image",
+        )
+        val storedAssetInfo = storeAsset(client, image, request, path = "profile")
+
+        client.get("/assets/profile/").apply {
+            status shouldBe HttpStatusCode.TemporaryRedirect
+            headers["Location"] shouldContain "https://"
+            headers["Location"] shouldContain storedAssetInfo.storeKey!!
+
+            val generalClient = createGeneralClient()
+            val storeResponse = generalClient.get(headers["Location"]!!)
+            storeResponse.status shouldBe HttpStatusCode.OK
+            val rendered = byteArrayToImage(storeResponse.bodyAsBytes())
+            rendered.width shouldBe bufferedImage.width
+            rendered.height shouldBe bufferedImage.height
+            Tika().detect(storeResponse.bodyAsBytes()) shouldBe "image/png"
         }
     }
 }

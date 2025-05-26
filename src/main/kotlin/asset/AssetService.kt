@@ -52,7 +52,7 @@ class AssetServiceImpl(
                 .set(field("bucket"), persistResult.bucket)
                 .set(field("store_key"), persistResult.key)
                 .set(field("url"), persistResult.url)
-                .set(field("mime_type"), asset.mimeType)
+                .set(field("mime_type"), preProcessed.attributes.mimeType)
                 .set(field("alt"), asset.request.alt)
                 .set(field("entry_id"), entryId)
                 .set(field("created_at"), LocalDateTime.now())

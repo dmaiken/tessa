@@ -7,9 +7,9 @@ import io.image.AssetResponse
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.http.HttpStatusCode
 import io.util.createJsonClient
 import io.util.storeAsset
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class AssetLifecycleTest : BaseTest() {
         val client = createJsonClient()
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val request = StoreAssetRequest(
-            fileName = "filename.jpeg",
+            fileName = "filename.png",
             type = "image/png",
             alt = "an image",
         )
@@ -45,7 +45,7 @@ class AssetLifecycleTest : BaseTest() {
             val client = createJsonClient()
             val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
             val request = StoreAssetRequest(
-                fileName = "filename.jpeg",
+                fileName = "filename.png",
                 type = "image/png",
                 alt = "an image",
             )

@@ -9,6 +9,7 @@ import io.asset.PathAdapter
 import io.asset.TikaMimeTypeDetector
 import io.asset.store.AWSProperties
 import io.asset.store.S3Service
+import io.image.ImageFormat
 import io.image.ImageProcessor
 import io.image.ImageProperties
 import io.image.PreProcessingProperties
@@ -47,7 +48,12 @@ fun Application.configureKoin(
                     enabled = environment.config.propertyOrNull("image.preprocessing.enabled")?.getString()?.toBoolean()
                         ?: false,
                     maxWidth = environment.config.propertyOrNull("image.preprocessing.maxWidth")?.getString()?.toInt(),
-                    maxHeight = environment.config.propertyOrNull("image.preprocessing.maxHeight")?.getString()?.toInt()
+                    maxHeight = environment.config.propertyOrNull("image.preprocessing.maxHeight")?.getString()
+                        ?.toInt(),
+                    imageFormat = environment.config.propertyOrNull("image.preprocessing.imageFormat")?.getString()
+                        ?.let {
+                            ImageFormat.fromFormat(it)
+                        }
                 ),
             )
         }
@@ -82,7 +88,7 @@ fun Application.configureKoin(
         single<ObjectStore> {
             val port = environment.config.property("localstack.port").getString().toInt()
             val awsProperties = AWSProperties(
-                host = if (useMock) "localhost:$port" else "s3-$region.amazonaws.com",
+                host = if (useMock) "localhost.localstack.cloud:$port" else "s3-$region.amazonaws.com",
                 region = region,
             )
             S3Service(get(), awsProperties)

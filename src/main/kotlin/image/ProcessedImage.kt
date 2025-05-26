@@ -8,4 +8,5 @@ data class ProcessedImage(
 data class ImageAttributes(
     val width: Int,
     val height: Int,
+    val mimeType: String
 )

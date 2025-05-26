@@ -7,7 +7,9 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.matcher.shouldBeApproximately
 import io.util.createJsonClient
+import io.util.fetchAsset
 import io.util.storeAsset
+import org.apache.tika.Tika
 import org.junit.jupiter.api.Named.named
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -25,6 +27,15 @@ class ImagePreProcessingTest : BaseTest() {
             arguments(named("Image preprocessing not enabled", false), 50, 50),
             arguments(named("Height and width are too large", true), 5000, 5000)
         )
+
+        @JvmStatic
+        fun imageConversionSource(): Stream<Arguments> = Stream.of(
+            arguments("jpeg", "image/jpeg"),
+            arguments("jpg", "image/jpeg"),
+            arguments("png", "image/png"),
+            arguments("webp", "image/webp"),
+            arguments("avif", "image/avif")
+        )
     }
 
     @Test
@@ -34,16 +45,16 @@ class ImagePreProcessingTest : BaseTest() {
             "image.preprocessing.maxWidth" to "100",
         )
     ) {
-        val client = createJsonClient()
+        val client = createJsonClient(followRedirects = false)
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val bufferedImage = byteArrayToImage(image)
         val originalScale = bufferedImage.width.toDouble() / bufferedImage.height.toDouble()
         val request = StoreAssetRequest(
-            fileName = "filename.jpeg",
+            fileName = "filename.png",
             type = "image/png",
             alt = "an image",
         )
-        storeAsset(client, image, request).apply {
+        val storedAssetInfo = storeAsset(client, image, request).apply {
             id shouldNotBe null
             createdAt shouldNotBe null
             bucket shouldBe "assets"
@@ -53,6 +64,12 @@ class ImagePreProcessingTest : BaseTest() {
             width shouldBe 100
             width.toDouble() / height.toDouble() shouldBeApproximately originalScale
         }
+
+        val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey!!)
+        Tika().detect(fetchedAsset) shouldBe "image/png"
+        val fetchedImage = byteArrayToImage(fetchedAsset)
+        fetchedImage.width shouldBe 100
+        fetchedImage.width.toDouble() / fetchedImage.height.toDouble() shouldBeApproximately originalScale
     }
 
     @Test
@@ -62,16 +79,16 @@ class ImagePreProcessingTest : BaseTest() {
             "image.preprocessing.maxHeight" to "50",
         )
     ) {
-        val client = createJsonClient()
+        val client = createJsonClient(followRedirects = false)
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
         val bufferedImage = byteArrayToImage(image)
         val originalScale = bufferedImage.width.toDouble() / bufferedImage.height.toDouble()
         val request = StoreAssetRequest(
-            fileName = "filename.jpeg",
+            fileName = "filename.png",
             type = "image/png",
             alt = "an image",
         )
-        storeAsset(client, image, request).apply {
+        val storedAssetInfo = storeAsset(client, image, request).apply {
             id shouldNotBe null
             createdAt shouldNotBe null
             bucket shouldBe "assets"
@@ -81,6 +98,12 @@ class ImagePreProcessingTest : BaseTest() {
             height shouldBe 50
             width.toDouble() / height.toDouble() shouldBeApproximately originalScale
         }
+
+        val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey!!)
+        Tika().detect(fetchedAsset) shouldBe "image/png"
+        val fetchedImage = byteArrayToImage(fetchedAsset)
+        fetchedImage.height shouldBe 50
+        fetchedImage.width.toDouble() / fetchedImage.height.toDouble() shouldBeApproximately originalScale
     }
 
     @ParameterizedTest
@@ -93,15 +116,15 @@ class ImagePreProcessingTest : BaseTest() {
                 maxHeight?.let { put("image.preprocessing.maxHeight", it.toString()) }
             }
         ) {
-            val client = createJsonClient()
+            val client = createJsonClient(followRedirects = false)
             val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
             val bufferedImage = byteArrayToImage(image)
             val request = StoreAssetRequest(
-                fileName = "filename.jpeg",
+                fileName = "filename.png",
                 type = "image/png",
                 alt = "an image",
             )
-            storeAsset(client, image, request).apply {
+            val storedAssetInfo = storeAsset(client, image, request).apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
                 bucket shouldBe "assets"
@@ -111,5 +134,40 @@ class ImagePreProcessingTest : BaseTest() {
                 width shouldBe bufferedImage.width
                 height shouldBe bufferedImage.height
             }
+            val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey!!)
+            Tika().detect(fetchedAsset) shouldBe "image/png"
+            val fetchedImage = byteArrayToImage(fetchedAsset)
+            fetchedImage.width shouldBe bufferedImage.width
+            fetchedImage.height shouldBe bufferedImage.height
         }
+
+    @ParameterizedTest
+    @MethodSource("imageConversionSource")
+    fun `image is converted if necessary`(imageFormat: String, expectedType: String) = testWithTestcontainers(
+        postgres, localstack, mapOf(
+            "image.preprocessing.enabled" to "true",
+            "image.preprocessing.imageFormat" to imageFormat,
+        )
+    ) {
+        val client = createJsonClient(followRedirects = false)
+        val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+        val bufferedImage = byteArrayToImage(image)
+        val request = StoreAssetRequest(
+            fileName = "filename.png",
+            type = "image/png",
+            alt = "an image",
+        )
+        val storedAssetInfo = storeAsset(client, image, request).apply {
+            id shouldNotBe null
+            createdAt shouldNotBe null
+            bucket shouldBe "assets"
+            storeKey shouldNotBe null
+            type shouldBe expectedType
+            alt shouldBe "an image"
+            width shouldBe bufferedImage.width
+            height shouldBe bufferedImage.height
+        }
+        val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey!!)
+        Tika().detect(fetchedAsset) shouldBe expectedType
+    }
 }
