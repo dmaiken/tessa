@@ -26,7 +26,7 @@ fun Application.connectToPostgres(): ConnectionFactory {
     val host = environment.config.property("postgres.host").getString()
     val port = environment.config.property("postgres.port").getString().toInt()
     val options = builder()
-        .option(DATABASE, "imagek")
+        .option(DATABASE, "tessa")
         .option(DRIVER, "pool")
         .option(PROTOCOL, "postgresql")
         .option(USER, user)

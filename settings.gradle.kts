@@ -1,4 +1,4 @@
-rootProject.name = "imagek"
+rootProject.name = "tessa"
 
 dependencyResolutionManagement {
     repositories {

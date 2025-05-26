@@ -10,7 +10,7 @@ class PostgresTestContainer : PostgreSQLContainer<PostgresTestContainer>(
 class PostgresTestContainerManager {
     private var started = false
     private val postgres = PostgresTestContainer().apply {
-        withDatabaseName("imagek")
+        withDatabaseName("tessa")
         withUsername("username")
         withPassword("password")
     }
