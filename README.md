@@ -1,25 +1,105 @@
 # tessA
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
-
-Here are some useful links to get you started:
-
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need
-  to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+tessA is a high-performance, non-blocking REST API for managing assets such as images and media files.
+Built with Kotlin, it provides a flexible, path-driven design that allows clients to define their own hierarchical
+structure for asset storage and retrieval.
 
 ## Features
 
-Here's a list of features included in this project:
+🚀 100% non-blocking I/O using Kotlin coroutines and Netty
 
-| Name                                                                   | Description                                                                        |
-|------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| [Koin](https://start.ktor.io/p/koin)                                   | Provides dependency injection                                                      |
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [Postgres](https://start.ktor.io/p/postgres)                           | Adds Postgres database to your application                                         |
+🌐 REST API (with support for future protocols like gRPC)
+
+🧩 Composable asset paths – you define the structure
+
+🎯 Efficient streaming of large asset content
+
+🗂️ Support for metadata, direct content access, and redirects
+
+🧼 Minimal configuration, strong conventions
+
+## Path-based Design
+
+tessA's API design is inspired from the idea that the storing of assets is inherently hierarchical, much like a
+directory structure. This pairs nicely with a REST API where resources are accessed by their path and "own" resources
+defined underneath them. tessA doesn't try to enforce any particular structure for assets, but it does provide a
+simple way to define your own.
+
+The way that tessA stores and references the asset tree means there is no performance penalty for any path structure you
+choose.
+
+Assets are stored according to their URL path when persisting them. So, if you wished to store a user's profile photo,
+you could do
+something like this:
+
+```
+POST:/assets/users/{userId}/profilePicture
+```
+
+To retrieve this image:
+
+```
+GET:/assets/users/{userId}/profilePicture
+```
+
+Assets are assigned an increasing `entryId` within their path. In the example above, calling:
+
+```
+GET:/assets/users/{userId}/profilePicture?entryId=0
+```
+
+will return the same image
+
+## Multiple Assets in Path
+
+What if the user has an album? Easy. tessA provides a solution for that. Let's say your user went on a ski trip:
+
+```
+POST:/assets/users/{userId}/ski-trip
+POST:/assets/users/{userId}/ski-trip
+```
+
+When assets are persisted to a specific path, they are "pushed" into the path much like a stack. Calling:
+
+```
+GET:/assets/users/{userId}/ski-trip
+```
+
+will return the latest image persisted. Other images in the path can be accessed via their `entryId`.
+
+## Userless Assets
+
+What if I don't have users? No problem! tessA is incredibly generic and adaptable to your specific use case. Let's take
+a
+common example, a simple AirBnB-type listing:
+
+```
+// Post images to your listing
+POST:/assets/{listingId}
+
+// I want to organize them by room/area
+POST:/assets/{listingId}/kitchen // creates entryId: 0
+POST:/assets/{listingId}/kitchen // creates entryId: 1
+```
+
+# Just Desserts
+
+If Asset storage was all tessA did, you would use AWS S3 or even a SAN. tessA is more powerful though. In addition to
+asset storage,
+tessA provides:
+
+- asset processing (image resizing, filetype conversion)
+- returning asset content directly from tessA or returning a redirect to the backing object store
+- an image transformation API built on Libvips, the standard in image processing performance (and no JNI is used) (*
+  *coming soon!**)
+- asset metadata
+- on-the-fly variant generation or variant caching including precomputation of common image variants at upload time (*
+  *all coming soon!**)
+- image compression at storage and/or over the network (**coming soon!**)
+- Lots of asset types (currently only image types are supported but **more to come!**)
+- Template generation (**coming soon!**)
+- Default assets based on path patterns (**coming soon!**)
+- OAuth based on path patterns (**coming soon!**)
 
 ## Building & Running
 
