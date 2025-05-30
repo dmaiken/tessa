@@ -5,8 +5,11 @@ import asset.store.FetchResult
 import asset.store.ObjectStore
 import asset.store.PersistResult
 import aws.sdk.kotlin.services.s3.S3Client
+import aws.sdk.kotlin.services.s3.model.Delete
 import aws.sdk.kotlin.services.s3.model.DeleteObjectRequest
+import aws.sdk.kotlin.services.s3.model.DeleteObjectsRequest
 import aws.sdk.kotlin.services.s3.model.GetObjectRequest
+import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.writeToOutputStream
@@ -67,6 +70,22 @@ class S3Service(
         } catch (e: Exception) {
             logger.error("Unable to delete asset with key: $key from bucket: $bucket", e)
             throw e
+        }
+    }
+
+    override suspend fun deleteAll(bucket: String, keys: List<String>) {
+        // max 1000 keys allowed per S3 request
+        keys.chunked(1000).forEach { chunk ->
+            s3Client.deleteObjects(
+                input = DeleteObjectsRequest {
+                    this.bucket = bucket
+                    delete = Delete {
+                        objects = chunk.map {
+                            ObjectIdentifier { key = it }
+                        }
+                    }
+                }
+            )
         }
     }
 

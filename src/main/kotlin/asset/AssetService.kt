@@ -5,11 +5,8 @@ import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
 import io.image.ImageProcessor
 import io.ktor.util.logging.KtorSimpleLogger
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.collect
@@ -143,17 +140,10 @@ class AssetServiceImpl(
             assets
         }
         logger.info("Initiating deletes of ${deletedAssets.size} assets")
-        // TODO create a bulk-delete API in the object store - S3 offers a bulk-delete API
-        val deleteJobs = mutableListOf<Job>()
-        deletedAssets.forEach { asset ->
-            deleteJobs.add(launch {
-                objectStore.delete(
-                    bucket = asset.get("bucket", String::class.java),
-                    key = asset.get("store_key", String::class.java)
-                )
-            })
+        val keysByBuckets = deletedAssets.groupBy { it.get("bucket", String::class.java) }
+        keysByBuckets.forEach { (bucket, keys) ->
+            objectStore.deleteAll(bucket, keys.map { it.get("store_key", String::class.java) })
         }
-        deleteJobs.joinAll()
     }
 
     private suspend fun getNextEntryId(context: DSLContext, treePath: String): Long {

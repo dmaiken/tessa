@@ -13,6 +13,8 @@ interface ObjectStore {
      * Delete an object by key. This method is idempotent and will not throw an exception if the object does not exist
      */
     suspend fun delete(bucket: String, key: String)
+
+    suspend fun deleteAll(bucket: String, keys: List<String>)
 }
 
 data class PersistResult(
