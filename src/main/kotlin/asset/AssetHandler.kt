@@ -67,6 +67,16 @@ class AssetHandler(
         assetService.deleteAssetByPath(treePath, entryId)
     }
 
+    suspend fun deleteAssets(uriPath: String, mode: PathModifierOption) {
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
+        if (mode == PathModifierOption.CHILDREN) {
+            logger.info("Deleting assets at path: $treePath")
+        } else {
+            logger.info("Deleting assets at path: $treePath and all underneath it!")
+        }
+        assetService.deleteAssetsByPath(treePath, mode == PathModifierOption.RECURSIVE)
+    }
+
     private fun deriveValidMimeType(content: ByteArray): String {
         val mimeType = mimeTypeDetector.detect(content)
         if (!validate(mimeType)) {

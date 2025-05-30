@@ -55,14 +55,44 @@ suspend fun storeAsset(
     return body
 }
 
-suspend fun fetchAsset(client: HttpClient, path: String, entryId: String? = null): ByteArray {
-    val fetchResponse = client.get("/assets/profile/").apply {
-        status shouldBe HttpStatusCode.TemporaryRedirect
-        headers["Location"] shouldContain "https://"
+suspend fun fetchAsset(client: HttpClient, path: String = "profile", entryId: Long? = null): ByteArray {
+    val fetchResponse = if (entryId != null) {
+        "/assets/$path?entryId=$entryId"
+    } else {
+        "/assets/$path"
+    }.let {
+        client.get("/assets/$path/").apply {
+            status shouldBe HttpStatusCode.TemporaryRedirect
+            headers["Location"] shouldContain "https://"
+        }
     }
     val generalClient = createGeneralClient()
     val storeResponse = generalClient.get(fetchResponse.headers["Location"]!!)
     storeResponse.status shouldBe HttpStatusCode.OK
 
     return storeResponse.bodyAsBytes()
+}
+
+suspend fun fetchAssetInfo(
+    client: HttpClient,
+    path: String,
+    entryId: Long? = null,
+    expectedResponse: HttpStatusCode = HttpStatusCode.OK
+): AssetResponse? {
+    return if (entryId != null) {
+        "/assets/$path?format=metadata&entryId=$entryId"
+    } else {
+        "/assets/$path?format=metadata"
+    }.let {
+        val response = client.get("/assets/$path?format=metadata")
+        response.status shouldBe expectedResponse
+
+        if (response.status == HttpStatusCode.NotFound) {
+            null
+        } else {
+            response.body<AssetResponse>().apply {
+                entryId shouldBe entryId
+            }
+        }
+    }
 }

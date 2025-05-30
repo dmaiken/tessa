@@ -1,5 +1,6 @@
 package io
 
+import io.asset.PathModifierOption
 import io.ktor.server.routing.RoutingRequest
 
 /**
@@ -21,5 +22,11 @@ fun getEntryId(request: RoutingRequest): Long? {
         }
     } else {
         null
+    }
+}
+
+fun getPathModifierOption(request: RoutingRequest): PathModifierOption? {
+    return request.queryParameters["mode"]?.let { option ->
+        PathModifierOption.fromString(option)
     }
 }

@@ -65,7 +65,7 @@ class ImagePreProcessingTest : BaseTest() {
             width.toDouble() / height.toDouble() shouldBeApproximately originalScale
         }
 
-        val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey)
+        val fetchedAsset = fetchAsset(client)
         Tika().detect(fetchedAsset) shouldBe "image/png"
         val fetchedImage = byteArrayToImage(fetchedAsset)
         fetchedImage.width shouldBe 100
@@ -99,7 +99,7 @@ class ImagePreProcessingTest : BaseTest() {
             width.toDouble() / height.toDouble() shouldBeApproximately originalScale
         }
 
-        val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey)
+        val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
         Tika().detect(fetchedAsset) shouldBe "image/png"
         val fetchedImage = byteArrayToImage(fetchedAsset)
         fetchedImage.height shouldBe 50
@@ -134,7 +134,7 @@ class ImagePreProcessingTest : BaseTest() {
                 width shouldBe bufferedImage.width
                 height shouldBe bufferedImage.height
             }
-            val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey)
+            val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
             Tika().detect(fetchedAsset) shouldBe "image/png"
             val fetchedImage = byteArrayToImage(fetchedAsset)
             fetchedImage.width shouldBe bufferedImage.width
@@ -167,7 +167,7 @@ class ImagePreProcessingTest : BaseTest() {
             width shouldBe bufferedImage.width
             height shouldBe bufferedImage.height
         }
-        val fetchedAsset = fetchAsset(client, storedAssetInfo.storeKey)
+        val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
         Tika().detect(fetchedAsset) shouldBe expectedType
     }
 }

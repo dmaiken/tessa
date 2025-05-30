@@ -5,11 +5,19 @@ import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
 import io.image.ImageProcessor
 import io.ktor.util.logging.KtorSimpleLogger
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.collect
 import org.jooq.DSLContext
 import org.jooq.Record
+import org.jooq.impl.DSL.condition
 import org.jooq.impl.DSL.field
+import org.jooq.impl.DSL.inline
 import org.jooq.impl.DSL.max
 import org.jooq.impl.DSL.name
 import org.jooq.impl.DSL.table
@@ -26,6 +34,7 @@ interface AssetService {
     suspend fun fetchByPath(treePath: String, entryId: Long?): Asset?
     suspend fun fetchAllByPath(treePath: String): List<Asset>
     suspend fun deleteAssetByPath(treePath: String, entryId: Long? = null)
+    suspend fun deleteAssetsByPath(treePath: String, recursive: Boolean)
 }
 
 class AssetServiceImpl(
@@ -113,6 +122,40 @@ class AssetServiceImpl(
         }
     }
 
+    override suspend fun deleteAssetsByPath(treePath: String, recursive: Boolean) = coroutineScope {
+        val deletedAssets = dslContext.transactionCoroutine { trx ->
+            val assets = if (recursive) {
+                fetchAllUnderPath(trx.dsl(), treePath).also {
+                    logger.info("Found ${it.size} assets at path: $treePath for deletion")
+                }
+            } else {
+                fetchAllAtPath(trx.dsl(), treePath).also {
+                    logger.info("Found ${it.size} assets descendents of path: $treePath for deletion")
+                }
+            }
+            trx.dsl().deleteFrom(table("asset_tree"))
+                .where(
+                    field("id")
+                        .`in`(*assets.map {
+                            it.get("id", UUID::class.java)
+                        }.toTypedArray())
+                ).awaitFirstOrNull()
+            assets
+        }
+        logger.info("Initiating deletes of ${deletedAssets.size} assets")
+        // TODO create a bulk-delete API in the object store - S3 offers a bulk-delete API
+        val deleteJobs = mutableListOf<Job>()
+        deletedAssets.forEach { asset ->
+            deleteJobs.add(launch {
+                objectStore.delete(
+                    bucket = asset.get("bucket", String::class.java),
+                    key = asset.get("store_key", String::class.java)
+                )
+            })
+        }
+        deleteJobs.joinAll()
+    }
+
     private suspend fun getNextEntryId(context: DSLContext, treePath: String): Long {
         val maxField = max(field("entry_id", Long::class.java)).`as`("max_entry")
         return context.select(maxField)
@@ -127,7 +170,7 @@ class AssetServiceImpl(
             ?.inc() ?: 0L
     }
 
-    suspend fun fetch(context: DSLContext, treePath: String, entryId: Long?): Record? {
+    private suspend fun fetch(context: DSLContext, treePath: String, entryId: Long?): Record? {
         return context.select()
             .from(table("asset_tree"))
             .where(
@@ -143,5 +186,24 @@ class AssetServiceImpl(
             }
             .limit(1)
             .awaitFirstOrNull()
+    }
+
+    private suspend fun fetchAllAtPath(context: DSLContext, treePath: String): List<Record> {
+        return context.select()
+            .from(table("asset_tree"))
+            .where(
+                field(name("path"), String::class.java)
+                    .cast(String::class.java)
+                    .eq(treePath)
+            ).asFlow()
+            .toList()
+    }
+
+    private suspend fun fetchAllUnderPath(context: DSLContext, treePath: String): List<Record> {
+        return context.select()
+            .from(table("asset_tree"))
+            .where(condition("path <@ {0}", inline(treePath)))
+            .asFlow()
+            .toList()
     }
 }

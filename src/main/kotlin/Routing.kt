@@ -44,6 +44,7 @@ fun Application.configureRouting() {
                     logger.info("Found asset info: $it with path: $route")
                     call.respond(HttpStatusCode.OK, it.toResponse())
                 } ?: call.respond(HttpStatusCode.NotFound)
+                return@get
             } else if (returnFormat == AssetReturnFormat.METADATA) {
                 logger.info("Navigating to asset info of all assets with path: $route")
                 assetHandler.fetchAssetInfoInPath(route).map {
@@ -84,7 +85,16 @@ fun Application.configureRouting() {
 
         delete("/assets/{...}") {
             val suppliedEntryId = getEntryId(call.request)
-            assetHandler.deleteAsset(call.request.path(), suppliedEntryId)
+            val suppliedOption = getPathModifierOption(call.request)
+            if (suppliedOption != null && suppliedEntryId != null) {
+                throw IllegalArgumentException("Both entryId and option cannot both be supplied")
+            }
+            if (suppliedOption != null) {
+                assetHandler.deleteAssets(call.request.path(), suppliedOption)
+            } else {
+                assetHandler.deleteAsset(call.request.path(), suppliedEntryId)
+            }
+
             call.respond(HttpStatusCode.NoContent)
         }
     }
