@@ -9,22 +9,25 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
 class AssetReturnFormatTest {
-
     companion object {
         @JvmStatic
-        fun fromQueryParamSource(): Stream<Arguments> = Stream.of(
-            Arguments.of("redirect", AssetReturnFormat.REDIRECT),
-            Arguments.of("metadata", AssetReturnFormat.METADATA),
-            Arguments.of("content", AssetReturnFormat.CONTENT),
-            Arguments.of("REDIRECT", AssetReturnFormat.REDIRECT),
-            Arguments.of("METADATA", AssetReturnFormat.METADATA),
-            Arguments.of("CONTENT", AssetReturnFormat.CONTENT),
-        )
+        fun fromQueryParamSource(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of("redirect", AssetReturnFormat.REDIRECT),
+                Arguments.of("metadata", AssetReturnFormat.METADATA),
+                Arguments.of("content", AssetReturnFormat.CONTENT),
+                Arguments.of("REDIRECT", AssetReturnFormat.REDIRECT),
+                Arguments.of("METADATA", AssetReturnFormat.METADATA),
+                Arguments.of("CONTENT", AssetReturnFormat.CONTENT),
+            )
     }
 
     @ParameterizedTest
     @MethodSource("fromQueryParamSource")
-    fun `fromQueryParam returns correct asset format`(string: String, expected: AssetReturnFormat) {
+    fun `fromQueryParam returns correct asset format`(
+        string: String,
+        expected: AssetReturnFormat,
+    ) {
         AssetReturnFormat.fromQueryParam(string) shouldBe expected
     }
 

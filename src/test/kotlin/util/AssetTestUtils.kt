@@ -1,8 +1,8 @@
 package io.util
 
+import asset.AssetResponse
 import asset.StoreAssetRequest
 import io.BaseTest.Companion.BOUNDARY
-import io.image.AssetResponse
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
@@ -25,7 +25,7 @@ suspend fun storeAsset(
     client: HttpClient,
     asset: ByteArray,
     request: StoreAssetRequest,
-    path: String = "profile"
+    path: String = "profile",
 ): AssetResponse {
     val body: AssetResponse
     client.post("/assets/$path") {
@@ -33,39 +33,53 @@ suspend fun storeAsset(
         setBody(
             MultiPartFormDataContent(
                 formData {
-                    append("metadata", Json.encodeToString<StoreAssetRequest>(request), Headers.build {
-                        append(HttpHeaders.ContentType, "application/json")
-                    })
-                    append("file", asset, Headers.build {
-                        append(HttpHeaders.ContentType, "image/png")
-                        append(HttpHeaders.ContentDisposition, "filename=\"ktor_logo.png\"")
-                    })
+                    append(
+                        "metadata",
+                        Json.encodeToString<StoreAssetRequest>(request),
+                        Headers.build {
+                            append(HttpHeaders.ContentType, "application/json")
+                        },
+                    )
+                    append(
+                        "file",
+                        asset,
+                        Headers.build {
+                            append(HttpHeaders.ContentType, "image/png")
+                            append(HttpHeaders.ContentDisposition, "filename=\"ktor_logo.png\"")
+                        },
+                    )
                 },
                 BOUNDARY,
-                ContentType.MultiPart.FormData.withParameter("boundary", BOUNDARY)
-            )
+                ContentType.MultiPart.FormData.withParameter("boundary", BOUNDARY),
+            ),
         )
     }.apply {
         status shouldBe HttpStatusCode.Created
-        body = body<AssetResponse>().apply {
-            id shouldNotBe null
-            createdAt shouldNotBe null
-        }
+        body =
+            body<AssetResponse>().apply {
+                id shouldNotBe null
+                createdAt shouldNotBe null
+            }
     }
     return body
 }
 
-suspend fun fetchAsset(client: HttpClient, path: String = "profile", entryId: Long? = null): ByteArray {
-    val fetchResponse = if (entryId != null) {
-        "/assets/$path?entryId=$entryId"
-    } else {
-        "/assets/$path"
-    }.let {
-        client.get("/assets/$path/").apply {
-            status shouldBe HttpStatusCode.TemporaryRedirect
-            headers["Location"] shouldContain "https://"
+suspend fun fetchAsset(
+    client: HttpClient,
+    path: String = "profile",
+    entryId: Long? = null,
+): ByteArray {
+    val fetchResponse =
+        if (entryId != null) {
+            "/assets/$path?entryId=$entryId"
+        } else {
+            "/assets/$path"
+        }.let {
+            client.get("/assets/$path/").apply {
+                status shouldBe HttpStatusCode.TemporaryRedirect
+                headers["Location"] shouldContain "https://"
+            }
         }
-    }
     val generalClient = createGeneralClient()
     val storeResponse = generalClient.get(fetchResponse.headers["Location"]!!)
     storeResponse.status shouldBe HttpStatusCode.OK
@@ -77,7 +91,7 @@ suspend fun fetchAssetInfo(
     client: HttpClient,
     path: String,
     entryId: Long? = null,
-    expectedResponse: HttpStatusCode = HttpStatusCode.OK
+    expectedResponse: HttpStatusCode = HttpStatusCode.OK,
 ): AssetResponse? {
     return if (entryId != null) {
         "/assets/$path?format=metadata&entryId=$entryId"

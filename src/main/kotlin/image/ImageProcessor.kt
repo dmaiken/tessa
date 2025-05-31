@@ -7,51 +7,58 @@ import org.apache.commons.io.output.ByteArrayOutputStream
 import kotlin.math.min
 
 interface ImageProcessor {
-
     /**
      * Preprocesses the image based on application configuration. Make sure to use the returned properties
      * since they reflect any changes performed on the image.
      */
-    suspend fun preprocess(image: ByteArray, mimeType: String): ProcessedImage
+    suspend fun preprocess(
+        image: ByteArray,
+        mimeType: String,
+    ): ProcessedImage
 }
 
 class VipsImageProcessor(
-    private val imageProperties: ImageProperties
+    private val imageProperties: ImageProperties,
 ) : ImageProcessor {
-
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
-    override suspend fun preprocess(image: ByteArray, mimeType: String): ProcessedImage {
+    override suspend fun preprocess(
+        image: ByteArray,
+        mimeType: String,
+    ): ProcessedImage {
         var attributes: ImageAttributes? = null
         val resizedStream = ByteArrayOutputStream()
         Vips.run { arena ->
             val sourceImage = VImage.newFromBytes(arena, image)
             if (!imageProperties.preProcessing.enabled) {
-                attributes = ImageAttributes(
-                    height = sourceImage.height,
-                    width = sourceImage.width,
-                    mimeType = mimeType
-                )
+                attributes =
+                    ImageAttributes(
+                        height = sourceImage.height,
+                        width = sourceImage.width,
+                        mimeType = mimeType,
+                    )
                 resizedStream.write(image)
                 return@run
             }
 
-            val resized = downScale(
-                image = sourceImage,
-                maxWidth = imageProperties.preProcessing.maxWidth,
-                maxHeight = imageProperties.preProcessing.maxHeight
-            )
+            val resized =
+                downScale(
+                    image = sourceImage,
+                    maxWidth = imageProperties.preProcessing.maxWidth,
+                    maxHeight = imageProperties.preProcessing.maxHeight,
+                )
             val newMimeType = determineMimeType(mimeType)
             resized.writeToStream(resizedStream, ".${ImageFormat.fromMimeType(newMimeType).extension}")
-            attributes = ImageAttributes(
-                height = resized.height,
-                width = resized.width,
-                mimeType = newMimeType
-            )
+            attributes =
+                ImageAttributes(
+                    height = resized.height,
+                    width = resized.width,
+                    mimeType = newMimeType,
+                )
         }
         return ProcessedImage(
             image = resizedStream.toByteArray(),
-            attributes = attributes ?: throw IllegalStateException()
+            attributes = attributes ?: throw IllegalStateException(),
         )
     }
 
@@ -59,18 +66,24 @@ class VipsImageProcessor(
      * Downscale the image to fit within the given max width and height. Height or width may be smaller based on the
      * image's aspect ratio. If both maxWidth and maxHeight are null, the image is not downscaled.
      */
-    private fun downScale(image: VImage, maxWidth: Int?, maxHeight: Int?): VImage {
+    private fun downScale(
+        image: VImage,
+        maxWidth: Int?,
+        maxHeight: Int?,
+    ): VImage {
         if (maxWidth == null && maxHeight == null) {
             logger.info("Preprocessing width and height are not set, skipping preprocessing downscaling")
             return image
         }
         // Compute scale so that the image fits within max dimensions
-        val widthRatio = maxWidth?.let {
-            it.toDouble() / image.width
-        } ?: 1.0
-        val heightRatio = maxHeight?.let {
-            it.toDouble() / image.height
-        } ?: 1.0
+        val widthRatio =
+            maxWidth?.let {
+                it.toDouble() / image.width
+            } ?: 1.0
+        val heightRatio =
+            maxHeight?.let {
+                it.toDouble() / image.height
+            } ?: 1.0
         val scale = min(widthRatio, heightRatio)
 
         // Don't upscale

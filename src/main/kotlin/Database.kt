@@ -25,24 +25,25 @@ fun Application.connectToPostgres(): ConnectionFactory {
     val password = environment.config.property("postgres.password").getString()
     val host = environment.config.property("postgres.host").getString()
     val port = environment.config.property("postgres.port").getString().toInt()
-    val options = builder()
-        .option(DATABASE, "tessa")
-        .option(DRIVER, "pool")
-        .option(PROTOCOL, "postgresql")
-        .option(USER, user)
-        .option(PASSWORD, password)
-        .option(HOST, host)
-        .option(PORT, port)
-        .build()
-
+    val options =
+        builder()
+            .option(DATABASE, "tessa")
+            .option(DRIVER, "pool")
+            .option(PROTOCOL, "postgresql")
+            .option(USER, user)
+            .option(PASSWORD, password)
+            .option(HOST, host)
+            .option(PORT, port)
+            .build()
 
     return ConnectionFactories.get(options)
 }
 
 fun migrateSchema(connectionFactory: ConnectionFactory) {
-    val migrateProperties = R2dbcMigrateProperties().apply {
-        setResourcesPath("db/migration")
-    }
+    val migrateProperties =
+        R2dbcMigrateProperties().apply {
+            setResourcesPath("db/migration")
+        }
 
     R2dbcMigrate.migrate(connectionFactory, migrateProperties, ReflectionsClasspathResourceReader(), null, null).block()
 }

@@ -27,11 +27,9 @@ import org.koin.ktor.ext.inject
 private val logger = KtorSimpleLogger("io")
 
 fun Application.configureRouting() {
-
     val assetHandler by inject<AssetHandler>()
 
     routing {
-
         get("/assets/{...}") {
             val route = call.request.path()
             val returnFormat = AssetReturnFormat.fromQueryParam(call.request.queryParameters["format"])
@@ -67,7 +65,7 @@ fun Application.configureRouting() {
                     logger.info("Found asset content with path: $route")
                     call.respondOutputStream(
                         contentType = ContentType.parse(asset.mimeType),
-                        status = HttpStatusCode.OK
+                        status = HttpStatusCode.OK,
                     ) {
                         assetHandler.fetchAssetContent(asset.bucket, asset.storeKey, this)
                     }
@@ -100,7 +98,10 @@ fun Application.configureRouting() {
     }
 }
 
-suspend fun createNewAsset(call: RoutingCall, assetHandler: AssetHandler) {
+suspend fun createNewAsset(
+    call: RoutingCall,
+    assetHandler: AssetHandler,
+) {
     var assetData: StoreAssetRequest? = null
     var assetContent: ByteArray? = null
     val multipart = call.receiveMultipart()
@@ -126,11 +127,12 @@ suspend fun createNewAsset(call: RoutingCall, assetHandler: AssetHandler) {
     if (assetContent == null) {
         throw IllegalArgumentException("No asset content supplied")
     }
-    val asset = assetHandler.storeNewAsset(
-        request = checkNotNull(assetData),
-        content = checkNotNull(assetContent),
-        uriPath = call.request.path()
-    )
+    val asset =
+        assetHandler.storeNewAsset(
+            request = checkNotNull(assetData),
+            content = checkNotNull(assetContent),
+            uriPath = call.request.path(),
+        )
     logger.info("Created asset under path: ${asset.locationPath}")
 
     call.response.headers.append(HttpHeaders.Location, "http//${call.request.origin.localAddress}${asset.locationPath}")

@@ -1,6 +1,6 @@
-package io.image
+package asset
 
-import io.serializers.LocalDateSerializer
+import io.serializers.LocalDateTimeSerializer
 import io.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
@@ -17,6 +17,6 @@ data class AssetResponse(
     val height: Int,
     val width: Int,
     val entryId: Long,
-    @Serializable(with = LocalDateSerializer::class)
-    val createdAt: LocalDateTime
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val createdAt: LocalDateTime,
 )

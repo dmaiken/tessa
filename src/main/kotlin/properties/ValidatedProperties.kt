@@ -1,7 +1,6 @@
 package io.properties
 
 interface ValidatedProperties {
-
     /**
      * Validates the properties in the implementation.
      *

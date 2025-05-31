@@ -8,14 +8,13 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import java.security.cert.X509Certificate
 import javax.net.ssl.X509TrustManager
 
-fun ApplicationTestBuilder.createJsonClient(
-    followRedirects: Boolean = true
-): HttpClient = createClient {
-    this.followRedirects = followRedirects
-    install(ContentNegotiation) {
-        json()
+fun ApplicationTestBuilder.createJsonClient(followRedirects: Boolean = true): HttpClient =
+    createClient {
+        this.followRedirects = followRedirects
+        install(ContentNegotiation) {
+            json()
+        }
     }
-}
 
 fun createGeneralClient(): HttpClient {
     return HttpClient(CIO) {
@@ -28,11 +27,10 @@ fun createGeneralClient(): HttpClient {
 }
 
 private class AllCertsTrustManager : X509TrustManager {
-
     @Suppress("TrustAllX509TrustManager")
     override fun checkServerTrusted(
         chain: Array<X509Certificate>,
-        authType: String
+        authType: String,
     ) {
         // no-op
     }
@@ -40,7 +38,7 @@ private class AllCertsTrustManager : X509TrustManager {
     @Suppress("TrustAllX509TrustManager")
     override fun checkClientTrusted(
         chain: Array<X509Certificate>,
-        authType: String
+        authType: String,
     ) {
         // no-op
     }

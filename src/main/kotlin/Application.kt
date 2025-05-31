@@ -13,13 +13,15 @@ fun main(args: Array<String>) {
 fun Application.module() {
     logger.info("Initializing Vips")
     Vips.init()
-    Runtime.getRuntime().addShutdownHook(object : Thread() {
-        override fun run() {
-            logger.info("Shutting down Vips")
-            Vips.shutdown()
-            logger.info("Vips has shutdown")
-        }
-    })
+    Runtime.getRuntime().addShutdownHook(
+        object : Thread() {
+            override fun run() {
+                logger.info("Shutting down Vips")
+                Vips.shutdown()
+                logger.info("Vips has shutdown")
+            }
+        },
+    )
 
     val connectionFactory = connectToPostgres()
     configureKoin(connectionFactory)

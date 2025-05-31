@@ -10,13 +10,12 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class FetchAssetTest : BaseTest() {
-
     @Test
     fun `fetching an asset with an incorrect format returns bad request`() =
         testWithTestcontainers(postgres, localstack) {
             val client = createJsonClient()
             client.get("/assets/${UUID.randomUUID()}?format=invalid").apply {
                 status shouldBe HttpStatusCode.BadRequest
+            }
         }
-    }
 }

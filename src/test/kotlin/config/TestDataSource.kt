@@ -4,16 +4,17 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
 class PostgresTestContainer : PostgreSQLContainer<PostgresTestContainer>(
-    DockerImageName.parse("postgres:17.4")
+    DockerImageName.parse("postgres:17.4"),
 )
 
 class PostgresTestContainerManager {
     private var started = false
-    private val postgres = PostgresTestContainer().apply {
-        withDatabaseName("tessa")
-        withUsername("username")
-        withPassword("password")
-    }
+    private val postgres =
+        PostgresTestContainer().apply {
+            withDatabaseName("tessa")
+            withUsername("username")
+            withPassword("password")
+        }
 
     init {
         postgres.start()
@@ -27,9 +28,12 @@ class PostgresTestContainerManager {
     fun clearTables() {
         postgres.execInContainer(
             "psql",
-            "-U", postgres.username,
-            "-d", postgres.databaseName,
-            "-c", "TRUNCATE TABLE asset_tree;"
+            "-U",
+            postgres.username,
+            "-d",
+            postgres.databaseName,
+            "-c",
+            "TRUNCATE TABLE asset_tree;",
         )
     }
 }

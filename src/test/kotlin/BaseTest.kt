@@ -7,9 +7,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 
 open class BaseTest {
-
     companion object {
-
         lateinit var postgres: PostgresTestContainerManager
         lateinit var localstack: LocalstackContainerManager
 

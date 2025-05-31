@@ -23,77 +23,85 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
-fun Application.configureKoin(
-    connectionFactory: ConnectionFactory,
-) {
-    val appModule = module {
-        single<PathAdapter> {
-            PathAdapter()
-        }
-        single<AssetHandler> {
-            AssetHandler(get(), get(), get(), get())
-        }
-        single<MimeTypeDetector> {
-            TikaMimeTypeDetector()
-        }
-        single<AssetService> {
-            AssetServiceImpl(get(), get(), get())
-        }
-        single<ImageProcessor> {
-            VipsImageProcessor(get())
-        }
-        single<ImageProperties> {
-            ImageProperties.create(
-                preProcessing = PreProcessingProperties.create(
-                    enabled = environment.config.propertyOrNull("image.preprocessing.enabled")?.getString()?.toBoolean()
-                        ?: false,
-                    maxWidth = environment.config.propertyOrNull("image.preprocessing.maxWidth")?.getString()?.toInt(),
-                    maxHeight = environment.config.propertyOrNull("image.preprocessing.maxHeight")?.getString()
-                        ?.toInt(),
-                    imageFormat = environment.config.propertyOrNull("image.preprocessing.imageFormat")?.getString()
-                        ?.let {
-                            ImageFormat.fromFormat(it)
-                        }
-                ),
-            )
-        }
-    }
-    val dbModule = module {
-        single<ConnectionFactory> {
-            migrateSchema(connectionFactory)
-            connectionFactory
-        }
-        single<DSLContext> {
-            configureJOOQ(get())
-        }
-    }
-
-    val awsModule = module {
-        val useMock = environment.config.propertyOrNull("aws.mock")?.getString().toBoolean()
-        val region = environment.config.propertyOrNull("localstack.region")?.getString() ?: "us-east-1" // TODO
-        single<S3Client> {
-            if (useMock) {
-                s3Client(
-                    LocalstackProperties(
-                        region = region,
-                        accessKey = environment.config.property("localstack.accessKey").getString(),
-                        secretKey = environment.config.property("localstack.secretKey").getString(),
-                        endpointUrl = environment.config.property("localstack.endpointUrl").getString()
-                    )
+fun Application.configureKoin(connectionFactory: ConnectionFactory) {
+    val appModule =
+        module {
+            single<PathAdapter> {
+                PathAdapter()
+            }
+            single<AssetHandler> {
+                AssetHandler(get(), get(), get(), get())
+            }
+            single<MimeTypeDetector> {
+                TikaMimeTypeDetector()
+            }
+            single<AssetService> {
+                AssetServiceImpl(get(), get(), get())
+            }
+            single<ImageProcessor> {
+                VipsImageProcessor(get())
+            }
+            single<ImageProperties> {
+                ImageProperties.create(
+                    preProcessing =
+                        PreProcessingProperties.create(
+                            enabled =
+                                environment.config.propertyOrNull("image.preprocessing.enabled")?.getString()
+                                    ?.toBoolean()
+                                    ?: false,
+                            maxWidth = environment.config.propertyOrNull("image.preprocessing.maxWidth")?.getString()
+                                ?.toInt(),
+                            maxHeight =
+                                environment.config.propertyOrNull("image.preprocessing.maxHeight")?.getString()
+                                    ?.toInt(),
+                            imageFormat =
+                                environment.config.propertyOrNull("image.preprocessing.imageFormat")?.getString()
+                                    ?.let {
+                                        ImageFormat.fromFormat(it)
+                                    },
+                        ),
                 )
-            } else {
-                s3Client()
             }
         }
-        single<ObjectStore> {
-            val port = environment.config.property("localstack.port").getString().toInt()
-            val awsProperties = AWSProperties(
-                host = if (useMock) "localhost.localstack.cloud:$port" else "s3-$region.amazonaws.com",
-                region = region,
-            )
-            S3Service(get(), awsProperties)
+    val dbModule =
+        module {
+            single<ConnectionFactory> {
+                migrateSchema(connectionFactory)
+                connectionFactory
+            }
+            single<DSLContext> {
+                configureJOOQ(get())
+            }
         }
-    }
+
+    val awsModule =
+        module {
+            val useMock = environment.config.propertyOrNull("aws.mock")?.getString().toBoolean()
+            val region = environment.config.propertyOrNull("localstack.region")?.getString() ?: "us-east-1" // TODO
+            single<S3Client> {
+                if (useMock) {
+                    s3Client(
+                        LocalstackProperties(
+                            region = region,
+                            accessKey = environment.config.property("localstack.accessKey").getString(),
+                            secretKey = environment.config.property("localstack.secretKey").getString(),
+                            endpointUrl = environment.config.property("localstack.endpointUrl").getString(),
+                        ),
+                    )
+                } else {
+                    s3Client()
+                }
+            }
+            single<ObjectStore> {
+                val port = environment.config.property("localstack.port").getString().toInt()
+                val awsProperties =
+                    AWSProperties(
+                        host = if (useMock) "localhost.localstack.cloud:$port" else "s3-$region.amazonaws.com",
+                        region = region,
+                    )
+                S3Service(get(), awsProperties)
+            }
+        }
 
     install(Koin) {
         slf4jLogger()

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.ktlint)
 }
 
 group = "io"
@@ -41,7 +42,7 @@ dependencies {
     implementation(libs.r2dbc.h2)
     implementation(libs.r2dbc.pool)
     implementation(libs.kotlinx.coroutines.reactive)
-    testImplementation("io.ktor:ktor-client-content-negotiation:3.1.1")
+    testImplementation(libs.ktor.client.content.negotiation)
 
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.postgresql)

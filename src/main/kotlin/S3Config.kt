@@ -9,37 +9,39 @@ import io.asset.store.S3Service.Companion.BUCKET
 import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.runBlocking
 
-
 private val logger = KtorSimpleLogger("io.image.S3Config")
 
-fun s3Client(
-    properties: LocalstackProperties? = null,
-): S3Client = S3Client {
-    properties?.let {
-        logger.info("Using LocalStack properties: $properties")
-        credentialsProvider = StaticCredentialsProvider(
-            Credentials(
-                it.accessKey, it.secretKey
-            )
-        )
-        endpointUrl = Url.parse(properties.endpointUrl)
-        region = it.region
-    } ?: run {
-        logger.info("Using standard AWS credential provider")
+fun s3Client(properties: LocalstackProperties? = null): S3Client =
+    S3Client {
+        properties?.let {
+            logger.info("Using LocalStack properties: $properties")
+            credentialsProvider =
+                StaticCredentialsProvider(
+                    Credentials(
+                        it.accessKey, it.secretKey,
+                    ),
+                )
+            endpointUrl = Url.parse(properties.endpointUrl)
+            region = it.region
+        } ?: run {
+            logger.info("Using standard AWS credential provider")
+        }
+    }.also {
+        createImageBucket(it)
     }
-}.also {
-    createImageBucket(it)
-}
 
-private fun createImageBucket(s3Client: S3Client) = runBlocking {
-    s3Client.createBucket(CreateBucketRequest {
-        bucket = BUCKET
-    })
-}
+private fun createImageBucket(s3Client: S3Client) =
+    runBlocking {
+        s3Client.createBucket(
+            CreateBucketRequest {
+                bucket = BUCKET
+            },
+        )
+    }
 
 data class LocalstackProperties(
     val region: String,
     val accessKey: String,
     val secretKey: String,
-    val endpointUrl: String
+    val endpointUrl: String,
 )

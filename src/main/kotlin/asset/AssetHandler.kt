@@ -14,32 +14,42 @@ class AssetHandler(
     private val pathGenerator: PathAdapter,
     private val objectStore: ObjectStore,
 ) {
-
     private val logger = KtorSimpleLogger("io.asset")
 
-    suspend fun storeNewAsset(request: StoreAssetRequest, content: ByteArray, uriPath: String): AssetAndLocation {
+    suspend fun storeNewAsset(
+        request: StoreAssetRequest,
+        content: ByteArray,
+        uriPath: String,
+    ): AssetAndLocation {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         val mimeType = deriveValidMimeType(content)
-        val asset = assetService.store(
-            StoreAssetDto(
-                content = content,
-                request = request,
-                mimeType = mimeType,
-                treePath = treePath,
+        val asset =
+            assetService.store(
+                StoreAssetDto(
+                    content = content,
+                    request = request,
+                    mimeType = mimeType,
+                    treePath = treePath,
+                ),
             )
-        )
 
         return AssetAndLocation(
             asset = asset,
-            locationPath = uriPath
+            locationPath = uriPath,
         )
     }
 
-    suspend fun fetchAssetByPath(uriPath: String, entryId: Long?): String? {
+    suspend fun fetchAssetByPath(
+        uriPath: String,
+        entryId: Long?,
+    ): String? {
         return fetchAssetInfoByPath(uriPath, entryId)?.url
     }
 
-    suspend fun fetchAssetInfoByPath(uriPath: String, entryId: Long?): Asset? {
+    suspend fun fetchAssetInfoByPath(
+        uriPath: String,
+        entryId: Long?,
+    ): Asset? {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info by path: $treePath")
         return assetService.fetchByPath(treePath, entryId)
@@ -51,13 +61,20 @@ class AssetHandler(
         return assetService.fetchAllByPath(treePath)
     }
 
-    suspend fun fetchAssetContent(bucket: String, storeKey: String, stream: OutputStream): Long {
+    suspend fun fetchAssetContent(
+        bucket: String,
+        storeKey: String,
+        stream: OutputStream,
+    ): Long {
         return objectStore.fetch(bucket, storeKey, stream)
             .takeIf { it.found }?.contentLength
             ?: throw IllegalStateException("Asset not found in object store: $bucket/$storeKey")
     }
 
-    suspend fun deleteAsset(uriPath: String, entryId: Long? = null) {
+    suspend fun deleteAsset(
+        uriPath: String,
+        entryId: Long? = null,
+    ) {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         if (entryId == null) {
             logger.info("Deleting asset with path: $treePath")
@@ -67,7 +84,10 @@ class AssetHandler(
         assetService.deleteAssetByPath(treePath, entryId)
     }
 
-    suspend fun deleteAssets(uriPath: String, mode: PathModifierOption) {
+    suspend fun deleteAssets(
+        uriPath: String,
+        mode: PathModifierOption,
+    ) {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         if (mode == PathModifierOption.CHILDREN) {
             logger.info("Deleting assets at path: $treePath")
@@ -92,5 +112,5 @@ class AssetHandler(
 
 data class AssetAndLocation(
     val asset: Asset,
-    val locationPath: String
+    val locationPath: String,
 )
