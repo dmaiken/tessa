@@ -13,7 +13,7 @@ import io.util.createJsonClient
 import io.util.storeAsset
 import org.apache.tika.Tika
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class FetchAssetContentTest : BaseTest() {
     @Test

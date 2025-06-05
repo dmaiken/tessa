@@ -14,7 +14,7 @@ import io.util.createJsonClient
 import io.util.storeAsset
 import org.apache.tika.Tika
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class FetchAssetRedirectTest : BaseTest() {
     @Test
@@ -43,7 +43,7 @@ class FetchAssetRedirectTest : BaseTest() {
             client.get("/assets/profile/").apply {
                 status shouldBe HttpStatusCode.TemporaryRedirect
                 headers["Location"] shouldContain "https://"
-                headers["Location"] shouldContain storedAssetInfo.storeKey
+                headers["Location"] shouldContain storedAssetInfo!!.storeKey
 
                 val generalClient = createGeneralClient()
                 val storeResponse = generalClient.get(headers["Location"]!!)

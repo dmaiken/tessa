@@ -1,4 +1,6 @@
-package io.asset
+package io.path
+
+import io.ktor.util.logging.KtorSimpleLogger
 
 class PathAdapter {
     companion object {
@@ -9,6 +11,8 @@ class PathAdapter {
         const val URI_PREFIX = "/assets"
     }
 
+    private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
+
     fun toTreePathFromUriPath(uriPath: String): String {
         val trimmedPath =
             uriPath.removePrefix(URI_PREFIX)
@@ -18,15 +22,11 @@ class PathAdapter {
             throw IllegalArgumentException("Invalid path: $trimmedPath")
         }
         return trimmedPath.replace(URI_PATH_DELIMITER, TREE_PATH_DELIMITER).let {
-            return if (it.isEmpty()) {
+            if (it.isEmpty()) {
                 TREE_ROOT
             } else {
                 TREE_ROOT + TREE_PATH_DELIMITER + it
             }
         }
-    }
-
-    fun toUriPathFromTreePath(treePath: String): String {
-        return URI_PREFIX + URI_PATH_DELIMITER + treePath.replace(TREE_PATH_DELIMITER, URI_PATH_DELIMITER)
     }
 }

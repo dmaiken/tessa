@@ -26,9 +26,9 @@ suspend fun storeAsset(
     asset: ByteArray,
     request: StoreAssetRequest,
     path: String = "profile",
-): AssetResponse {
-    val body: AssetResponse
-    client.post("/assets/$path") {
+    expectedStatus: HttpStatusCode = HttpStatusCode.Created,
+): AssetResponse? {
+    return client.post("/assets/$path") {
         contentType(ContentType.MultiPart.FormData)
         setBody(
             MultiPartFormDataContent(
@@ -53,15 +53,17 @@ suspend fun storeAsset(
                 ContentType.MultiPart.FormData.withParameter("boundary", BOUNDARY),
             ),
         )
-    }.apply {
-        status shouldBe HttpStatusCode.Created
-        body =
-            body<AssetResponse>().apply {
+    }.let { response ->
+        response.status shouldBe expectedStatus
+        if (response.status == HttpStatusCode.Created) {
+            response.body<AssetResponse>().apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
             }
+        } else {
+            null
+        }
     }
-    return body
 }
 
 suspend fun fetchAsset(
@@ -91,7 +93,7 @@ suspend fun fetchAssetInfo(
     client: HttpClient,
     path: String,
     entryId: Long? = null,
-    expectedResponse: HttpStatusCode = HttpStatusCode.OK,
+    expectedStatus: HttpStatusCode = HttpStatusCode.OK,
 ): AssetResponse? {
     return if (entryId != null) {
         "/assets/$path?format=metadata&entryId=$entryId"
@@ -99,7 +101,7 @@ suspend fun fetchAssetInfo(
         "/assets/$path?format=metadata"
     }.let {
         val response = client.get("/assets/$path?format=metadata")
-        response.status shouldBe expectedResponse
+        response.status shouldBe expectedStatus
 
         if (response.status == HttpStatusCode.NotFound) {
             null

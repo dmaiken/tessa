@@ -1,7 +1,7 @@
 package io
 
-import io.asset.PathModifierOption
 import io.ktor.server.routing.RoutingRequest
+import io.path.PathModifierOption
 
 /**
  * Gets the entryId of the request.

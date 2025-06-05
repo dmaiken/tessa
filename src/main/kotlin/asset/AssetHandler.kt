@@ -6,6 +6,9 @@ import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
 import io.image.InvalidImageException
 import io.ktor.util.logging.KtorSimpleLogger
+import io.path.PathAdapter
+import io.path.PathModifierOption
+import io.path.configuration.PathConfigurationService
 import java.io.OutputStream
 
 class AssetHandler(
@@ -13,6 +16,7 @@ class AssetHandler(
     private val assetService: AssetService,
     private val pathGenerator: PathAdapter,
     private val objectStore: ObjectStore,
+    private val pathConfigurationService: PathConfigurationService,
 ) {
     private val logger = KtorSimpleLogger("io.asset")
 
@@ -21,8 +25,9 @@ class AssetHandler(
         content: ByteArray,
         uriPath: String,
     ): AssetAndLocation {
-        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         val mimeType = deriveValidMimeType(content)
+        validatePathConfiguration(uriPath, mimeType)
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         val asset =
             assetService.store(
                 StoreAssetDto(
@@ -107,6 +112,17 @@ class AssetHandler(
 
     private fun validate(mimeType: String): Boolean {
         return mimeType.startsWith("image/")
+    }
+
+    private fun validatePathConfiguration(
+        uriPath: String,
+        mimeType: String,
+    ) {
+        pathConfigurationService.fetch(uriPath)?.let { config ->
+            if (!config.allowedContentTypes.contains(mimeType)) {
+                throw IllegalArgumentException("Not an allowed content type: $mimeType for path: $uriPath")
+            }
+        }
     }
 }
 

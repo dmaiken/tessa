@@ -1,4 +1,4 @@
-package io.asset.store
+package io.aws
 
 data class AWSProperties(
     val host: String,

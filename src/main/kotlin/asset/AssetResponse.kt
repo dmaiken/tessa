@@ -4,7 +4,7 @@ import io.serializers.LocalDateTimeSerializer
 import io.serializers.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Serializable
 data class AssetResponse(

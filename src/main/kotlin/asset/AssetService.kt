@@ -23,7 +23,7 @@ import org.jooq.kotlin.coroutines.transactionCoroutine
 import org.jooq.postgres.extensions.bindings.LtreeBinding
 import org.jooq.postgres.extensions.types.Ltree.ltree
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 interface AssetService {
     suspend fun store(asset: StoreAssetDto): Asset

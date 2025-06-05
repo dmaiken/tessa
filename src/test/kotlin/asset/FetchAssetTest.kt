@@ -7,7 +7,7 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.util.createJsonClient
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class FetchAssetTest : BaseTest() {
     @Test

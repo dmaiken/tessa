@@ -44,10 +44,14 @@ class ImagePreProcessingTest : BaseTest() {
         testWithTestcontainers(
             postgres,
             localstack,
-            mapOf(
-                "image.preprocessing.enabled" to "true",
-                "image.preprocessing.maxWidth" to "100",
-            ),
+            """
+            image {
+                preprocessing {
+                    enabled = true
+                    maxWidth = 100
+                }
+            }
+            """.trimIndent(),
         ) {
             val client = createJsonClient(followRedirects = false)
             val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
@@ -59,17 +63,16 @@ class ImagePreProcessingTest : BaseTest() {
                     type = "image/png",
                     alt = "an image",
                 )
-            val storedAssetInfo =
-                storeAsset(client, image, request).apply {
-                    id shouldNotBe null
-                    createdAt shouldNotBe null
-                    bucket shouldBe "assets"
-                    storeKey shouldNotBe null
-                    type shouldBe "image/png"
-                    alt shouldBe "an image"
-                    width shouldBe 100
-                    width.toDouble() / height.toDouble() shouldBeApproximately originalScale
-                }
+            storeAsset(client, image, request)!!.apply {
+                id shouldNotBe null
+                createdAt shouldNotBe null
+                bucket shouldBe "assets"
+                storeKey shouldNotBe null
+                type shouldBe "image/png"
+                alt shouldBe "an image"
+                width shouldBe 100
+                width.toDouble() / height.toDouble() shouldBeApproximately originalScale
+            }
 
             val fetchedAsset = fetchAsset(client)
             Tika().detect(fetchedAsset) shouldBe "image/png"
@@ -83,10 +86,14 @@ class ImagePreProcessingTest : BaseTest() {
         testWithTestcontainers(
             postgres,
             localstack,
-            mapOf(
-                "image.preprocessing.enabled" to "true",
-                "image.preprocessing.maxHeight" to "50",
-            ),
+            """
+            image {
+                preprocessing {
+                    enabled = true
+                    maxHeight = 50
+                }
+            }
+            """.trimIndent(),
         ) {
             val client = createJsonClient(followRedirects = false)
             val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
@@ -99,7 +106,7 @@ class ImagePreProcessingTest : BaseTest() {
                     alt = "an image",
                 )
             val storedAssetInfo =
-                storeAsset(client, image, request).apply {
+                storeAsset(client, image, request)!!.apply {
                     id shouldNotBe null
                     createdAt shouldNotBe null
                     bucket shouldBe "assets"
@@ -126,11 +133,15 @@ class ImagePreProcessingTest : BaseTest() {
     ) = testWithTestcontainers(
         postgres,
         localstack,
-        buildMap {
-            put("image.preprocessing.enabled", enabled.toString())
-            maxWidth?.let { put("image.preprocessing.maxWidth", it.toString()) }
-            maxHeight?.let { put("image.preprocessing.maxHeight", it.toString()) }
-        },
+        """
+        image {
+            preprocessing {
+                enabled = ${enabled.toString().lowercase()}
+                ${maxHeight?.let { "maxHeight = $it" } ?: ""}
+                ${maxWidth?.let { "maxWidth = $it" } ?: ""}
+            }
+        }
+        """.trimIndent(),
     ) {
         val client = createJsonClient(followRedirects = false)
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
@@ -142,7 +153,7 @@ class ImagePreProcessingTest : BaseTest() {
                 alt = "an image",
             )
         val storedAssetInfo =
-            storeAsset(client, image, request).apply {
+            storeAsset(client, image, request)!!.apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
                 bucket shouldBe "assets"
@@ -167,10 +178,14 @@ class ImagePreProcessingTest : BaseTest() {
     ) = testWithTestcontainers(
         postgres,
         localstack,
-        mapOf(
-            "image.preprocessing.enabled" to "true",
-            "image.preprocessing.imageFormat" to imageFormat,
-        ),
+        """
+        image {
+            preprocessing {
+                enabled = true
+                imageFormat = $imageFormat
+            }
+        }
+        """.trimIndent(),
     ) {
         val client = createJsonClient(followRedirects = false)
         val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
@@ -182,7 +197,7 @@ class ImagePreProcessingTest : BaseTest() {
                 alt = "an image",
             )
         val storedAssetInfo =
-            storeAsset(client, image, request).apply {
+            storeAsset(client, image, request)!!.apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
                 bucket shouldBe "assets"

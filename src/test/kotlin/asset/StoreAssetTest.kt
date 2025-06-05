@@ -14,6 +14,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.util.createJsonClient
+import io.util.storeAsset
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 
@@ -57,5 +58,32 @@ class StoreAssetTest : BaseTest() {
             }.apply {
                 status shouldBe HttpStatusCode.BadRequest
             }
+        }
+
+    @Test
+    fun `cannot store asset that is a disallowed content type`() =
+        testWithTestcontainers(
+            postgres,
+            localstack,
+            """
+            path-configuration = [
+              {
+                path-matcher = "/users/*/profile"
+                allowed-content-types = [
+                  "image/jpeg"
+                ]
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            val client = createJsonClient()
+            val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+            val request =
+                StoreAssetRequest(
+                    fileName = "filename.png",
+                    type = "image/png",
+                    alt = "an image",
+                )
+            storeAsset(client, image, request, path = "users/123/profile", expectedStatus = HttpStatusCode.BadRequest)
         }
 }

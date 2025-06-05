@@ -5,7 +5,7 @@ import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.CreateBucketRequest
 import aws.smithy.kotlin.runtime.auth.awscredentials.Credentials
 import aws.smithy.kotlin.runtime.net.url.Url
-import io.asset.store.S3Service.Companion.BUCKET
+import io.aws.S3Service.Companion.BUCKET
 import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.runBlocking
 

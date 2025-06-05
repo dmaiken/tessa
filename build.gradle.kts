@@ -39,7 +39,6 @@ dependencies {
     implementation(libs.r2dbc.migrate)
     implementation(libs.r2dbc.migrate.resource.reader)
     implementation(libs.r2dbc.postgresql)
-    implementation(libs.r2dbc.h2)
     implementation(libs.r2dbc.pool)
     implementation(libs.kotlinx.coroutines.reactive)
     testImplementation(libs.ktor.client.content.negotiation)

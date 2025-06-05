@@ -2,7 +2,7 @@ package asset
 
 import org.jooq.Record
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class Asset(
     val id: UUID = UUID.randomUUID(),

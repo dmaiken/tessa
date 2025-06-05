@@ -1,4 +1,4 @@
-package io.asset.store
+package io.aws
 
 import asset.StoreAssetRequest
 import asset.store.FetchResult
@@ -15,7 +15,7 @@ import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.writeToOutputStream
 import io.ktor.util.logging.KtorSimpleLogger
 import java.io.OutputStream
-import java.util.*
+import java.util.UUID
 
 class S3Service(
     private val s3Client: S3Client,

@@ -13,7 +13,7 @@ import io.ktor.http.HttpStatusCode
 import io.util.createJsonClient
 import io.util.storeAsset
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class AssetLifecycleTest : BaseTest() {
     @Test
@@ -28,7 +28,7 @@ class AssetLifecycleTest : BaseTest() {
                     alt = "an image",
                 )
             val storeAssetResponse = storeAsset(client, image, request)
-            storeAssetResponse.createdAt shouldNotBe null
+            storeAssetResponse!!.createdAt shouldNotBe null
             storeAssetResponse.bucket shouldBe "assets"
             storeAssetResponse.storeKey shouldNotBe null
             storeAssetResponse.type shouldBe "image/png"
@@ -54,7 +54,7 @@ class AssetLifecycleTest : BaseTest() {
             val ids = mutableListOf<UUID>()
             repeat(2) {
                 val response = storeAsset(client, image, request)
-                ids.add(response.id)
+                ids.add(response!!.id)
             }
             ids shouldHaveSize 2
             client.get("/assets/profile?format=metadata").apply {

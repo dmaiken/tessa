@@ -1,4 +1,4 @@
-package io.asset
+package io.path
 
 import java.util.Locale.getDefault
 

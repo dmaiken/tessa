@@ -1,8 +1,10 @@
 package io
 
 import app.photofox.vipsffm.Vips
+import io.asset.configureAssetRouting
 import io.ktor.server.application.Application
 import io.ktor.util.logging.KtorSimpleLogger
+import io.path.configuration.configurePathConfigurationRouting
 
 private val logger = KtorSimpleLogger("io.Application")
 
@@ -24,8 +26,14 @@ fun Application.module() {
     )
 
     val connectionFactory = connectToPostgres()
+    migrateSchema(connectionFactory)
     configureKoin(connectionFactory)
     configureContentNegotiation()
     configureRouting()
     configureStatusPages()
+}
+
+fun Application.configureRouting() {
+    configureAssetRouting()
+    configurePathConfigurationRouting()
 }

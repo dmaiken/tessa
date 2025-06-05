@@ -1,8 +1,8 @@
-package io
+package io.asset
 
 import asset.StoreAssetRequest
-import io.asset.AssetHandler
-import io.asset.AssetReturnFormat
+import io.getEntryId
+import io.getPathModifierOption
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -24,9 +24,9 @@ import io.ktor.utils.io.toByteArray
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
-private val logger = KtorSimpleLogger("io")
+private val logger = KtorSimpleLogger("io.asset")
 
-fun Application.configureRouting() {
+fun Application.configureAssetRouting() {
     val assetHandler by inject<AssetHandler>()
 
     routing {

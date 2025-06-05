@@ -14,7 +14,7 @@ import io.util.createJsonClient
 import io.util.fetchAssetInfo
 import io.util.storeAsset
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class DeleteAssetTest : BaseTest() {
     @Test
@@ -68,7 +68,7 @@ class DeleteAssetTest : BaseTest() {
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    id shouldBe secondAsset.id
+                    id shouldBe secondAsset!!.id
                     entryId shouldBe secondAsset.entryId
                 }
             }
@@ -76,7 +76,7 @@ class DeleteAssetTest : BaseTest() {
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    id shouldBe firstAsset.id
+                    id shouldBe firstAsset!!.id
                     entryId shouldBe firstAsset.entryId
                 }
             }
@@ -96,11 +96,11 @@ class DeleteAssetTest : BaseTest() {
             val firstAsset = storeAsset(client, image, request, path = "profile")
             val secondAsset = storeAsset(client, image, request, path = "profile")
 
-            client.delete("/assets/profile?entryId=${firstAsset.entryId}").status shouldBe HttpStatusCode.NoContent
+            client.delete("/assets/profile?entryId=${firstAsset!!.entryId}").status shouldBe HttpStatusCode.NoContent
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    id shouldBe secondAsset.id
+                    id shouldBe secondAsset!!.id
                     entryId shouldBe secondAsset.entryId
                 }
             }
@@ -141,10 +141,10 @@ class DeleteAssetTest : BaseTest() {
             client.delete("/assets/user/123?mode=children").status shouldBe HttpStatusCode.NoContent
 
             fetchAssetInfo(client, "user/123", entryId = null, HttpStatusCode.NotFound)
-            fetchAssetInfo(client, "user/123", firstAsset.entryId, HttpStatusCode.NotFound)
-            fetchAssetInfo(client, "user/123", secondAsset.entryId, HttpStatusCode.NotFound)
+            fetchAssetInfo(client, "user/123", firstAsset!!.entryId, HttpStatusCode.NotFound)
+            fetchAssetInfo(client, "user/123", secondAsset!!.entryId, HttpStatusCode.NotFound)
 
-            fetchAssetInfo(client, "user/123/profile", assetToNotDelete.entryId)
+            fetchAssetInfo(client, "user/123/profile", assetToNotDelete!!.entryId)
             fetchAssetInfo(client, "user/123/profile")
         }
 
@@ -168,13 +168,13 @@ class DeleteAssetTest : BaseTest() {
             client.delete("/assets/user/123?mode=recursive").status shouldBe HttpStatusCode.NoContent
 
             fetchAssetInfo(client, "user/123", entryId = null, HttpStatusCode.NotFound)
-            fetchAssetInfo(client, "user/123", firstAsset.entryId, HttpStatusCode.NotFound)
-            fetchAssetInfo(client, "user/123", secondAsset.entryId, HttpStatusCode.NotFound)
-            fetchAssetInfo(client, "user/123/profile", thirdAsset.entryId, HttpStatusCode.NotFound)
-            fetchAssetInfo(client, "user/123/profile/other", fourthAsset.entryId, HttpStatusCode.NotFound)
+            fetchAssetInfo(client, "user/123", firstAsset!!.entryId, HttpStatusCode.NotFound)
+            fetchAssetInfo(client, "user/123", secondAsset!!.entryId, HttpStatusCode.NotFound)
+            fetchAssetInfo(client, "user/123/profile", thirdAsset!!.entryId, HttpStatusCode.NotFound)
+            fetchAssetInfo(client, "user/123/profile/other", fourthAsset!!.entryId, HttpStatusCode.NotFound)
 
             fetchAssetInfo(client, "user")
-            fetchAssetInfo(client, "user", entryId = control.entryId)
+            fetchAssetInfo(client, "user", entryId = control!!.entryId)
         }
 
     @Test
