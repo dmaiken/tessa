@@ -8,15 +8,13 @@ class PathAdapter {
         private const val TREE_PATH_DELIMITER = "."
         private const val URI_PATH_DELIMITER = "/"
         const val TREE_ROOT = "root"
-        const val URI_PREFIX = "/assets"
     }
 
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
     fun toTreePathFromUriPath(uriPath: String): String {
         val trimmedPath =
-            uriPath.removePrefix(URI_PREFIX)
-                .removePrefix(URI_PATH_DELIMITER)
+            uriPath.removePrefix(URI_PATH_DELIMITER)
                 .removeSuffix(URI_PATH_DELIMITER)
         if (!trimmedPath.matches(validPathRegex)) {
             throw IllegalArgumentException("Invalid path: $trimmedPath")

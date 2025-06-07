@@ -210,4 +210,57 @@ class ImagePreProcessingTest : BaseTest() {
         val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
         Tika().detect(fetchedAsset) shouldBe expectedType
     }
+
+    @Test
+    fun `image preprocessing is available per route`() =
+        testWithTestcontainers(
+            postgres,
+            localstack,
+            """
+            image {
+                preprocessing {
+                    enabled = true
+                    imageFormat = jpeg
+                    maxHeight = 55
+                }
+            }
+            path-configuration = [
+                {
+                    path-matcher = "/Users/*/Profile"
+                    image {
+                        preprocessing {
+                            enabled = true
+                            imageFormat = webp
+                            maxHeight = 50
+                        }
+                    }
+                }
+            ]
+            """.trimIndent(),
+        ) {
+            val client = createJsonClient(followRedirects = false)
+            val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+            val bufferedImage = byteArrayToImage(image)
+            val originalScale = bufferedImage.width.toDouble() / bufferedImage.height.toDouble()
+            val request =
+                StoreAssetRequest(
+                    fileName = "filename.png",
+                    type = "image/png",
+                    alt = "an image",
+                )
+            val storedAssetInfo =
+                storeAsset(client, image, request, path = "users/123/profile")!!.apply {
+                    id shouldNotBe null
+                    createdAt shouldNotBe null
+                    bucket shouldBe "assets"
+                    storeKey shouldNotBe null
+                    type shouldBe "image/webp"
+                    alt shouldBe "an image"
+                    height shouldBe 50
+                    width.toDouble() / height.toDouble() shouldBeApproximately originalScale
+                }
+
+            val fetchedAsset = fetchAsset(client, path = "users/123/profile", entryId = storedAssetInfo.entryId)
+            Tika().detect(fetchedAsset) shouldBe "image/webp"
+        }
 }

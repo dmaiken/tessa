@@ -27,7 +27,6 @@ class PathConfigurationServiceTest : BaseTest() {
               {
                 path-matcher = "/users/456/profile"
                 allowed-content-types = [
-                  "image/tiff",
                   "image/jpeg"
                 ]
               }
@@ -36,7 +35,7 @@ class PathConfigurationServiceTest : BaseTest() {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                val pathConfiguration = pathConfigurationService.fetch("/assets/users/123/profile")
+                val pathConfiguration = pathConfigurationService.fetch("/users/123/profile")
                 pathConfiguration shouldNotBe null
                 pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
             }
@@ -59,7 +58,6 @@ class PathConfigurationServiceTest : BaseTest() {
               {
                 path-matcher = "/users/456/profile"
                 allowed-content-types = [
-                  "image/tiff",
                   "image/jpeg"
                 ]
               }
@@ -69,8 +67,8 @@ class PathConfigurationServiceTest : BaseTest() {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
                 listOf(
-                    "/assets/users/123/profile",
-                    "/assets/USERS/123/profile",
+                    "/users/123/profile",
+                    "/USERS/123/profile",
                 ).forEach { path ->
                     val pathConfiguration = pathConfigurationService.fetch(path)
                     pathConfiguration shouldNotBe null
@@ -98,7 +96,7 @@ class PathConfigurationServiceTest : BaseTest() {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                val pathConfiguration = pathConfigurationService.fetch("/assets/users/123/profile")
+                val pathConfiguration = pathConfigurationService.fetch("/users/123/profile")
                 pathConfiguration shouldNotBe null
                 pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
             }
@@ -123,7 +121,7 @@ class PathConfigurationServiceTest : BaseTest() {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                val pathConfiguration = pathConfigurationService.fetch("/assets/users/123/profile")
+                val pathConfiguration = pathConfigurationService.fetch("/users/123/profile")
                 pathConfiguration shouldNotBe null
                 pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
             }

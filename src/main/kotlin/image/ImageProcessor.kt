@@ -3,6 +3,7 @@ package io.image
 import app.photofox.vipsffm.VImage
 import app.photofox.vipsffm.Vips
 import io.ktor.util.logging.KtorSimpleLogger
+import io.path.configuration.PathConfiguration
 import org.apache.commons.io.output.ByteArrayOutputStream
 import kotlin.math.min
 
@@ -14,23 +15,27 @@ interface ImageProcessor {
     suspend fun preprocess(
         image: ByteArray,
         mimeType: String,
+        pathConfiguration: PathConfiguration?,
     ): ProcessedImage
 }
 
 class VipsImageProcessor(
-    private val imageProperties: ImageProperties,
+    private val defaultImageProperties: ImageProperties,
 ) : ImageProcessor {
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
     override suspend fun preprocess(
         image: ByteArray,
         mimeType: String,
+        pathConfiguration: PathConfiguration?,
     ): ProcessedImage {
         var attributes: ImageAttributes? = null
         val resizedStream = ByteArrayOutputStream()
+        val preProcessingProperties =
+            pathConfiguration?.imageProperties?.preProcessing ?: defaultImageProperties.preProcessing
         Vips.run { arena ->
             val sourceImage = VImage.newFromBytes(arena, image)
-            if (!imageProperties.preProcessing.enabled) {
+            if (!preProcessingProperties.enabled) {
                 attributes =
                     ImageAttributes(
                         height = sourceImage.height,
@@ -44,10 +49,10 @@ class VipsImageProcessor(
             val resized =
                 downScale(
                     image = sourceImage,
-                    maxWidth = imageProperties.preProcessing.maxWidth,
-                    maxHeight = imageProperties.preProcessing.maxHeight,
+                    maxWidth = preProcessingProperties.maxWidth,
+                    maxHeight = preProcessingProperties.maxHeight,
                 )
-            val newMimeType = determineMimeType(mimeType)
+            val newMimeType = determineMimeType(mimeType, preProcessingProperties)
             resized.writeToStream(resizedStream, ".${ImageFormat.fromMimeType(newMimeType).extension}")
             attributes =
                 ImageAttributes(
@@ -94,13 +99,15 @@ class VipsImageProcessor(
         return image.resize(scale)
     }
 
-    private fun determineMimeType(originalMimeType: String) =
-        if (imageProperties.preProcessing.imageFormat != null) {
-            if (imageProperties.preProcessing.imageFormat.mimeType != originalMimeType) {
-                logger.info("Converting image from $originalMimeType to ${imageProperties.preProcessing.imageFormat.mimeType}")
-            }
-            imageProperties.preProcessing.imageFormat.mimeType
-        } else {
-            originalMimeType
+    private fun determineMimeType(
+        originalMimeType: String,
+        preProcessingProperties: PreProcessingProperties,
+    ) = if (preProcessingProperties.imageFormat != null) {
+        if (preProcessingProperties.imageFormat.mimeType != originalMimeType) {
+            logger.info("Converting image from $originalMimeType to ${preProcessingProperties.imageFormat.mimeType}")
         }
+        preProcessingProperties.imageFormat.mimeType
+    } else {
+        originalMimeType
+    }
 }

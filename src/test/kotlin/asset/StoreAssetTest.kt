@@ -3,11 +3,15 @@ package io.asset
 import asset.StoreAssetRequest
 import io.BaseTest
 import io.config.testWithTestcontainers
+import io.image.ImageFormat
+import io.image.byteArrayToImage
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -16,7 +20,10 @@ import io.ktor.http.contentType
 import io.util.createJsonClient
 import io.util.storeAsset
 import kotlinx.serialization.json.Json
+import org.apache.tika.Tika
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 class StoreAssetTest : BaseTest() {
     @Test
@@ -85,5 +92,99 @@ class StoreAssetTest : BaseTest() {
                     alt = "an image",
                 )
             storeAsset(client, image, request, path = "users/123/profile", expectedStatus = HttpStatusCode.BadRequest)
+        }
+
+    @Test
+    fun `cannot store asset if no content type is allowed`() =
+        testWithTestcontainers(
+            postgres,
+            localstack,
+            """
+            path-configuration = [
+              {
+                path-matcher = "/users/*/profile"
+                allowed-content-types = [ ]
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            val client = createJsonClient()
+            val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+            val request =
+                StoreAssetRequest(
+                    fileName = "filename.png",
+                    type = "image/png",
+                    alt = "an image",
+                )
+            storeAsset(client, image, request, path = "users/123/profile", expectedStatus = HttpStatusCode.BadRequest)
+        }
+
+    @Test
+    fun `can store asset if allowed-content-types is not defined for path`() =
+        testWithTestcontainers(
+            postgres,
+            localstack,
+            """
+            path-configuration = [
+              {
+                path-matcher = "/users/*/profile"
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            val client = createJsonClient()
+            val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+            val bufferedImage = byteArrayToImage(image)
+            val request =
+                StoreAssetRequest(
+                    fileName = "filename.png",
+                    type = "image/png",
+                    alt = "an image",
+                )
+            storeAsset(client, image, request, path = "users/123/profile")
+
+            client.get("/assets/users/123/profile?format=content").apply {
+                status shouldBe HttpStatusCode.OK
+                contentType().toString() shouldBe "image/png"
+                val imageBytes = bodyAsBytes()
+                val rendered = byteArrayToImage(imageBytes)
+                rendered.width shouldBe bufferedImage.width
+                rendered.height shouldBe bufferedImage.height
+                Tika().detect(imageBytes) shouldBe "image/png"
+            }
+        }
+
+    @ParameterizedTest
+    @EnumSource(ImageFormat::class)
+    fun `can convert image to any every supported type`(format: ImageFormat) =
+        testWithTestcontainers(
+            postgres,
+            localstack,
+            """
+            image {
+                preprocessing {
+                    enabled = true
+                    imageFormat = ${format.extension}
+                }
+            }
+            """.trimIndent(),
+        ) {
+            val client = createJsonClient()
+            val image = javaClass.getResourceAsStream("/images/img.png")!!.readBytes()
+            val bufferedImage = byteArrayToImage(image)
+            val request =
+                StoreAssetRequest(
+                    fileName = "filename.png",
+                    type = "image/png",
+                    alt = "an image",
+                )
+            storeAsset(client, image, request, path = "users/123/profile")
+
+            client.get("/assets/users/123/profile?format=content").apply {
+                status shouldBe HttpStatusCode.OK
+                contentType().toString() shouldBe format.mimeType
+                val imageBytes = bodyAsBytes()
+                Tika().detect(imageBytes) shouldBe format.mimeType
+            }
         }
 }

@@ -1,36 +1,29 @@
 package io.path.configuration
 
-import io.WildcardRegexAdapter
+import io.image.constructImageProperties
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.tryGetString
 import io.ktor.server.config.tryGetStringList
-import io.ktor.util.logging.KtorSimpleLogger
+import io.path.configuration.PathConfiguration.Companion.ALLOWED_CONTENT_TYPES
+import io.path.configuration.PathConfiguration.Companion.PATH_MATCHER
+import io.properties.ConfigurationProperties
+import io.tryGetConfig
 
 class PathConfigurationService(
     applicationConfig: ApplicationConfig,
 ) {
-    private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
-    private val wildcardRegexAdapter = WildcardRegexAdapter()
-
     private val pathConfigurations: List<PathConfiguration> =
-        applicationConfig.configList("path-configuration").map { config ->
-            PathConfiguration(
-                allowedContentTypesRegex =
-                    config.tryGetStringList("allowed-content-types")
-                        ?.map { wildcardRegexAdapter.toRegex(it) } ?: emptyList(),
-                allowedContentTypes = config.tryGetStringList("allowed-content-types") ?: emptyList(),
+        applicationConfig.configList(ConfigurationProperties.PATH_CONFIGURATION).map { config ->
+            PathConfiguration.create(
+                allowedContentTypes = config.tryGetStringList(ALLOWED_CONTENT_TYPES),
                 pathMatcher =
-                    config.tryGetString("path-matcher")
-                        ?: throw IllegalArgumentException("Path matcher is required"),
-                pathRegex =
-                    config.tryGetString("path-matcher")?.let {
-                        wildcardRegexAdapter.toRegex(it)
-                    } ?: throw IllegalArgumentException("Path matcher is required"),
+                    config.tryGetString(PATH_MATCHER),
+                imageProperties = constructImageProperties(config.tryGetConfig("image")),
             )
         }
 
     fun fetch(uriPath: String): PathConfiguration? {
-        return uriPath.removePrefix("/assets").lowercase().let { path ->
+        return uriPath.lowercase().let { path ->
             pathConfigurations.firstOrNull { config -> config.pathRegex.matches(path) }
         }
     }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 @Serializable
 data class PathConfigurationResponse(
     val pathMatcher: String,
-    val allowedContentTypes: List<String>,
+    val allowedContentTypes: List<String>?,
     @Serializable(with = LocalDateTimeSerializer::class)
     val createdAt: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class)

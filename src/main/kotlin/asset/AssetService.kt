@@ -5,6 +5,7 @@ import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
 import io.image.ImageProcessor
 import io.ktor.util.logging.KtorSimpleLogger
+import io.path.configuration.PathConfiguration
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
@@ -26,7 +27,10 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 interface AssetService {
-    suspend fun store(asset: StoreAssetDto): Asset
+    suspend fun store(
+        asset: StoreAssetDto,
+        pathConfiguration: PathConfiguration?,
+    ): Asset
 
     suspend fun fetch(id: UUID): Asset?
 
@@ -55,8 +59,11 @@ class AssetServiceImpl(
 ) : AssetService {
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
-    override suspend fun store(asset: StoreAssetDto): Asset {
-        val preProcessed = imageProcessor.preprocess(asset.content, asset.mimeType)
+    override suspend fun store(
+        asset: StoreAssetDto,
+        pathConfiguration: PathConfiguration?,
+    ): Asset {
+        val preProcessed = imageProcessor.preprocess(asset.content, asset.mimeType, pathConfiguration)
         val persistResult = objectStore.persist(asset.request, preProcessed.image)
 
         val id = UUID.randomUUID()

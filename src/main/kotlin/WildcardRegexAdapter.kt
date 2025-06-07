@@ -22,4 +22,6 @@ class WildcardRegexAdapter {
         sb.append("$")
         return Regex(sb.toString())
     }
+
+    fun toRegexList(pathPatterns: List<String>): List<Regex> = pathPatterns.map { toRegex(it) }
 }

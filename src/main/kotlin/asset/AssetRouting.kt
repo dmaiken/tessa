@@ -26,12 +26,14 @@ import org.koin.ktor.ext.inject
 
 private val logger = KtorSimpleLogger("io.asset")
 
+const val ASSET_PATH_PREFIX = "/assets"
+
 fun Application.configureAssetRouting() {
     val assetHandler by inject<AssetHandler>()
 
     routing {
-        get("/assets/{...}") {
-            val route = call.request.path()
+        get("$ASSET_PATH_PREFIX/{...}") {
+            val route = call.request.path().removePrefix(ASSET_PATH_PREFIX)
             val returnFormat = AssetReturnFormat.fromQueryParam(call.request.queryParameters["format"])
             val all = call.request.queryParameters["all"]?.toBoolean() ?: false
             val suppliedEntryId = getEntryId(call.request)
@@ -73,24 +75,25 @@ fun Application.configureAssetRouting() {
             }
         }
 
-        post("/assets") {
+        post(ASSET_PATH_PREFIX) {
             createNewAsset(call, assetHandler)
         }
 
-        post("/assets/{...}") {
+        post("$ASSET_PATH_PREFIX/{...}") {
             createNewAsset(call, assetHandler)
         }
 
-        delete("/assets/{...}") {
+        delete("$ASSET_PATH_PREFIX/{...}") {
             val suppliedEntryId = getEntryId(call.request)
             val suppliedOption = getPathModifierOption(call.request)
+            val route = call.request.path().removePrefix(ASSET_PATH_PREFIX)
             if (suppliedOption != null && suppliedEntryId != null) {
                 throw IllegalArgumentException("Both entryId and option cannot both be supplied")
             }
             if (suppliedOption != null) {
-                assetHandler.deleteAssets(call.request.path(), suppliedOption)
+                assetHandler.deleteAssets(route, suppliedOption)
             } else {
-                assetHandler.deleteAsset(call.request.path(), suppliedEntryId)
+                assetHandler.deleteAsset(route, suppliedEntryId)
             }
 
             call.respond(HttpStatusCode.NoContent)
@@ -131,7 +134,7 @@ suspend fun createNewAsset(
         assetHandler.storeNewAsset(
             request = checkNotNull(assetData),
             content = checkNotNull(assetContent),
-            uriPath = call.request.path(),
+            uriPath = call.request.path().removePrefix(ASSET_PATH_PREFIX),
         )
     logger.info("Created asset under path: ${asset.locationPath}")
 

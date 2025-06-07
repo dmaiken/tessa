@@ -2,6 +2,7 @@ package io
 
 import io.asset.assetModule
 import io.aws.awsModule
+import io.image.imageModule
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.path.pathModule
@@ -24,6 +25,6 @@ fun Application.configureKoin(connectionFactory: ConnectionFactory) {
 
     install(Koin) {
         slf4jLogger()
-        modules(dbModule, assetModule(), awsModule(), pathModule())
+        modules(dbModule, assetModule(), awsModule(), pathModule(), imageModule())
     }
 }

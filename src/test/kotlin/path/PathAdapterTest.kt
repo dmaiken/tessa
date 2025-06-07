@@ -10,7 +10,7 @@ class PathAdapterTest {
     private val pathAdapter = PathAdapter()
 
     @ParameterizedTest
-    @ValueSource(strings = ["", "/", "/assets", "/assets/"])
+    @ValueSource(strings = ["", "/"])
     fun `root path is used when uri path is the root`(uriPath: String) {
         val treePath = pathAdapter.toTreePathFromUriPath(uriPath)
 
@@ -27,7 +27,7 @@ class PathAdapterTest {
 
     @Test
     fun `generates the tree path correctly`() {
-        val uriPath = "/assets/user1/profile-picture/"
+        val uriPath = "/user1/profile-picture/"
 
         val treePath = pathAdapter.toTreePathFromUriPath(uriPath)
 
