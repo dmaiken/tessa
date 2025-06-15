@@ -11,3 +11,7 @@ dependencyResolutionManagement {
         }
     }
 }
+
+include("service")
+
+include("integration")
