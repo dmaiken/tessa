@@ -124,8 +124,8 @@ class AssetHandler(
     private fun validatePathConfiguration(
         uriPath: String,
         mimeType: String,
-    ): PathConfiguration? {
-        return pathConfigurationService.fetch(uriPath)?.also { config ->
+    ): PathConfiguration {
+        return pathConfigurationService.fetchConfigurationForPath(uriPath).also { config ->
             config.allowedContentTypes?.contains(mimeType)?.let { allowedContentTypes ->
                 if (!allowedContentTypes) {
                     throw IllegalArgumentException("Not an allowed content type: $mimeType for path: $uriPath")

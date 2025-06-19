@@ -1,12 +1,13 @@
 package io.image
 
-import io.image.PreProcessingProperties.Companion.ENABLED
-import io.image.PreProcessingProperties.Companion.IMAGE_FORMAT
-import io.image.PreProcessingProperties.Companion.MAX_HEIGHT
-import io.image.PreProcessingProperties.Companion.MAX_WIDTH
 import io.ktor.server.config.ApplicationConfig
+import io.properties.ConfigurationProperties.PathConfigurationProperties.ImageProperties.PREPROCESSING
+import io.properties.ConfigurationProperties.PathConfigurationProperties.ImageProperties.PreProcessingProperties.IMAGE_FORMAT
+import io.properties.ConfigurationProperties.PathConfigurationProperties.ImageProperties.PreProcessingProperties.MAX_HEIGHT
+import io.properties.ConfigurationProperties.PathConfigurationProperties.ImageProperties.PreProcessingProperties.MAX_WIDTH
 import io.properties.ValidatedProperties
 import io.properties.validateAndCreate
+import io.tryGetConfig
 
 class ImageProperties private constructor(
     val preProcessing: PreProcessingProperties,
@@ -15,15 +16,36 @@ class ImageProperties private constructor(
 
     companion object {
         fun create(preProcessing: PreProcessingProperties) = validateAndCreate { ImageProperties(preProcessing) }
+
+        fun create(
+            applicationConfig: ApplicationConfig?,
+            parent: ImageProperties?,
+        ): ImageProperties =
+            create(
+                preProcessing = PreProcessingProperties.create(
+                    applicationConfig?.tryGetConfig(PREPROCESSING),
+                    parent?.preProcessing
+                ),
+            )
+
+        fun default() =
+            ImageProperties(
+                preProcessing = PreProcessingProperties.default(),
+            )
+    }
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(preProcessing: $preProcessing)"
     }
 }
 
 class PreProcessingProperties private constructor(
-    val enabled: Boolean,
     val maxWidth: Int?,
     val maxHeight: Int?,
     val imageFormat: ImageFormat?,
 ) : ValidatedProperties {
+    val enabled: Boolean = maxWidth != null || maxHeight != null || imageFormat != null
+
     override fun validate() {
         maxWidth?.let {
             require(it > 0) { "'${MAX_WIDTH}' must be greater than 0" }
@@ -34,39 +56,38 @@ class PreProcessingProperties private constructor(
     }
 
     companion object {
-        const val ENABLED = "enabled"
-        const val MAX_HEIGHT = "max-height"
-        const val MAX_WIDTH = "max-width"
-        const val IMAGE_FORMAT = "image-format"
-
         fun create(
-            enabled: Boolean,
             maxWidth: Int?,
             maxHeight: Int?,
             imageFormat: ImageFormat?,
-        ) = validateAndCreate { PreProcessingProperties(enabled, maxWidth, maxHeight, imageFormat) }
-    }
-}
+        ) = validateAndCreate { PreProcessingProperties(maxWidth, maxHeight, imageFormat) }
 
-fun constructImageProperties(config: ApplicationConfig?): ImageProperties {
-    return ImageProperties.create(
-        preProcessing =
-            PreProcessingProperties.create(
-                enabled =
-                    config?.propertyOrNull("preprocessing.$ENABLED")?.getString()
-                        ?.toBoolean()
-                        ?: false,
-                maxWidth =
-                    config?.propertyOrNull("preprocessing.$MAX_WIDTH")?.getString()
-                        ?.toInt(),
-                maxHeight =
-                    config?.propertyOrNull("preprocessing.$MAX_HEIGHT")?.getString()
-                        ?.toInt(),
-                imageFormat =
-                    config?.propertyOrNull("preprocessing.$IMAGE_FORMAT")?.getString()
-                        ?.let {
-                            ImageFormat.fromFormat(it)
-                        },
-            ),
-    )
+        fun create(
+            applicationConfig: ApplicationConfig?,
+            parent: PreProcessingProperties?,
+        ) = create(
+            maxWidth =
+                applicationConfig?.propertyOrNull(MAX_WIDTH)?.getString()
+                    ?.toInt() ?: parent?.maxWidth,
+            maxHeight =
+                applicationConfig?.propertyOrNull(MAX_HEIGHT)?.getString()
+                    ?.toInt() ?: parent?.maxHeight,
+            imageFormat =
+                applicationConfig?.propertyOrNull(IMAGE_FORMAT)?.getString()
+                    ?.let {
+                        ImageFormat.fromFormat(it)
+                    } ?: parent?.imageFormat,
+        )
+
+        fun default() =
+            PreProcessingProperties(
+                maxWidth = null,
+                maxHeight = null,
+                imageFormat = null,
+            )
+    }
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(maxWidth=$maxWidth, maxHeight=$maxHeight, imageFormat=$imageFormat)"
+    }
 }

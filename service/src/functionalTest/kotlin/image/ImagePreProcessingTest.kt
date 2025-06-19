@@ -23,9 +23,8 @@ class ImagePreProcessingTest {
         @JvmStatic
         fun scalingNotNeededSource(): Stream<Arguments> =
             Stream.of(
-                arguments(named("No height or width supplied", true), null, null),
-                arguments(named("Image preprocessing not enabled", false), 50, 50),
-                arguments(named("Height and width are too large", true), 5000, 5000),
+                arguments(named("No height or width supplied", null), null),
+                arguments(named("Height and width are too large", 5000), 5000),
             )
 
         @JvmStatic
@@ -43,12 +42,16 @@ class ImagePreProcessingTest {
     fun `image width is resized when it is too large`() =
         testInMemory(
             """
-            image {
-                preprocessing {
-                    enabled = true
-                    max-width = 100
+            path-configuration = [
+                {
+                    path = "/**"
+                    image {
+                        preprocessing {
+                            max-width = 100
+                        }
+                    }
                 }
-            }
+            ]
             """.trimIndent(),
         ) {
             val client = createJsonClient(followRedirects = false)
@@ -83,12 +86,16 @@ class ImagePreProcessingTest {
     fun `image height is resized when it is too large`() =
         testInMemory(
             """
-            image {
-                preprocessing {
-                    enabled = true
-                    max-height = 50
+            path-configuration = [
+                {
+                    path = "/**"
+                    image {
+                        preprocessing {
+                            max-height = 50
+                        }
+                    }
                 }
-            }
+            ]
             """.trimIndent(),
         ) {
             val client = createJsonClient(followRedirects = false)
@@ -123,18 +130,21 @@ class ImagePreProcessingTest {
     @ParameterizedTest
     @MethodSource("scalingNotNeededSource")
     fun `image is not resized when not needed`(
-        enabled: Boolean,
         maxWidth: Int?,
         maxHeight: Int?,
     ) = testInMemory(
         """
-        image {
-            preprocessing {
-                enabled = ${enabled.toString().lowercase()}
-                ${maxHeight?.let { "max-height = $it" } ?: ""}
-                ${maxWidth?.let { "max-width = $it" } ?: ""}
+        path-configuration = [
+            {
+                path = "/**"
+                image {
+                    preprocessing {
+                        ${maxHeight?.let { "max-height = $it" } ?: ""}
+                        ${maxWidth?.let { "max-width = $it" } ?: ""}
+                    }
+                }
             }
-        }
+        ]
         """.trimIndent(),
     ) {
         val client = createJsonClient(followRedirects = false)
@@ -171,12 +181,16 @@ class ImagePreProcessingTest {
         expectedType: String,
     ) = testInMemory(
         """
-        image {
-            preprocessing {
-                enabled = true
-                image-format = $imageFormat
+        path-configuration = [
+            {
+                path = "/**"
+                image {
+                    preprocessing {
+                        image-format = $imageFormat
+                    }
+                }
             }
-        }
+        ]
         """.trimIndent(),
     ) {
         val client = createJsonClient(followRedirects = false)
@@ -207,19 +221,20 @@ class ImagePreProcessingTest {
     fun `image preprocessing is available per route`() =
         testInMemory(
             """
-            image {
-                preprocessing {
-                    enabled = true
-                    image-format = jpeg
-                    max-height = 55
-                }
-            }
             path-configuration = [
                 {
-                    path-matcher = "/Users/*/Profile"
+                    path = "/**"
                     image {
                         preprocessing {
-                            enabled = true
+                            image-format = jpeg
+                            max-height = 55
+                        }
+                    }
+                }
+                {
+                    path = "/Users/*/Profile"
+                    image {
+                        preprocessing {
                             image-format = webp
                             max-height = 50
                         }

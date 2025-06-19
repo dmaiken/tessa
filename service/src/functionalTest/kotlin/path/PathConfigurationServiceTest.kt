@@ -1,8 +1,8 @@
 package path
 
 import config.testInMemory
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.path.configuration.PathConfigurationService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -15,14 +15,14 @@ class PathConfigurationServiceTest {
             """
             path-configuration = [
               {
-                path-matcher = "/users/123/profile"
+                path = "/users/123/profile"
                 allowed-content-types = [
                   "image/png",
                   "image/jpeg"
                 ]
               },
               {
-                path-matcher = "/users/456/profile"
+                path = "/users/456/profile"
                 allowed-content-types = [
                   "image/jpeg"
                 ]
@@ -32,9 +32,8 @@ class PathConfigurationServiceTest {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                val pathConfiguration = pathConfigurationService.fetch("/users/123/profile")
-                pathConfiguration shouldNotBe null
-                pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("/users/123/profile")
+                pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
             }
         }
 
@@ -44,14 +43,14 @@ class PathConfigurationServiceTest {
             """
             path-configuration = [
               {
-                path-matcher = "/Users/123/Profile"
+                path = "/Users/123/Profile"
                 allowed-content-types = [
                   "image/png",
                   "image/jpeg"
                 ]
               },
               {
-                path-matcher = "/users/456/profile"
+                path = "/users/456/profile"
                 allowed-content-types = [
                   "image/jpeg"
                 ]
@@ -65,9 +64,8 @@ class PathConfigurationServiceTest {
                     "/users/123/profile",
                     "/USERS/123/profile",
                 ).forEach { path ->
-                    val pathConfiguration = pathConfigurationService.fetch(path)
-                    pathConfiguration shouldNotBe null
-                    pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+                    val pathConfiguration = pathConfigurationService.fetchConfigurationForPath(path)
+                    pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
                 }
             }
         }
@@ -78,7 +76,7 @@ class PathConfigurationServiceTest {
             """
             path-configuration = [
               {
-                path-matcher = "/users/*/profile"
+                path = "/users/*/profile"
                 allowed-content-types = [
                   "image/png",
                   "image/jpeg"
@@ -89,9 +87,8 @@ class PathConfigurationServiceTest {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                val pathConfiguration = pathConfigurationService.fetch("/users/123/profile")
-                pathConfiguration shouldNotBe null
-                pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("/users/123/profile")
+                pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
             }
         }
 
@@ -101,7 +98,7 @@ class PathConfigurationServiceTest {
             """
             path-configuration = [
               {
-                path-matcher = "/users/**"
+                path = "/users/**"
                 allowed-content-types = [
                   "image/png",
                   "image/jpeg"
@@ -112,9 +109,8 @@ class PathConfigurationServiceTest {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                val pathConfiguration = pathConfigurationService.fetch("/users/123/profile")
-                pathConfiguration shouldNotBe null
-                pathConfiguration?.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("/users/123/profile")
+                pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
             }
         }
 
@@ -131,7 +127,7 @@ class PathConfigurationServiceTest {
             """
             path-configuration = [
               {
-                path-matcher = "$path"
+                path = "$path"
                 allowed-content-types = [
                   "image/png",
                   "image/jpeg"
@@ -142,7 +138,190 @@ class PathConfigurationServiceTest {
         ) {
             application {
                 val pathConfigurationService = PathConfigurationService(environment.config)
-                pathConfigurationService.fetch("/assets/notAUser/123/profile") shouldBe null
+                pathConfigurationService.fetchConfigurationForPath("/notAUser/123/profile").apply {
+                    imageProperties.apply {
+                        preProcessing.enabled shouldBe false
+                    }
+                    allowedContentTypes shouldBe null
+                }
+            }
+        }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "/users/**/profile/**",
+            "/users/**",
+            "/users/**/profile/**/last",
+        ],
+    )
+    fun `greedy wildcard matching works`(path: String) =
+        testInMemory(
+            """
+            path-configuration = [
+              {
+                path = "$path"
+                allowed-content-types = [
+                  "image/png",
+                  "image/jpeg"
+                ]
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            application {
+                val pathConfigurationService = PathConfigurationService(environment.config)
+                val pathConfiguration =
+                    pathConfigurationService.fetchConfigurationForPath("/users/lastName/firstName/profile/last")
+                pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+            }
+        }
+
+    @Test
+    fun `path configuration is inherited if not supplied`() =
+        testInMemory(
+            """
+            path-configuration = [
+              {
+                path = "/users/*"
+                allowed-content-types = [
+                  "image/png",
+                  "image/jpeg"
+                ],
+                image {
+                  preprocessing = {
+                    max-height = 10
+                  }
+                }
+              },
+              {
+                path = "/users/*/profile"
+                allowed-content-types = [ ]
+                image {
+                  preprocessing = {
+                    max-width = 10
+                  }
+                }
+              },
+            ]
+            """.trimIndent(),
+        ) {
+            application {
+                val pathConfigurationService = PathConfigurationService(environment.config)
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("/users/123/profile")
+                pathConfiguration.allowedContentTypes shouldBe listOf()
+                pathConfiguration.imageProperties.preProcessing.maxWidth shouldBe 10
+                pathConfiguration.imageProperties.preProcessing.maxHeight shouldBe 10
+            }
+        }
+
+    @Test
+    fun `default path is used when none suffice`() =
+        testInMemory(
+            """
+            path-configuration = [
+              {
+                path = "/**"
+                allowed-content-types = [
+                  "image/png",
+                  "image/jpeg"
+                ]
+              },
+              {
+                path = "/users/**"
+                allowed-content-types = [
+                ]
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            application {
+                val pathConfigurationService = PathConfigurationService(environment.config)
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("/recipe/123")
+                pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+            }
+        }
+
+    @Test
+    fun `default path configuration is inherited`() =
+        testInMemory(
+            """
+            path-configuration = [
+              {
+                path = "/**"
+                allowed-content-types = [
+                  "image/png",
+                  "image/jpeg"
+                ],
+                image {
+                  preprocessing = {
+                    max-height = 10
+                  }
+                }
+              },
+              {
+                path = "/users/*/profile"
+                allowed-content-types = [ ]
+                image {
+                  preprocessing = {
+                    max-width = 10
+                  }
+                }
+              },
+            ]
+            """.trimIndent(),
+        ) {
+            application {
+                val pathConfigurationService = PathConfigurationService(environment.config)
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("/users/123/profile")
+                pathConfiguration.allowedContentTypes shouldBe listOf()
+                pathConfiguration.imageProperties.preProcessing.maxWidth shouldBe 10
+                pathConfiguration.imageProperties.preProcessing.maxHeight shouldBe 10
+            }
+        }
+
+    @Test
+    fun `path is stripped of blank and empty path segments`() =
+        testInMemory(
+            """
+            path-configuration = [
+              {
+                path = "/**"
+                allowed-content-types = [
+                  "image/png",
+                  "image/jpeg"
+                ]
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            application {
+                val pathConfigurationService = PathConfigurationService(environment.config)
+                val pathConfiguration = pathConfigurationService.fetchConfigurationForPath("// //123")
+                pathConfiguration.allowedContentTypes shouldBe listOf("image/png", "image/jpeg")
+            }
+        }
+
+    @Test
+    fun `path must be supplied`() =
+        testInMemory(
+            """
+            path-configuration = [
+              {
+                allowed-content-types = [
+                  "image/png",
+                  "image/jpeg"
+                ]
+              }
+            ]
+            """.trimIndent(),
+        ) {
+            application {
+                val exception =
+                    shouldThrow<IllegalArgumentException> {
+                        PathConfigurationService(environment.config)
+                    }
+                exception.message shouldBe "Path configuration must be supplied"
             }
         }
 }

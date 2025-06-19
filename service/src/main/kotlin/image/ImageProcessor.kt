@@ -15,24 +15,22 @@ interface ImageProcessor {
     suspend fun preprocess(
         image: ByteArray,
         mimeType: String,
-        pathConfiguration: PathConfiguration?,
+        pathConfiguration: PathConfiguration,
     ): ProcessedImage
 }
 
-class VipsImageProcessor(
-    private val defaultImageProperties: ImageProperties,
-) : ImageProcessor {
+class VipsImageProcessor() : ImageProcessor {
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
     override suspend fun preprocess(
         image: ByteArray,
         mimeType: String,
-        pathConfiguration: PathConfiguration?,
+        pathConfiguration: PathConfiguration,
     ): ProcessedImage {
         var attributes: ImageAttributes? = null
         val resizedStream = ByteArrayOutputStream()
         val preProcessingProperties =
-            pathConfiguration?.imageProperties?.preProcessing ?: defaultImageProperties.preProcessing
+            pathConfiguration.imageProperties.preProcessing
         Vips.run { arena ->
             val sourceImage = VImage.newFromBytes(arena, image)
             if (!preProcessingProperties.enabled) {

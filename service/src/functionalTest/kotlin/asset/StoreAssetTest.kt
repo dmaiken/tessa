@@ -72,7 +72,7 @@ class StoreAssetTest {
             """
             path-configuration = [
               {
-                path-matcher = "/users/*/profile"
+                path = "/users/*/profile"
                 allowed-content-types = [
                   "image/jpeg"
                 ]
@@ -97,7 +97,7 @@ class StoreAssetTest {
             """
             path-configuration = [
               {
-                path-matcher = "/users/*/profile"
+                path = "/users/*/profile"
                 allowed-content-types = [ ]
               }
             ]
@@ -120,7 +120,7 @@ class StoreAssetTest {
             """
             path-configuration = [
               {
-                path-matcher = "/users/*/profile"
+                path = "/users/*/profile"
               }
             ]
             """.trimIndent(),
@@ -152,12 +152,16 @@ class StoreAssetTest {
     fun `can convert image to any every supported type`(format: ImageFormat) =
         testInMemory(
             """
-            image {
-                preprocessing {
-                    enabled = true
+            path-configuration = [
+              {
+                path = "/**"
+                image {
+                  preprocessing {
                     image-format = ${format.extension}
+                  }
                 }
-            }
+              }
+            ]
             """.trimIndent(),
         ) {
             val client = createJsonClient()
