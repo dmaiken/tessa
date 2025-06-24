@@ -46,6 +46,7 @@ dependencies {
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.localstack)
+    testImplementation(libs.testcontainers.jupiter)
 
     testImplementation(libs.kotest.runner)
     testImplementation(libs.kotest.assertions)

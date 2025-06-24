@@ -39,6 +39,7 @@ kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika-version" }
 
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
+testcontainers-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers-version" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
 testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers-version" }
 

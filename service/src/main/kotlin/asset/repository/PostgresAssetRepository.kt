@@ -52,23 +52,23 @@ class PostgresAssetRepository(
     object AssetTreeAttributes {
         const val ASSET_TREE_TABLE_ALIAS = "at"
         val ASSET_TREE_TABLE = table("asset_tree").`as`(ASSET_TREE_TABLE_ALIAS)
-        val ASSET_TREE_ID = field("id", UUID::class.java).`as`("asset_tree_id")
+        val ASSET_TREE_ID = field("id", UUID::class.java)
         val ENTRY_ID = field("entry_id", Long::class.java)
         val PATH = field("path", SQLDataType.VARCHAR.asConvertedDataType(LtreeBinding()))
         val ALT = field("alt", String::class.java)
-        val ASSET_TREE_CREATED_AT = field("created_at", LocalDateTime::class.java).`as`("asset_created_at")
+        val ASSET_TREE_CREATED_AT = field("created_at", LocalDateTime::class.java)
     }
 
     object AssetVariantAttributes {
         const val ASSET_VARIANT_TABLE_ALIAS = "av"
         val ASSET_VARIANT_TABLE = table("asset_variant").`as`(ASSET_VARIANT_TABLE_ALIAS)
-        val ASSET_VARIANT_ID = field("id", UUID::class.java).`as`("asset_variant_id")
+        val ASSET_VARIANT_ID = field("id", UUID::class.java)
         val ASSET_ID = field("asset_id", UUID::class.java)
         val OBJECT_STORE_BUCKET = field("object_store_bucket", String::class.java)
         val OBJECT_STORE_KEY = field("object_store_key", String::class.java)
         val ATTRIBUTES = field("attributes", SQLDataType.JSONB)
         val ORIGINAL_VARIANT = field("original_variant", Boolean::class.java)
-        val ASSET_VARIANT_CREATED_AT = field("created_at", LocalDateTime::class.java).`as`("variant_created_at")
+        val ASSET_VARIANT_CREATED_AT = field("created_at", LocalDateTime::class.java)
     }
 
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
@@ -107,9 +107,9 @@ class PostgresAssetRepository(
         return dslContext.select()
             .from(ASSET_TREE_TABLE)
             .join(ASSET_VARIANT_TABLE)
-            .on(field("$ASSET_VARIANT_TABLE_ALIAS.asset_id").eq("$ASSET_TREE_TABLE_ALIAS.id"))
+            .on(field("$ASSET_VARIANT_TABLE_ALIAS.asset_id").eq(field("$ASSET_TREE_TABLE_ALIAS.id")))
             .where(ASSET_TREE_ID.eq(id))
-            .and(field("variant.$ORIGINAL_VARIANT").eq(true))
+            .and(ORIGINAL_VARIANT.eq(true))
             .awaitFirstOrNull()?.let {
                 AssetAndVariant.from(it)
             }
@@ -130,7 +130,7 @@ class PostgresAssetRepository(
         dslContext.select()
             .from(ASSET_TREE_TABLE)
             .where(
-                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
+                field(name("path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             )
@@ -206,7 +206,7 @@ class PostgresAssetRepository(
         return context.select(maxField)
             .from(ASSET_TREE_TABLE)
             .where(
-                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
+                field(name("path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             )
@@ -223,7 +223,7 @@ class PostgresAssetRepository(
         return context.select()
             .from(ASSET_TREE_TABLE)
             .where(
-                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
+                field(name("path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             ).let {
@@ -244,7 +244,7 @@ class PostgresAssetRepository(
         return context.select()
             .from(ASSET_TREE_TABLE)
             .where(
-                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
+                field(name("path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             ).asFlow()
