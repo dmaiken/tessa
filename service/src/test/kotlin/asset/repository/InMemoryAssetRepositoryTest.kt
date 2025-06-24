@@ -20,7 +20,7 @@ class InMemoryAssetRepositoryTest {
         runTest {
             val dto = createAssetDto("root.users.123")
             val asset = repository.store(dto)
-            val fetched = repository.fetch(asset.id)
+            val fetched = repository.fetchOriginalVariant(asset.id)
 
             fetched shouldBe asset
         }
@@ -28,7 +28,7 @@ class InMemoryAssetRepositoryTest {
     @Test
     fun `fetching asset that does not exist returns null`() =
         runTest {
-            repository.fetch(UUID.randomUUID()) shouldBe null
+            repository.fetchOriginalVariant(UUID.randomUUID()) shouldBe null
         }
 
     @Test
@@ -48,7 +48,7 @@ class InMemoryAssetRepositoryTest {
         runTest {
             val dto = createAssetDto("root.users.123")
             val asset = repository.store(dto)
-            val fetched = repository.fetch(asset.id)
+            val fetched = repository.fetchOriginalVariant(asset.id)
 
             fetched shouldBe asset
         }
@@ -123,7 +123,7 @@ class InMemoryAssetRepositoryTest {
             val asset = repository.store(dto)
             repository.deleteAssetByPath("root.users.123")
 
-            repository.fetch(asset.id) shouldBe null
+            repository.fetchOriginalVariant(asset.id) shouldBe null
             repository.fetchByPath("root.users.123", entryId = null) shouldBe null
         }
 
@@ -144,7 +144,7 @@ class InMemoryAssetRepositoryTest {
                 repository.deleteAssetByPath("root.users.123", entryId = 1)
             }
 
-            repository.fetch(asset.id) shouldBe asset
+            repository.fetchOriginalVariant(asset.id) shouldBe asset
             repository.fetchAllByPath("root.users.123") shouldBe listOf(asset)
         }
 
@@ -158,8 +158,8 @@ class InMemoryAssetRepositoryTest {
 
             repository.deleteAssetsByPath("root.users.123", recursive = false)
 
-            repository.fetch(asset1.id) shouldBe null
-            repository.fetch(asset2.id) shouldBe null
+            repository.fetchOriginalVariant(asset1.id) shouldBe null
+            repository.fetchOriginalVariant(asset2.id) shouldBe null
             repository.fetchAllByPath("root.users.123") shouldBe emptyList()
         }
 
@@ -174,9 +174,9 @@ class InMemoryAssetRepositoryTest {
             val asset3 = repository.store(dto3)
 
             repository.deleteAssetsByPath("root.users.123", recursive = true)
-            repository.fetch(asset1.id) shouldBe null
-            repository.fetch(asset2.id) shouldBe null
-            repository.fetch(asset3.id) shouldBe null
+            repository.fetchOriginalVariant(asset1.id) shouldBe null
+            repository.fetchOriginalVariant(asset2.id) shouldBe null
+            repository.fetchOriginalVariant(asset3.id) shouldBe null
             repository.fetchAllByPath("root.users.123") shouldBe emptyList()
             repository.fetchAllByPath("root.users.123.profile") shouldBe emptyList()
         }

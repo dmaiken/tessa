@@ -1,8 +1,26 @@
 package io.asset.repository
 
-import asset.Asset
 import asset.store.ObjectStore
+import io.asset.AssetAndVariant
 import io.asset.handler.StoreAssetDto
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ALT
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ASSET_TREE_CREATED_AT
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ASSET_TREE_ID
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ASSET_TREE_TABLE
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ASSET_TREE_TABLE_ALIAS
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ENTRY_ID
+import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.PATH
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ASSET_ID
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ASSET_VARIANT_CREATED_AT
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ASSET_VARIANT_ID
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ASSET_VARIANT_TABLE
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ASSET_VARIANT_TABLE_ALIAS
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ATTRIBUTES
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.OBJECT_STORE_BUCKET
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.OBJECT_STORE_KEY
+import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ORIGINAL_VARIANT
+import io.asset.variant.VariantParameterGenerator
+import io.image.ImageAttributes
 import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.toList
@@ -10,6 +28,7 @@ import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.collect
 import org.jooq.DSLContext
+import org.jooq.JSONB
 import org.jooq.Record
 import org.jooq.impl.DSL.condition
 import org.jooq.impl.DSL.field
@@ -27,64 +46,99 @@ import java.util.UUID
 class PostgresAssetRepository(
     private val dslContext: DSLContext,
     private val objectStore: ObjectStore,
+    private val variantParameterGenerator: VariantParameterGenerator
 ) : AssetRepository {
+
+    object AssetTreeAttributes {
+        const val ASSET_TREE_TABLE_ALIAS = "at"
+        val ASSET_TREE_TABLE = table("asset_tree").`as`(ASSET_TREE_TABLE_ALIAS)
+        val ASSET_TREE_ID = field("id", UUID::class.java).`as`("asset_tree_id")
+        val ENTRY_ID = field("entry_id", Long::class.java)
+        val PATH = field("path", SQLDataType.VARCHAR.asConvertedDataType(LtreeBinding()))
+        val ALT = field("alt", String::class.java)
+        val ASSET_TREE_CREATED_AT = field("created_at", LocalDateTime::class.java).`as`("asset_created_at")
+    }
+
+    object AssetVariantAttributes {
+        const val ASSET_VARIANT_TABLE_ALIAS = "av"
+        val ASSET_VARIANT_TABLE = table("asset_variant").`as`(ASSET_VARIANT_TABLE_ALIAS)
+        val ASSET_VARIANT_ID = field("id", UUID::class.java).`as`("asset_variant_id")
+        val ASSET_ID = field("asset_id", UUID::class.java)
+        val OBJECT_STORE_BUCKET = field("object_store_bucket", String::class.java)
+        val OBJECT_STORE_KEY = field("object_store_key", String::class.java)
+        val ATTRIBUTES = field("attributes", SQLDataType.JSONB)
+        val ORIGINAL_VARIANT = field("original_variant", Boolean::class.java)
+        val ASSET_VARIANT_CREATED_AT = field("created_at", LocalDateTime::class.java).`as`("variant_created_at")
+    }
+
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
-    override suspend fun store(asset: StoreAssetDto): Asset {
-        val id = UUID.randomUUID()
+    override suspend fun store(asset: StoreAssetDto): AssetAndVariant {
+        val assetId = UUID.randomUUID()
+        val now = LocalDateTime.now()
+        val variantAttributes = variantParameterGenerator.generateImageVariantAttributes(asset.imageAttributes)
         dslContext.transactionCoroutine { trx ->
             val entryId = getNextEntryId(trx.dsl(), asset.treePath)
-            logger.info("Calculated entry_id: $entryId when storing new asset with path: ${asset.treePath}")
-            trx.dsl().insertInto(table("asset_tree"))
-                .set(field("id"), id)
-                .set(field("path", SQLDataType.VARCHAR.asConvertedDataType(LtreeBinding())), ltree(asset.treePath))
-                .set(field("height"), asset.imageAttributes.height)
-                .set(field("width"), asset.imageAttributes.width)
-                .set(field("bucket"), asset.persistResult.bucket)
-                .set(field("store_key"), asset.persistResult.key)
-                .set(field("url"), asset.persistResult.url)
-                .set(field("mime_type"), asset.imageAttributes.mimeType)
-                .set(field("alt"), asset.request.alt)
-                .set(field("entry_id"), entryId)
-                .set(field("created_at"), LocalDateTime.now())
+            logger.info("Calculated $ENTRY_ID: $entryId when storing new asset with path: ${asset.treePath}")
+            trx.dsl().insertInto(ASSET_TREE_TABLE)
+                .set(ASSET_TREE_ID, assetId)
+                .set(PATH, ltree(asset.treePath))
+                .set(ALT, asset.request.alt)
+                .set(ENTRY_ID, entryId)
+                .set(ASSET_TREE_CREATED_AT, now)
+                .awaitFirstOrNull()
+
+            trx.dsl().insertInto(ASSET_VARIANT_TABLE)
+                .set(ASSET_VARIANT_ID, UUID.randomUUID())
+                .set(ASSET_ID, assetId)
+                .set(OBJECT_STORE_BUCKET, asset.persistResult.bucket)
+                .set(OBJECT_STORE_KEY, asset.persistResult.key)
+                .set(ATTRIBUTES, JSONB.valueOf(variantAttributes))
+                .set(ORIGINAL_VARIANT, true)
+                .set(ASSET_VARIANT_CREATED_AT, now)
                 .awaitFirstOrNull()
         }
 
-        return fetch(id) ?: throw IllegalStateException("Cannot find persisted image with id: $id")
+        return fetchOriginalVariant(assetId)
+            ?: throw IllegalStateException("Cannot find persisted image with id: $assetId")
     }
 
-    override suspend fun fetch(id: UUID): Asset? {
+    override suspend fun fetchOriginalVariant(id: UUID): AssetAndVariant? {
         return dslContext.select()
-            .from(table("asset_tree"))
-            .where(field("id").eq(id))
+            .from(ASSET_TREE_TABLE)
+            .join(ASSET_VARIANT_TABLE)
+            .on(field("$ASSET_VARIANT_TABLE_ALIAS.asset_id").eq("$ASSET_TREE_TABLE_ALIAS.id"))
+            .where(ASSET_TREE_ID.eq(id))
+            .and(field("variant.$ORIGINAL_VARIANT").eq(true))
             .awaitFirstOrNull()?.let {
-                Asset.from(it)
+                AssetAndVariant.from(it)
             }
     }
 
     override suspend fun fetchByPath(
         treePath: String,
         entryId: Long?,
-    ): Asset? {
+        imageAttributes: ImageAttributes?
+    ): AssetAndVariant? {
         return fetch(dslContext, treePath, entryId)?.let {
-            Asset.from(it)
+            AssetAndVariant.from(it)
         }
     }
 
-    override suspend fun fetchAllByPath(treePath: String): List<Asset> {
-        val assets = mutableListOf<Asset>()
+    override suspend fun fetchAllByPath(treePath: String): List<AssetAndVariant> {
+        val assetAndVariants = mutableListOf<AssetAndVariant>()
         dslContext.select()
-            .from(table("asset_tree"))
+            .from(ASSET_TREE_TABLE)
             .where(
-                field(name("path"), String::class.java)
+                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             )
-            .orderBy(field("created_at").desc())
+            .orderBy(ASSET_TREE_CREATED_AT.desc())
             .collect {
-                assets.add(Asset.from(it))
+                assetAndVariants.add(AssetAndVariant.from(it))
             }
-        return assets
+        return assetAndVariants
     }
 
     override suspend fun deleteAssetByPath(
@@ -98,14 +152,14 @@ class PostgresAssetRepository(
                 return@transactionCoroutine
             }
 
-            logger.info("Deleting asset with path: $treePath and entry id: ${asset.get("entry_id")}")
-            trx.dsl().deleteFrom(table("asset_tree"))
-                .where(field("id").eq(asset.get("id")))
+            logger.info("Deleting asset with path: $treePath and $ENTRY_ID: ${asset.get(ENTRY_ID)}")
+            trx.dsl().deleteFrom(ASSET_TREE_TABLE)
+                .where(ASSET_TREE_ID.eq(asset.get(ASSET_TREE_ID)))
                 .awaitFirstOrNull()
 
             objectStore.delete(
-                bucket = asset.get("bucket", String::class.java),
-                key = asset.get("store_key", String::class.java),
+                bucket = asset.get(OBJECT_STORE_BUCKET, String::class.java),
+                key = asset.get(OBJECT_STORE_KEY, String::class.java),
             )
         }
     }
@@ -126,21 +180,21 @@ class PostgresAssetRepository(
                             logger.info("Found ${it.size} assets descendents of path: $treePath for deletion")
                         }
                     }
-                trx.dsl().deleteFrom(table("asset_tree"))
+                trx.dsl().deleteFrom(ASSET_TREE_TABLE)
                     .where(
-                        field("id")
+                        ASSET_TREE_ID
                             .`in`(
                                 *assets.map {
-                                    it.get("id", UUID::class.java)
+                                    it.get(ASSET_TREE_ID)
                                 }.toTypedArray(),
                             ),
                     ).awaitFirstOrNull()
                 assets
             }
         logger.info("Initiating deletes of ${deletedAssets.size} assets")
-        val keysByBuckets = deletedAssets.groupBy { it.get("bucket", String::class.java) }
+        val keysByBuckets = deletedAssets.groupBy { it.get(OBJECT_STORE_BUCKET, String::class.java) }
         keysByBuckets.forEach { (bucket, keys) ->
-            objectStore.deleteAll(bucket, keys.map { it.get("store_key", String::class.java) })
+            objectStore.deleteAll(bucket, keys.map { it.get(OBJECT_STORE_KEY, String::class.java) })
         }
     }
 
@@ -148,11 +202,11 @@ class PostgresAssetRepository(
         context: DSLContext,
         treePath: String,
     ): Long {
-        val maxField = max(field("entry_id", Long::class.java)).`as`("max_entry")
+        val maxField = max(ENTRY_ID).`as`("max_entry")
         return context.select(maxField)
-            .from(table("asset_tree"))
+            .from(ASSET_TREE_TABLE)
             .where(
-                field(name("path"), String::class.java)
+                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             )
@@ -165,18 +219,18 @@ class PostgresAssetRepository(
         context: DSLContext,
         treePath: String,
         entryId: Long?,
-    ): org.jooq.Record? {
+    ): Record? {
         return context.select()
-            .from(table("asset_tree"))
+            .from(ASSET_TREE_TABLE)
             .where(
-                field(name("path"), String::class.java)
+                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             ).let {
                 if (entryId != null) {
-                    it.and(field("entry_id").eq(entryId))
+                    it.and(ENTRY_ID.eq(entryId))
                 } else {
-                    it.orderBy(field("created_at").desc())
+                    it.orderBy(ASSET_TREE_CREATED_AT.desc())
                 }
             }
             .limit(1)
@@ -186,11 +240,11 @@ class PostgresAssetRepository(
     private suspend fun fetchAllAtPath(
         context: DSLContext,
         treePath: String,
-    ): List<org.jooq.Record> {
+    ): List<Record> {
         return context.select()
-            .from(table("asset_tree"))
+            .from(ASSET_TREE_TABLE)
             .where(
-                field(name("path"), String::class.java)
+                field(name("$ASSET_VARIANT_TABLE_ALIAS.path"), String::class.java)
                     .cast(String::class.java)
                     .eq(treePath),
             ).asFlow()
@@ -202,8 +256,10 @@ class PostgresAssetRepository(
         treePath: String,
     ): List<Record> {
         return context.select()
-            .from(table("asset_tree"))
-            .where(condition("path <@ {0}", inline(treePath)))
+            .from(ASSET_TREE_TABLE)
+            .join(ASSET_VARIANT_TABLE)
+            .on(field("$ASSET_VARIANT_TABLE_ALIAS.asset_id").eq("$ASSET_VARIANT_TABLE_ALIAS.id"))
+            .where(condition("$PATH <@ {0}", inline(treePath)))
             .asFlow()
             .toList()
     }

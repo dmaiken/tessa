@@ -3,6 +3,7 @@ package io.asset
 import io.asset.repository.AssetRepository
 import io.asset.repository.InMemoryAssetRepository
 import io.asset.repository.PostgresAssetRepository
+import io.asset.variant.VariantParameterGenerator
 import io.r2dbc.spi.ConnectionFactory
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -18,7 +19,11 @@ fun assetModule(connectionFactory: ConnectionFactory?): Module =
 
         single<AssetRepository> {
             connectionFactory?.let {
-                PostgresAssetRepository(get(), get())
-            } ?: InMemoryAssetRepository()
+                PostgresAssetRepository(get(), get(), get())
+            } ?: InMemoryAssetRepository(get())
+        }
+
+        single<VariantParameterGenerator> {
+            VariantParameterGenerator()
         }
     }

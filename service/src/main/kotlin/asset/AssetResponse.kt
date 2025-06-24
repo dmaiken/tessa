@@ -12,11 +12,21 @@ data class AssetResponse(
     val id: UUID,
     val bucket: String,
     val storeKey: String,
-    val type: String,
+    val `class`: AssetClass,
     val alt: String?,
-    val height: Int,
-    val width: Int,
     val entryId: Long,
+    val imageAttributes: ImageAttributeResponse,
     @Serializable(with = LocalDateTimeSerializer::class)
     val createdAt: LocalDateTime,
 )
+
+@Serializable
+data class ImageAttributeResponse(
+    val height: Int,
+    val width: Int,
+    val mimeType: String
+)
+
+enum class AssetClass {
+    IMAGE,
+}
