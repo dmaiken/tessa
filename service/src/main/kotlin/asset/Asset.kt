@@ -1,10 +1,7 @@
 package asset
 
-import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ALT
-import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ASSET_TREE_CREATED_AT
-import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ASSET_TREE_ID
-import io.asset.repository.PostgresAssetRepository.AssetTreeAttributes.ENTRY_ID
 import org.jooq.Record
+import tessa.jooq.tables.AssetTree.Companion.ASSET_TREE
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -17,10 +14,10 @@ data class Asset(
     companion object {
         fun from(record: Record): Asset =
             Asset(
-                id = record.getValue(ASSET_TREE_ID),
-                alt = record.getValue(ALT),
-                entryId = record.getValue(ENTRY_ID),
-                createdAt = record.getValue(ASSET_TREE_CREATED_AT),
+                id = record.get(ASSET_TREE.ID)!!,
+                alt = record.getValue(ASSET_TREE.ALT),
+                entryId = record.getValue(ASSET_TREE.ENTRY_ID)!!,
+                createdAt = record.getValue(ASSET_TREE.CREATED_AT)!!,
             )
     }
 }

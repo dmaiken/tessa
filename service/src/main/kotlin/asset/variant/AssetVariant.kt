@@ -1,12 +1,8 @@
 package io.asset.variant
 
-import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ASSET_VARIANT_CREATED_AT
-import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ATTRIBUTES
-import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.OBJECT_STORE_BUCKET
-import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.OBJECT_STORE_KEY
-import io.asset.repository.PostgresAssetRepository.AssetVariantAttributes.ORIGINAL_VARIANT
 import kotlinx.serialization.json.Json
 import org.jooq.Record
+import tessa.jooq.tables.AssetVariant.Companion.ASSET_VARIANT
 import java.time.LocalDateTime
 
 data class AssetVariant(
@@ -19,11 +15,11 @@ data class AssetVariant(
     companion object Factory {
         fun from(record: Record): AssetVariant {
             return AssetVariant(
-                objectStoreBucket = record.get(OBJECT_STORE_BUCKET),
-                objectStoreKey = record.get(OBJECT_STORE_KEY),
-                attributes = Json.decodeFromString(record.get(ATTRIBUTES).data()),
-                isOriginalVariant = record.get(ORIGINAL_VARIANT),
-                createdAt = record.get(ASSET_VARIANT_CREATED_AT),
+                objectStoreBucket = record.get(ASSET_VARIANT.OBJECT_STORE_BUCKET)!!,
+                objectStoreKey = record.get(ASSET_VARIANT.OBJECT_STORE_KEY)!!,
+                attributes = Json.decodeFromString(record.get(ASSET_VARIANT.ATTRIBUTES)!!.data()),
+                isOriginalVariant = record.get(ASSET_VARIANT.ORIGINAL_VARIANT)!!,
+                createdAt = record.get(ASSET_VARIANT.CREATED_AT)!!,
             )
         }
     }

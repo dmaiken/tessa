@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":jooq-generated"))
+
     implementation(libs.jooq)
     implementation(libs.jooq.kotlin)
     implementation(libs.jooq.kotlin.coroutines)
