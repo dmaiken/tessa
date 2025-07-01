@@ -84,6 +84,7 @@ import tessa.jooq.routines._LtxtqExtractExec
 import tessa.jooq.routines._LtxtqRexec
 
 
+
 /**
  * Call <code>public._lt_q_regex</code>
  */
@@ -163,7 +164,6 @@ fun _LtQRregex(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtqExtractRegex(
     configuration: Configuration, __1: Array<org.jooq.postgres.extensions.types.Ltree?>?, __2: Any?
@@ -175,7 +175,6 @@ fun _LtqExtractRegex(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtqExtractRegex(
     __1: Array<org.jooq.postgres.extensions.types.Ltree?>?, __2: Any?
@@ -186,7 +185,6 @@ fun _LtqExtractRegex(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtqExtractRegex(
     __1: Field<Array<org.jooq.postgres.extensions.types.Ltree?>?>, __2: Field<Any?>
@@ -197,7 +195,6 @@ fun _LtqExtractRegex(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeCompress(
     configuration: Configuration, __1: Any?
@@ -208,7 +205,6 @@ fun _LtreeCompress(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeCompress(
     __1: Any?
@@ -218,7 +214,6 @@ fun _LtreeCompress(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeCompress(
     __1: Field<Any?>
@@ -228,7 +223,6 @@ fun _LtreeCompress(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeConsistent(
     configuration: Configuration,
@@ -248,7 +242,6 @@ fun _LtreeConsistent(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeConsistent(
     __1: Any?, __2: Array<org.jooq.postgres.extensions.types.Ltree?>?, __3: Short?, __4: Long?, __5: Any?
@@ -262,7 +255,6 @@ fun _LtreeConsistent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeConsistent(
     __1: Field<Any?>,
@@ -360,7 +352,6 @@ fun _LtreeExtractRisparent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeGistOptions(
     configuration: Configuration, __1: Any?
@@ -410,7 +401,6 @@ fun _LtreeIsparent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreePenalty(
     configuration: Configuration, __1: Any?, __2: Any?, __3: Any?
@@ -423,7 +413,6 @@ fun _LtreePenalty(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreePenalty(
     __1: Any?, __2: Any?, __3: Any?
@@ -435,7 +424,6 @@ fun _LtreePenalty(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreePenalty(
     __1: Field<Any?>, __2: Field<Any?>, __3: Field<Any?>
@@ -447,7 +435,6 @@ fun _LtreePenalty(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreePicksplit(
     configuration: Configuration, __1: Any?, __2: Any?
@@ -459,7 +446,6 @@ fun _LtreePicksplit(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreePicksplit(
     __1: Any?, __2: Any?
@@ -470,7 +456,6 @@ fun _LtreePicksplit(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreePicksplit(
     __1: Field<Any?>, __2: Field<Any?>
@@ -561,7 +546,6 @@ fun _LtreeRRisparent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeSame(
     configuration: Configuration, __1: Any?, __2: Any?, __3: Any?
@@ -574,7 +558,6 @@ fun _LtreeSame(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeSame(
     __1: Any?, __2: Any?, __3: Any?
@@ -586,7 +569,6 @@ fun _LtreeSame(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeSame(
     __1: Field<Any?>, __2: Field<Any?>, __3: Field<Any?>
@@ -598,7 +580,6 @@ fun _LtreeSame(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeUnion(
     configuration: Configuration, __1: Any?, __2: Any?
@@ -610,7 +591,6 @@ fun _LtreeUnion(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeUnion(
     __1: Any?, __2: Any?
@@ -621,7 +601,6 @@ fun _LtreeUnion(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtreeUnion(
     __1: Field<Any?>, __2: Field<Any?>
@@ -632,7 +611,6 @@ fun _LtreeUnion(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqExec(
     configuration: Configuration, __1: Array<org.jooq.postgres.extensions.types.Ltree?>?, __2: Any?
@@ -644,7 +622,6 @@ fun _LtxtqExec(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqExec(
     __1: Array<org.jooq.postgres.extensions.types.Ltree?>?, __2: Any?
@@ -655,7 +632,6 @@ fun _LtxtqExec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqExec(
     __1: Field<Array<org.jooq.postgres.extensions.types.Ltree?>?>, __2: Field<Any?>
@@ -666,7 +642,6 @@ fun _LtxtqExec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqExtractExec(
     configuration: Configuration, __1: Array<org.jooq.postgres.extensions.types.Ltree?>?, __2: Any?
@@ -678,7 +653,6 @@ fun _LtxtqExtractExec(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqExtractExec(
     __1: Array<org.jooq.postgres.extensions.types.Ltree?>?, __2: Any?
@@ -689,7 +663,6 @@ fun _LtxtqExtractExec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqExtractExec(
     __1: Field<Array<org.jooq.postgres.extensions.types.Ltree?>?>, __2: Field<Any?>
@@ -700,7 +673,6 @@ fun _LtxtqExtractExec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqRexec(
     configuration: Configuration, __1: Any?, __2: Array<org.jooq.postgres.extensions.types.Ltree?>?
@@ -712,7 +684,6 @@ fun _LtxtqRexec(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqRexec(
     __1: Any?, __2: Array<org.jooq.postgres.extensions.types.Ltree?>?
@@ -723,7 +694,6 @@ fun _LtxtqRexec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun _LtxtqRexec(
     __1: Field<Any?>, __2: Field<Array<org.jooq.postgres.extensions.types.Ltree?>?>
@@ -1230,7 +1200,6 @@ fun lca8(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryIn(
     configuration: Configuration, __1: Any?
@@ -1241,7 +1210,6 @@ fun lqueryIn(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryIn(
     __1: Any?
@@ -1251,7 +1219,6 @@ fun lqueryIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryIn(
     __1: Field<Any?>
@@ -1261,7 +1228,6 @@ fun lqueryIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryOut(
     configuration: Configuration, __1: Any?
@@ -1272,7 +1238,6 @@ fun lqueryOut(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryOut(
     __1: Any?
@@ -1282,7 +1247,6 @@ fun lqueryOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryOut(
     __1: Field<Any?>
@@ -1292,7 +1256,6 @@ fun lqueryOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryRecv(
     configuration: Configuration, __1: Any?
@@ -1303,7 +1266,6 @@ fun lqueryRecv(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryRecv(
     __1: Any?
@@ -1313,7 +1275,6 @@ fun lqueryRecv(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lqueryRecv(
     __1: Field<Any?>
@@ -1323,7 +1284,6 @@ fun lqueryRecv(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lquerySend(
     configuration: Configuration, __1: Any?
@@ -1334,7 +1294,6 @@ fun lquerySend(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lquerySend(
     __1: Any?
@@ -1344,7 +1303,6 @@ fun lquerySend(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun lquerySend(
     __1: Field<Any?>
@@ -1591,7 +1549,6 @@ fun ltreeCmp(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeCompress(
     configuration: Configuration, __1: Any?
@@ -1602,7 +1559,6 @@ fun ltreeCompress(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeCompress(
     __1: Any?
@@ -1612,7 +1568,6 @@ fun ltreeCompress(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeCompress(
     __1: Field<Any?>
@@ -1622,7 +1577,6 @@ fun ltreeCompress(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeConsistent(
     configuration: Configuration, __1: Any?, __2: Ltree?, __3: Short?, __4: Long?, __5: Any?
@@ -1637,7 +1591,6 @@ fun ltreeConsistent(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeConsistent(
     __1: Any?, __2: Ltree?, __3: Short?, __4: Long?, __5: Any?
@@ -1651,7 +1604,6 @@ fun ltreeConsistent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeConsistent(
     __1: Field<Any?>, __2: Field<Ltree?>, __3: Field<Short?>, __4: Field<Long?>, __5: Field<Any?>
@@ -1665,7 +1617,6 @@ fun ltreeConsistent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeDecompress(
     configuration: Configuration, __1: Any?
@@ -1676,7 +1627,6 @@ fun ltreeDecompress(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeDecompress(
     __1: Any?
@@ -1686,7 +1636,6 @@ fun ltreeDecompress(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeDecompress(
     __1: Field<Any?>
@@ -1776,7 +1725,6 @@ fun ltreeGe(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistIn(
     configuration: Configuration, __1: Any?
@@ -1787,7 +1735,6 @@ fun ltreeGistIn(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistIn(
     __1: Any?
@@ -1797,7 +1744,6 @@ fun ltreeGistIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistIn(
     __1: Field<Any?>
@@ -1807,7 +1753,6 @@ fun ltreeGistIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistOptions(
     configuration: Configuration, __1: Any?
@@ -1817,7 +1762,6 @@ fun ltreeGistOptions(
 
     p.execute(configuration)
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistOut(
     configuration: Configuration, __1: Any?
@@ -1828,7 +1772,6 @@ fun ltreeGistOut(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistOut(
     __1: Any?
@@ -1838,7 +1781,6 @@ fun ltreeGistOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeGistOut(
     __1: Field<Any?>
@@ -1888,7 +1830,6 @@ fun ltreeGt(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeIn(
     configuration: Configuration, __1: Any?
@@ -1899,7 +1840,6 @@ fun ltreeIn(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeIn(
     __1: Any?
@@ -1909,7 +1849,6 @@ fun ltreeIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeIn(
     __1: Field<Any?>
@@ -2079,7 +2018,6 @@ fun ltreeNe(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeOut(
     configuration: Configuration, __1: Ltree?
@@ -2090,7 +2028,6 @@ fun ltreeOut(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeOut(
     __1: Ltree?
@@ -2100,7 +2037,6 @@ fun ltreeOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeOut(
     __1: Field<Ltree?>
@@ -2110,7 +2046,6 @@ fun ltreeOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreePenalty(
     configuration: Configuration, __1: Any?, __2: Any?, __3: Any?
@@ -2123,7 +2058,6 @@ fun ltreePenalty(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreePenalty(
     __1: Any?, __2: Any?, __3: Any?
@@ -2135,7 +2069,6 @@ fun ltreePenalty(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreePenalty(
     __1: Field<Any?>, __2: Field<Any?>, __3: Field<Any?>
@@ -2147,7 +2080,6 @@ fun ltreePenalty(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreePicksplit(
     configuration: Configuration, __1: Any?, __2: Any?
@@ -2159,7 +2091,6 @@ fun ltreePicksplit(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreePicksplit(
     __1: Any?, __2: Any?
@@ -2170,7 +2101,6 @@ fun ltreePicksplit(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreePicksplit(
     __1: Field<Any?>, __2: Field<Any?>
@@ -2181,7 +2111,6 @@ fun ltreePicksplit(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeRecv(
     configuration: Configuration, __1: Any?
@@ -2192,7 +2121,6 @@ fun ltreeRecv(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeRecv(
     __1: Any?
@@ -2202,7 +2130,6 @@ fun ltreeRecv(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeRecv(
     __1: Field<Any?>
@@ -2252,7 +2179,6 @@ fun ltreeRisparent(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeSame(
     configuration: Configuration, __1: Any?, __2: Any?, __3: Any?
@@ -2265,7 +2191,6 @@ fun ltreeSame(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeSame(
     __1: Any?, __2: Any?, __3: Any?
@@ -2277,7 +2202,6 @@ fun ltreeSame(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeSame(
     __1: Field<Any?>, __2: Field<Any?>, __3: Field<Any?>
@@ -2366,7 +2290,6 @@ fun ltreeTextadd(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeUnion(
     configuration: Configuration, __1: Any?, __2: Any?
@@ -2378,7 +2301,6 @@ fun ltreeUnion(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeUnion(
     __1: Any?, __2: Any?
@@ -2389,7 +2311,6 @@ fun ltreeUnion(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeUnion(
     __1: Field<Any?>, __2: Field<Any?>
@@ -2400,7 +2321,6 @@ fun ltreeUnion(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeparentsel(
     configuration: Configuration, __1: Any?, __2: Long?, __3: Any?, __4: Int?
@@ -2414,7 +2334,6 @@ fun ltreeparentsel(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeparentsel(
     __1: Any?, __2: Long?, __3: Any?, __4: Int?
@@ -2427,7 +2346,6 @@ fun ltreeparentsel(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltreeparentsel(
     __1: Field<Any?>, __2: Field<Long?>, __3: Field<Any?>, __4: Field<Int?>
@@ -2440,7 +2358,6 @@ fun ltreeparentsel(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqExec(
     configuration: Configuration, __1: Ltree?, __2: Any?
@@ -2452,7 +2369,6 @@ fun ltxtqExec(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqExec(
     __1: Ltree?, __2: Any?
@@ -2463,7 +2379,6 @@ fun ltxtqExec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqExec(
     __1: Field<Ltree?>, __2: Field<Any?>
@@ -2474,7 +2389,6 @@ fun ltxtqExec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqIn(
     configuration: Configuration, __1: Any?
@@ -2485,7 +2399,6 @@ fun ltxtqIn(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqIn(
     __1: Any?
@@ -2495,7 +2408,6 @@ fun ltxtqIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqIn(
     __1: Field<Any?>
@@ -2505,7 +2417,6 @@ fun ltxtqIn(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqOut(
     configuration: Configuration, __1: Any?
@@ -2516,7 +2427,6 @@ fun ltxtqOut(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqOut(
     __1: Any?
@@ -2526,7 +2436,6 @@ fun ltxtqOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqOut(
     __1: Field<Any?>
@@ -2536,7 +2445,6 @@ fun ltxtqOut(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqRecv(
     configuration: Configuration, __1: Any?
@@ -2547,7 +2455,6 @@ fun ltxtqRecv(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqRecv(
     __1: Any?
@@ -2557,7 +2464,6 @@ fun ltxtqRecv(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqRecv(
     __1: Field<Any?>
@@ -2567,7 +2473,6 @@ fun ltxtqRecv(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqRexec(
     configuration: Configuration, __1: Any?, __2: Ltree?
@@ -2579,7 +2484,6 @@ fun ltxtqRexec(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqRexec(
     __1: Any?, __2: Ltree?
@@ -2590,7 +2494,6 @@ fun ltxtqRexec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqRexec(
     __1: Field<Any?>, __2: Field<Ltree?>
@@ -2601,7 +2504,6 @@ fun ltxtqRexec(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqSend(
     configuration: Configuration, __1: Any?
@@ -2612,7 +2514,6 @@ fun ltxtqSend(
     f.execute(configuration)
     return f.returnValue
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqSend(
     __1: Any?
@@ -2622,7 +2523,6 @@ fun ltxtqSend(
 
     return f.asField()
 }
-
 @Deprecated(message = "Unknown data type. Parameter type or return type is unknown. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
 fun ltxtqSend(
     __1: Field<Any?>

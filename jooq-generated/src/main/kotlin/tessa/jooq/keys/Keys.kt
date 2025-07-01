@@ -11,10 +11,9 @@ import org.jooq.impl.Internal
 
 import tessa.jooq.tables.AssetTree
 import tessa.jooq.tables.AssetVariant
-import tessa.jooq.tables.Migrations
 import tessa.jooq.tables.records.AssetTreeRecord
 import tessa.jooq.tables.records.AssetVariantRecord
-import tessa.jooq.tables.records.MigrationsRecord
+
 
 
 // -------------------------------------------------------------------------
@@ -27,11 +26,5 @@ val ASSET_VARIANT_PKEY: UniqueKey<AssetVariantRecord> = Internal.createUniqueKey
     AssetVariant.ASSET_VARIANT,
     DSL.name("asset_variant_pkey"),
     arrayOf(AssetVariant.ASSET_VARIANT.ID),
-    true
-)
-val MIGRATIONS_PKEY: UniqueKey<MigrationsRecord> = Internal.createUniqueKey(
-    Migrations.MIGRATIONS,
-    DSL.name("migrations_pkey"),
-    arrayOf(Migrations.MIGRATIONS.ID),
     true
 )

@@ -54,34 +54,6 @@ fun main() {
         null
     ).block()
 
-    // 3. Dump schema using pg_dump (requires pg_dump in PATH)
-    val output = File("src/main/resources/schema.sql")
-    output.parentFile.mkdirs()
-    val process = ProcessBuilder(
-        "pg_dump",
-        "--schema-only",
-        "--no-owner",
-        "--no-privileges",
-        "-h", pg.host,
-        "-p", pg.getMappedPort(5432).toString(),
-        "-U", pg.username,
-        "-d", pg.databaseName
-    ).apply {
-        environment()["PGPASSWORD"] = pg.password
-        redirectOutput(output)
-    }.start()
-    val errorReader = process.errorStream.bufferedReader()
-    val errorOutput = errorReader.readText()
-    println("pg_dump stderr: $errorOutput")
-
-    val exitCode = process.waitFor()
-
-    if (exitCode == 0) {
-        println("Schema dumped successfully to: ${output.absolutePath}")
-    } else {
-        println("pg_dump failed with exit code $exitCode")
-    }
-
     val configuration = Configuration().apply {
         jdbc = Jdbc().apply {
             driver = "org.postgresql.Driver"
@@ -94,6 +66,7 @@ fun main() {
             database = Database().apply {
                 name = "org.jooq.meta.postgres.PostgresDatabase"
                 inputSchema = "public"
+                excludes = "migrations"
             }
             target = Target().apply {
                 packageName = "tessa.jooq"
@@ -102,7 +75,6 @@ fun main() {
             generate = Generate().apply {
                 withKotlinNotNullInterfaceAttributes(true)
                 withKotlinNotNullPojoAttributes(true)
-
             }
         }
     }

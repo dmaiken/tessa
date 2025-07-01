@@ -29,7 +29,6 @@ open class _LtreeConsistent :
          */
         val RETURN_VALUE: Parameter<Boolean?> =
             Internal.createParameter("RETURN_VALUE", SQLDataType.BOOLEAN, false, false)
-
         @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
         val _1: Parameter<Any?> = Internal.createParameter(
             "_1",
@@ -58,7 +57,6 @@ open class _LtreeConsistent :
          * The parameter <code>public._ltree_consistent._4</code>.
          */
         val _4: Parameter<Long?> = Internal.createParameter("_4", SQLDataType.BIGINT, false, true)
-
         @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
         val _5: Parameter<Any?> = Internal.createParameter(
             "_5",

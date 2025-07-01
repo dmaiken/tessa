@@ -30,7 +30,6 @@ open class LtreePicksplit : AbstractRoutine<Any>(
             false,
             false
         )
-
         @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
         val _1: Parameter<Any?> = Internal.createParameter(
             "_1",
@@ -38,7 +37,6 @@ open class LtreePicksplit : AbstractRoutine<Any>(
             false,
             true
         )
-
         @Deprecated(message = "Unknown data type. If this is a qualified, user-defined type, it may have been excluded from code generation. If this is a built-in type, you can define an explicit org.jooq.Binding to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.")
         val _2: Parameter<Any?> = Internal.createParameter(
             "_2",

@@ -13,7 +13,6 @@ import org.jooq.impl.SchemaImpl
 
 import tessa.jooq.tables.AssetTree
 import tessa.jooq.tables.AssetVariant
-import tessa.jooq.tables.Migrations
 
 
 /**
@@ -40,16 +39,10 @@ open class Public :
      */
     val ASSET_VARIANT: AssetVariant get() = AssetVariant.ASSET_VARIANT
 
-    /**
-     * The table <code>public.migrations</code>.
-     */
-    val MIGRATIONS: Migrations get() = Migrations.MIGRATIONS
-
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
         AssetTree.ASSET_TREE,
-        AssetVariant.ASSET_VARIANT,
-        Migrations.MIGRATIONS
+        AssetVariant.ASSET_VARIANT
     )
 }

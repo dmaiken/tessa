@@ -13,6 +13,7 @@ kotest-version = "5.9.1"
 photofix-libvips-version = "1.5.2"
 mockk-version = "1.14.2"
 tika-version = "3.1.0"
+postgres-version = "42.7.2"
 
 [libraries]
 jooq = { module = "org.jooq:jooq", version.ref = "jooq-version" }
@@ -49,6 +50,9 @@ kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 kotest-assertions = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
 
 libvips-ffm = { module = "app.photofox.vips-ffm:vips-ffm-core", version.ref = "photofix-libvips-version" }
+
+# JDBC
+postresql = { module = "org.postgresql:postgresql", version.ref = "postgres-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }

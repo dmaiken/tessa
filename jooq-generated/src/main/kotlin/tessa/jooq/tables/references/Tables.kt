@@ -7,7 +7,6 @@ package tessa.jooq.tables.references
 
 import tessa.jooq.tables.AssetTree
 import tessa.jooq.tables.AssetVariant
-import tessa.jooq.tables.Migrations
 
 
 /**
@@ -19,8 +18,3 @@ val ASSET_TREE: AssetTree = AssetTree.ASSET_TREE
  * The table <code>public.asset_variant</code>.
  */
 val ASSET_VARIANT: AssetVariant = AssetVariant.ASSET_VARIANT
-
-/**
- * The table <code>public.migrations</code>.
- */
-val MIGRATIONS: Migrations = Migrations.MIGRATIONS

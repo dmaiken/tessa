@@ -13,6 +13,7 @@ import tessa.jooq.tables.AssetTree
 import tessa.jooq.tables.AssetVariant
 
 
+
 // -------------------------------------------------------------------------
 // INDEX definitions
 // -------------------------------------------------------------------------

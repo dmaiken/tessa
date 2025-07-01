@@ -162,11 +162,9 @@ open class AssetVariant(
      * Create a <code>public.asset_variant</code> table reference
      */
     constructor() : this(DSL.name("asset_variant"), null)
-
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIndexes(): List<Index> =
         listOf(ASSET_VARIANT_ASSET_ID_IDX, ASSET_VARIANT_ASSET_ID_ORIGINAL_VARIANT_UQ)
-
     override fun getPrimaryKey(): UniqueKey<AssetVariantRecord> = ASSET_VARIANT_PKEY
     override fun `as`(alias: String): AssetVariant = AssetVariant(DSL.name(alias), this)
     override fun `as`(alias: Name): AssetVariant = AssetVariant(alias, this)

@@ -154,7 +154,6 @@ open class AssetTree(
      * Create a <code>public.asset_tree</code> table reference
      */
     constructor() : this(DSL.name("asset_tree"), null)
-
     override fun getSchema(): Schema? = if (aliased()) null else Public.PUBLIC
     override fun getIndexes(): List<Index> = listOf(ASSET_PATH_IDX)
     override fun getPrimaryKey(): UniqueKey<AssetTreeRecord> = ASSET_TREE_PKEY
