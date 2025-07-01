@@ -13,7 +13,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.util.UUID
 
 abstract class AssetRepositoryTest {
-
     abstract fun createRepository(): AssetRepository
 
     @Test

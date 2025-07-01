@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class InMemoryAssetRepository(
-    private val variantParameterGenerator: VariantParameterGenerator
+    private val variantParameterGenerator: VariantParameterGenerator,
 ) : AssetRepository {
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
     private val store = mutableMapOf<String, MutableList<AssetAndVariants>>()
@@ -21,25 +21,29 @@ class InMemoryAssetRepository(
 
     override suspend fun store(asset: StoreAssetDto): AssetAndVariant {
         logger.info("Persisting asset at path: ${asset.treePath} and entryId: $currentEntryId")
-        val assetAndVariant = AssetAndVariant(
-            asset = Asset(
-                id = UUID.randomUUID(),
-                alt = asset.request.alt,
-                entryId = currentEntryId,
-                createdAt = LocalDateTime.now(),
-            ),
-            variant = AssetVariant(
-                objectStoreBucket = asset.persistResult.bucket,
-                objectStoreKey = asset.persistResult.key,
-                attributes = ImageVariantAttributes(
-                    height = asset.imageAttributes.height,
-                    width = asset.imageAttributes.width,
-                    mimeType = asset.imageAttributes.mimeType,
-                ),
-                isOriginalVariant = true,
-                createdAt = LocalDateTime.now()
+        val assetAndVariant =
+            AssetAndVariant(
+                asset =
+                    Asset(
+                        id = UUID.randomUUID(),
+                        alt = asset.request.alt,
+                        entryId = currentEntryId,
+                        createdAt = LocalDateTime.now(),
+                    ),
+                variant =
+                    AssetVariant(
+                        objectStoreBucket = asset.persistResult.bucket,
+                        objectStoreKey = asset.persistResult.key,
+                        attributes =
+                            ImageVariantAttributes(
+                                height = asset.imageAttributes.height,
+                                width = asset.imageAttributes.width,
+                                mimeType = asset.imageAttributes.mimeType,
+                            ),
+                        isOriginalVariant = true,
+                        createdAt = LocalDateTime.now(),
+                    ),
             )
-        )
         return assetAndVariant.also {
             val originalVariantAttributeKey =
                 variantParameterGenerator.generateImageVariantAttributes(asset.imageAttributes)
@@ -47,10 +51,11 @@ class InMemoryAssetRepository(
                 AssetAndVariants(
                     asset = it.asset,
                     originalVariantAttributeKey = originalVariantAttributeKey,
-                    variants = mutableMapOf(
-                        originalVariantAttributeKey to it.variant
-                    )
-                )
+                    variants =
+                        mutableMapOf(
+                            originalVariantAttributeKey to it.variant,
+                        ),
+                ),
             )
             idReference.put(it.asset.id, it)
             currentEntryId++
@@ -64,7 +69,7 @@ class InMemoryAssetRepository(
     override suspend fun fetchByPath(
         treePath: String,
         entryId: Long?,
-        imageAttributes: ImageAttributes?
+        imageAttributes: ImageAttributes?,
     ): AssetAndVariant? {
         return store[treePath]?.let { assets ->
             val resolvedEntryId = entryId ?: assets.maxByOrNull { it.asset.createdAt }?.asset?.entryId
@@ -72,7 +77,7 @@ class InMemoryAssetRepository(
             asset?.let {
                 AssetAndVariant(
                     asset = it.asset,
-                    variant = it.variants[it.originalVariantAttributeKey]!!
+                    variant = it.variants[it.originalVariantAttributeKey]!!,
                 )
             }
         }
@@ -82,7 +87,7 @@ class InMemoryAssetRepository(
         return store[treePath]?.toList()?.sortedBy { it.asset.entryId }?.reversed()?.map {
             AssetAndVariant(
                 asset = it.asset,
-                variant = it.variants[it.originalVariantAttributeKey]!!
+                variant = it.variants[it.originalVariantAttributeKey]!!,
             )
         } ?: emptyList()
     }
@@ -129,5 +134,5 @@ class InMemoryAssetRepository(
 private data class AssetAndVariants(
     val asset: Asset,
     val originalVariantAttributeKey: String,
-    val variants: MutableMap<String, AssetVariant> = mutableMapOf()
+    val variants: MutableMap<String, AssetVariant> = mutableMapOf(),
 )

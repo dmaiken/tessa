@@ -72,7 +72,7 @@ fun Application.configureAssetRouting() {
                         assetHandler.fetchAssetContent(
                             asset.variant.objectStoreBucket,
                             asset.variant.objectStoreKey,
-                            this
+                            this,
                         )
                     }
                 } ?: call.respond(HttpStatusCode.NotFound)

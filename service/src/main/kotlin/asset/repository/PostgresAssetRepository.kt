@@ -14,29 +14,22 @@ import kotlinx.coroutines.reactive.collect
 import org.jooq.DSLContext
 import org.jooq.JSONB
 import org.jooq.Record
-import org.jooq.impl.DSL.condition
 import org.jooq.impl.DSL.field
-import org.jooq.impl.DSL.inline
 import org.jooq.impl.DSL.max
 import org.jooq.impl.DSL.name
-import org.jooq.impl.DSL.table
-import org.jooq.impl.SQLDataType
 import org.jooq.kotlin.coroutines.transactionCoroutine
-import org.jooq.postgres.extensions.bindings.LtreeBinding
 import org.jooq.postgres.extensions.types.Ltree
 import org.jooq.postgres.extensions.types.Ltree.ltree
-import java.time.LocalDateTime
-import java.util.UUID
-import tessa.jooq.tables.AssetTree
 import tessa.jooq.tables.references.ASSET_TREE
 import tessa.jooq.tables.references.ASSET_VARIANT
+import java.time.LocalDateTime
+import java.util.UUID
 
 class PostgresAssetRepository(
     private val dslContext: DSLContext,
     private val objectStore: ObjectStore,
-    private val variantParameterGenerator: VariantParameterGenerator
+    private val variantParameterGenerator: VariantParameterGenerator,
 ) : AssetRepository {
-
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
     override suspend fun store(asset: StoreAssetDto): AssetAndVariant {
@@ -84,7 +77,7 @@ class PostgresAssetRepository(
     override suspend fun fetchByPath(
         treePath: String,
         entryId: Long?,
-        imageAttributes: ImageAttributes?
+        imageAttributes: ImageAttributes?,
     ): AssetAndVariant? {
         return fetch(dslContext, treePath, entryId)?.let {
             AssetAndVariant.from(it)

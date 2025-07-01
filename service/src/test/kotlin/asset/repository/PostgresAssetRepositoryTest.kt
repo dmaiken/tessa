@@ -20,7 +20,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 class PostgresAssetRepositoryTest : AssetRepositoryTest() {
-
     companion object {
         @JvmStatic
         @Container
@@ -40,21 +39,22 @@ class PostgresAssetRepositoryTest : AssetRepositoryTest() {
     }
 
     override fun createRepository(): AssetRepository {
-        val options = ConnectionFactoryOptions.builder()
-            .option(DRIVER, "postgresql")
-            .option(HOST, postgres.host)
-            .option(PORT, postgres.getMappedPort(5432))
-            .option(USER, postgres.username)
-            .option(PASSWORD, postgres.password)
-            .option(DATABASE, postgres.databaseName)
-            .build()
+        val options =
+            ConnectionFactoryOptions.builder()
+                .option(DRIVER, "postgresql")
+                .option(HOST, postgres.host)
+                .option(PORT, postgres.getMappedPort(5432))
+                .option(USER, postgres.username)
+                .option(PASSWORD, postgres.password)
+                .option(DATABASE, postgres.databaseName)
+                .build()
 
         val connectionFactory = ConnectionFactories.get(options)
         migrateSchema(connectionFactory)
         return PostgresAssetRepository(
             dslContext = configureJOOQ(connectionFactory),
             objectStore = InMemoryObjectStore(),
-            variantParameterGenerator = VariantParameterGenerator()
+            variantParameterGenerator = VariantParameterGenerator(),
         )
     }
 }

@@ -22,10 +22,11 @@ class ImageProperties private constructor(
             parent: ImageProperties?,
         ): ImageProperties =
             create(
-                preProcessing = PreProcessingProperties.create(
-                    applicationConfig?.tryGetConfig(PREPROCESSING),
-                    parent?.preProcessing
-                ),
+                preProcessing =
+                    PreProcessingProperties.create(
+                        applicationConfig?.tryGetConfig(PREPROCESSING),
+                        parent?.preProcessing,
+                    ),
             )
 
         fun default() =

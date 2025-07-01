@@ -12,11 +12,10 @@ data class AssetAndVariant(
     val variant: AssetVariant,
 ) {
     companion object Factory {
-
         fun from(record: Record): AssetAndVariant {
             return AssetAndVariant(
                 asset = Asset.from(record),
-                variant = AssetVariant.from(record)
+                variant = AssetVariant.from(record),
             )
         }
     }
@@ -29,11 +28,12 @@ data class AssetAndVariant(
             storeKey = variant.objectStoreKey,
             alt = asset.alt,
             entryId = asset.entryId,
-            imageAttributes = ImageAttributeResponse(
-                height = variant.attributes.height,
-                width = variant.attributes.width,
-                mimeType = variant.attributes.mimeType,
-            ),
+            imageAttributes =
+                ImageAttributeResponse(
+                    height = variant.attributes.height,
+                    width = variant.attributes.width,
+                    mimeType = variant.attributes.mimeType,
+                ),
             createdAt = asset.createdAt,
         )
 }

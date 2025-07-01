@@ -73,7 +73,8 @@ class InMemoryObjectStore() : ObjectStore {
     }
 
     override fun generateObjectUrl(assetAndVariant: AssetAndVariant): String {
-        return "http://localhost:$DEFAULT_PORT/objectStore/${assetAndVariant.variant.objectStoreBucket}/${assetAndVariant.variant.objectStoreKey}"
+        return "http://localhost:$DEFAULT_PORT/objectStore/${assetAndVariant.variant.objectStoreBucket}" +
+                "/${assetAndVariant.variant.objectStoreKey}"
     }
 
     fun clearObjectStore() {

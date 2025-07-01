@@ -61,7 +61,7 @@ class AssetHandler(
 
     suspend fun fetchAssetInfoByPath(
         uriPath: String,
-        entryId: Long?
+        entryId: Long?,
     ): AssetAndVariant? {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info by path: $treePath")

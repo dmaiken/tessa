@@ -13,7 +13,7 @@ interface AssetRepository {
     suspend fun fetchByPath(
         treePath: String,
         entryId: Long?,
-        imageAttributes: ImageAttributes?
+        imageAttributes: ImageAttributes?,
     ): AssetAndVariant?
 
     suspend fun fetchAllByPath(treePath: String): List<AssetAndVariant>

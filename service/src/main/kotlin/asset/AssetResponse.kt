@@ -24,7 +24,7 @@ data class AssetResponse(
 data class ImageAttributeResponse(
     val height: Int,
     val width: Int,
-    val mimeType: String
+    val mimeType: String,
 )
 
 enum class AssetClass {

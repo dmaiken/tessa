@@ -12,6 +12,12 @@ dependencies {
     implementation(libs.jooq.kotlin.coroutines)
     implementation(libs.jooq.postgres.extensions)
 }
+
+// Disable linting for this module
+tasks.matching { it.name.startsWith("ktlint") }.configureEach {
+    enabled = false
+}
+
 kotlin {
     jvmToolchain(23)
 }

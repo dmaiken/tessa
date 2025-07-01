@@ -23,12 +23,14 @@ class PathConfiguration private constructor(
                 return default()
             }
             return create(
-                allowedContentTypes = applicationConfig.tryGetStringList(ALLOWED_CONTENT_TYPES)
-                    ?: parent?.allowedContentTypes,
-                imageProperties = ImageProperties.create(
-                    applicationConfig.tryGetConfig(IMAGE),
-                    parent?.imageProperties
-                ),
+                allowedContentTypes =
+                    applicationConfig.tryGetStringList(ALLOWED_CONTENT_TYPES)
+                        ?: parent?.allowedContentTypes,
+                imageProperties =
+                    ImageProperties.create(
+                        applicationConfig.tryGetConfig(IMAGE),
+                        parent?.imageProperties,
+                    ),
             )
         }
 

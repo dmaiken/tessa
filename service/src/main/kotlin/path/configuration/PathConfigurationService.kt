@@ -43,8 +43,9 @@ class PathConfigurationService(
             .filter { it.tryGetString(PATH) != DEFAULT_PATH } // skip the default that we already populated
             .forEach { pathConfig ->
                 insertPath(
-                    path = pathConfig.tryGetString(PATH)?.trim()
-                        ?: throw IllegalArgumentException("Path configuration must be supplied"),
+                    path =
+                        pathConfig.tryGetString(PATH)?.trim()
+                            ?: throw IllegalArgumentException("Path configuration must be supplied"),
                     applicationConfig = pathConfig,
                 )
             }
