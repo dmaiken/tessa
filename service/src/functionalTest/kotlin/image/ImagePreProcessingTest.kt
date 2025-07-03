@@ -72,7 +72,7 @@ class ImagePreProcessingTest {
 
                 variants.apply {
                     size shouldBe 1
-                    first().bucket shouldBe "bucket"
+                    first().bucket shouldBe "assets"
                     first().storeKey shouldNotBe null
                     first().imageAttributes.mimeType shouldBe "image/png"
                     first().imageAttributes.width shouldBe 100
@@ -121,7 +121,7 @@ class ImagePreProcessingTest {
 
                     variants.apply {
                         size shouldBe 1
-                        first().bucket shouldBe "bucket"
+                        first().bucket shouldBe "assets"
                         first().storeKey shouldNotBe null
                         first().imageAttributes.mimeType shouldBe "image/png"
                         first().imageAttributes.height shouldBe 50
@@ -174,7 +174,7 @@ class ImagePreProcessingTest {
 
                 variants.apply {
                     size shouldBe 1
-                    first().bucket shouldBe "bucket"
+                    first().bucket shouldBe "assets"
                     first().storeKey shouldNotBe null
                     first().imageAttributes.mimeType shouldBe "image/png"
                     first().imageAttributes.height shouldBe bufferedImage.height
@@ -225,7 +225,7 @@ class ImagePreProcessingTest {
 
                 variants.apply {
                     size shouldBe 1
-                    first().bucket shouldBe "bucket"
+                    first().bucket shouldBe "assets"
                     first().storeKey shouldNotBe null
                     first().imageAttributes.mimeType shouldBe expectedType
                     first().imageAttributes.height shouldBe bufferedImage.height
@@ -281,7 +281,7 @@ class ImagePreProcessingTest {
 
                     variants.apply {
                         size shouldBe 1
-                        first().bucket shouldBe "bucket"
+                        first().bucket shouldBe "assets"
                         first().storeKey shouldNotBe null
                         first().imageAttributes.mimeType shouldBe "image/webp"
                         first().imageAttributes.height shouldBe 50

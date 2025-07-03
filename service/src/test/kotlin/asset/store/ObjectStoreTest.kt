@@ -1,8 +1,7 @@
-package io.inmemory
+package io.asset.store
 
 import asset.StoreAssetRequest
 import asset.store.ObjectStore
-import io.asset.store.InMemoryObjectStore
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -11,8 +10,10 @@ import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
-class InMemoryObjectStoreTest {
-    private val store: ObjectStore = InMemoryObjectStore()
+abstract class ObjectStoreTest {
+    abstract fun createObjectStore(): ObjectStore
+
+    val store = createObjectStore()
 
     @Test
     fun `can persist and fetch an object`() =
@@ -121,7 +122,7 @@ class InMemoryObjectStoreTest {
             val bytes = UUID.randomUUID().toString().toByteArray()
             val result = store.persist(request, bytes)
 
-            store.deleteAll(result.bucket + "1", listOf(result.key))
+            store.deleteAll("somethingelse", listOf(result.key))
 
             val stream = ByteArrayOutputStream()
             store.fetch(result.bucket, result.key, stream).apply {

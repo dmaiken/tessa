@@ -25,7 +25,7 @@ class AssetLifecycleTest {
                 )
             val storeAssetResponse = storeAsset(client, image, request)
             storeAssetResponse!!.createdAt shouldNotBe null
-            storeAssetResponse.variants.first().bucket shouldBe "bucket"
+            storeAssetResponse.variants.first().bucket shouldBe "assets"
             storeAssetResponse.variants.first().storeKey shouldNotBe null
             storeAssetResponse.variants.first().imageAttributes.mimeType shouldBe "image/png"
             storeAssetResponse.`class` shouldBe AssetClass.IMAGE

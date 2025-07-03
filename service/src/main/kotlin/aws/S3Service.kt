@@ -9,6 +9,7 @@ import aws.sdk.kotlin.services.s3.model.Delete
 import aws.sdk.kotlin.services.s3.model.DeleteObjectRequest
 import aws.sdk.kotlin.services.s3.model.DeleteObjectsRequest
 import aws.sdk.kotlin.services.s3.model.GetObjectRequest
+import aws.sdk.kotlin.services.s3.model.NoSuchKey
 import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
@@ -53,17 +54,22 @@ class S3Service(
         key: String,
         stream: OutputStream,
     ): FetchResult {
-        return s3Client.getObject(
-            input =
-                GetObjectRequest {
-                    this.bucket = bucket
-                    this.key = key
-                },
-        ) {
-            it.body?.let { body ->
-                body.writeToOutputStream(stream)
-                FetchResult.found(requireNotNull(it.contentLength))
-            } ?: FetchResult.notFound()
+        return try {
+            s3Client.getObject(
+                input =
+                    GetObjectRequest {
+                        this.bucket = bucket
+                        this.key = key
+                    },
+            ) {
+                it.body?.let { body ->
+                    body.writeToOutputStream(stream)
+                    FetchResult.found(requireNotNull(it.contentLength))
+                } ?: FetchResult.notFound()
+            }
+        } catch (e: NoSuchKey) {
+            logger.info("Object with key $key in bucket $bucket does not exist", e)
+            FetchResult.notFound()
         }
     }
 

@@ -11,7 +11,7 @@ import java.util.UUID
 class InMemoryObjectStore() : ObjectStore {
     companion object {
         const val DEFAULT_PORT = 8080
-        const val BUCKET = "bucket"
+        const val BUCKET = "assets"
     }
 
     private val store = mutableMapOf<String, ByteArray>()

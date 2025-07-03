@@ -30,7 +30,7 @@ fun s3Client(properties: LocalstackProperties? = null): S3Client =
         createImageBucket(it)
     }
 
-private fun createImageBucket(s3Client: S3Client) =
+fun createImageBucket(s3Client: S3Client) =
     runBlocking {
         s3Client.createBucket(
             CreateBucketRequest {
