@@ -1,6 +1,5 @@
 package io.asset
 
-import asset.Asset
 import asset.StoreAssetRequest
 import asset.store.ObjectStore
 import io.asset.handler.StoreAssetDto
@@ -34,7 +33,7 @@ class AssetHandler(
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         val preProcessed = imageProcessor.preprocess(content, mimeType, pathConfiguration)
         val persistResult = objectStore.persist(request, preProcessed.image)
-        val asset =
+        val assetAndVariants =
             assetRepository.store(
                 StoreAssetDto(
                     request = request,
@@ -46,7 +45,7 @@ class AssetHandler(
             )
 
         return AssetAndLocation(
-            asset = asset,
+            assetAndVariants = assetAndVariants,
             locationPath = uriPath,
         )
     }
@@ -55,19 +54,21 @@ class AssetHandler(
         uriPath: String,
         entryId: Long?,
     ): String? {
-        return fetchAssetInfoByPath(uriPath, entryId)?.url
+        return fetchAssetInfoByPath(uriPath, entryId)?.let {
+            objectStore.generateObjectUrl(it)
+        }
     }
 
     suspend fun fetchAssetInfoByPath(
         uriPath: String,
         entryId: Long?,
-    ): Asset? {
+    ): AssetAndVariants? {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info by path: $treePath")
-        return assetRepository.fetchByPath(treePath, entryId)
+        return assetRepository.fetchByPath(treePath, entryId, null)
     }
 
-    suspend fun fetchAssetInfoInPath(uriPath: String): List<Asset> {
+    suspend fun fetchAssetInfoInPath(uriPath: String): List<AssetAndVariants> {
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         logger.info("Fetching asset info in path: $treePath")
         return assetRepository.fetchAllByPath(treePath)
@@ -136,6 +137,6 @@ class AssetHandler(
 }
 
 data class AssetAndLocation(
-    val asset: Asset,
+    val assetAndVariants: AssetAndVariants,
     val locationPath: String,
 )

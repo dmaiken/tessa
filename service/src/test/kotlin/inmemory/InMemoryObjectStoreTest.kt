@@ -3,7 +3,6 @@ package io.inmemory
 import asset.StoreAssetRequest
 import asset.store.ObjectStore
 import io.asset.store.InMemoryObjectStore
-import io.asset.store.InMemoryObjectStore.Companion.DEFAULT_PORT
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -23,7 +22,6 @@ class InMemoryObjectStoreTest {
 
             val result = store.persist(request, bytes)
             result.bucket shouldBe InMemoryObjectStore.BUCKET
-            result.url shouldBe "http://localhost:$DEFAULT_PORT/objectStore/${result.bucket}/${result.key}"
 
             val stream = ByteArrayOutputStream()
             val fetchResult = store.fetch(result.bucket, result.key, stream)

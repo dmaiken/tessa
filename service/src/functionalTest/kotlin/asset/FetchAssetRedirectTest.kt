@@ -43,7 +43,7 @@ class FetchAssetRedirectTest {
             client.get("/assets/profile/").apply {
                 status shouldBe HttpStatusCode.TemporaryRedirect
                 headers[HttpHeaders.Location] shouldContain "http://"
-                headers[HttpHeaders.Location] shouldContain storedAssetInfo!!.storeKey
+                headers[HttpHeaders.Location] shouldContain storedAssetInfo!!.variants.first().storeKey
 
                 val location = Url(headers[HttpHeaders.Location]!!).fullPath
                 val storeResponse = client.get(location)

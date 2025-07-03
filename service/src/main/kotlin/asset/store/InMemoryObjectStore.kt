@@ -4,6 +4,7 @@ import asset.StoreAssetRequest
 import asset.store.FetchResult
 import asset.store.ObjectStore
 import asset.store.PersistResult
+import io.asset.AssetAndVariants
 import java.io.OutputStream
 import java.util.UUID
 
@@ -25,7 +26,6 @@ class InMemoryObjectStore() : ObjectStore {
         return PersistResult(
             key = key,
             bucket = BUCKET,
-            url = "http://localhost:$DEFAULT_PORT/objectStore/$BUCKET/$key",
         )
     }
 
@@ -70,6 +70,11 @@ class InMemoryObjectStore() : ObjectStore {
             return
         }
         keys.forEach { delete(bucket, it) }
+    }
+
+    override fun generateObjectUrl(assetAndVariant: AssetAndVariants): String {
+        return "http://localhost:$DEFAULT_PORT/objectStore/${assetAndVariant.getOriginalVariant().objectStoreBucket}" +
+            "/${assetAndVariant.getOriginalVariant().objectStoreKey}"
     }
 
     fun clearObjectStore() {

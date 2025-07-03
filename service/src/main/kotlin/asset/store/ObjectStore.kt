@@ -1,6 +1,7 @@
 package asset.store
 
 import asset.StoreAssetRequest
+import io.asset.AssetAndVariants
 import java.io.OutputStream
 
 interface ObjectStore {
@@ -27,12 +28,13 @@ interface ObjectStore {
         bucket: String,
         keys: List<String>,
     )
+
+    fun generateObjectUrl(assetAndVariant: AssetAndVariants): String
 }
 
 data class PersistResult(
     val key: String,
     val bucket: String,
-    val url: String,
 )
 
 data class FetchResult(

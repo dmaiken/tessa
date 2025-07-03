@@ -66,10 +66,14 @@ fun Application.configureAssetRouting() {
                 assetHandler.fetchAssetInfoByPath(route, suppliedEntryId)?.let { asset ->
                     logger.info("Found asset content with path: $route")
                     call.respondOutputStream(
-                        contentType = ContentType.parse(asset.mimeType),
+                        contentType = ContentType.parse(asset.getOriginalVariant().attributes.mimeType),
                         status = HttpStatusCode.OK,
                     ) {
-                        assetHandler.fetchAssetContent(asset.bucket, asset.storeKey, this)
+                        assetHandler.fetchAssetContent(
+                            asset.getOriginalVariant().objectStoreBucket,
+                            asset.getOriginalVariant().objectStoreKey,
+                            this,
+                        )
                     }
                 } ?: call.respond(HttpStatusCode.NotFound)
             }
@@ -139,5 +143,5 @@ suspend fun createNewAsset(
     logger.info("Created asset under path: ${asset.locationPath}")
 
     call.response.headers.append(HttpHeaders.Location, "http//${call.request.origin.localAddress}${asset.locationPath}")
-    call.respond(HttpStatusCode.Created, asset.asset.toResponse())
+    call.respond(HttpStatusCode.Created, asset.assetAndVariants.toResponse())
 }

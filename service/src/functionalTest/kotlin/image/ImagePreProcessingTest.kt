@@ -1,5 +1,6 @@
 package image
 
+import asset.AssetClass
 import asset.StoreAssetRequest
 import config.testInMemory
 import io.kotest.matchers.shouldBe
@@ -67,12 +68,17 @@ class ImagePreProcessingTest {
             storeAsset(client, image, request)!!.apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
-                bucket shouldBe "bucket"
-                storeKey shouldNotBe null
-                type shouldBe "image/png"
                 alt shouldBe "an image"
-                width shouldBe 100
-                width.toDouble() / height.toDouble() shouldBeApproximately originalScale
+                `class` shouldBe AssetClass.IMAGE
+
+                variants.apply {
+                    size shouldBe 1
+                    first().bucket shouldBe "bucket"
+                    first().storeKey shouldNotBe null
+                    first().imageAttributes.mimeType shouldBe "image/png"
+                    first().imageAttributes.width shouldBe 100
+                    first().imageAttributes.width.toDouble() / first().imageAttributes.height.toDouble() shouldBeApproximately originalScale
+                }
             }
 
             val fetchedAsset = fetchAsset(client)
@@ -112,12 +118,18 @@ class ImagePreProcessingTest {
                 storeAsset(client, image, request)!!.apply {
                     id shouldNotBe null
                     createdAt shouldNotBe null
-                    bucket shouldBe "bucket"
-                    storeKey shouldNotBe null
-                    type shouldBe "image/png"
                     alt shouldBe "an image"
-                    height shouldBe 50
-                    width.toDouble() / height.toDouble() shouldBeApproximately originalScale
+                    `class` shouldBe AssetClass.IMAGE
+
+                    variants.apply {
+                        size shouldBe 1
+                        first().bucket shouldBe "bucket"
+                        first().storeKey shouldNotBe null
+                        first().imageAttributes.mimeType shouldBe "image/png"
+                        first().imageAttributes.height shouldBe 50
+                        first().imageAttributes.width.toDouble() / first().imageAttributes.height.toDouble() shouldBeApproximately
+                            originalScale
+                    }
                 }
 
             val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
@@ -160,13 +172,19 @@ class ImagePreProcessingTest {
             storeAsset(client, image, request)!!.apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
-                bucket shouldBe "bucket"
-                storeKey shouldNotBe null
-                type shouldBe "image/png"
                 alt shouldBe "an image"
-                width shouldBe bufferedImage.width
-                height shouldBe bufferedImage.height
+                `class` shouldBe AssetClass.IMAGE
+
+                variants.apply {
+                    size shouldBe 1
+                    first().bucket shouldBe "bucket"
+                    first().storeKey shouldNotBe null
+                    first().imageAttributes.mimeType shouldBe "image/png"
+                    first().imageAttributes.height shouldBe bufferedImage.height
+                    first().imageAttributes.width shouldBe bufferedImage.width
+                }
             }
+
         val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
         Tika().detect(fetchedAsset) shouldBe "image/png"
         val fetchedImage = byteArrayToImage(fetchedAsset)
@@ -206,13 +224,19 @@ class ImagePreProcessingTest {
             storeAsset(client, image, request)!!.apply {
                 id shouldNotBe null
                 createdAt shouldNotBe null
-                bucket shouldBe "bucket"
-                storeKey shouldNotBe null
-                type shouldBe expectedType
                 alt shouldBe "an image"
-                width shouldBe bufferedImage.width
-                height shouldBe bufferedImage.height
+                `class` shouldBe AssetClass.IMAGE
+
+                variants.apply {
+                    size shouldBe 1
+                    first().bucket shouldBe "bucket"
+                    first().storeKey shouldNotBe null
+                    first().imageAttributes.mimeType shouldBe expectedType
+                    first().imageAttributes.height shouldBe bufferedImage.height
+                    first().imageAttributes.width shouldBe bufferedImage.width
+                }
             }
+
         val fetchedAsset = fetchAsset(client, entryId = storedAssetInfo.entryId)
         Tika().detect(fetchedAsset) shouldBe expectedType
     }
@@ -257,12 +281,18 @@ class ImagePreProcessingTest {
                 storeAsset(client, image, request, path = "users/123/profile")!!.apply {
                     id shouldNotBe null
                     createdAt shouldNotBe null
-                    bucket shouldBe "bucket"
-                    storeKey shouldNotBe null
-                    type shouldBe "image/webp"
                     alt shouldBe "an image"
-                    height shouldBe 50
-                    width.toDouble() / height.toDouble() shouldBeApproximately originalScale
+                    `class` shouldBe AssetClass.IMAGE
+
+                    variants.apply {
+                        size shouldBe 1
+                        first().bucket shouldBe "bucket"
+                        first().storeKey shouldNotBe null
+                        first().imageAttributes.mimeType shouldBe "image/webp"
+                        first().imageAttributes.height shouldBe 50
+                        first().imageAttributes.width.toDouble() / first().imageAttributes.height.toDouble() shouldBeApproximately
+                            originalScale
+                    }
                 }
 
             val fetchedAsset = fetchAsset(client, path = "users/123/profile", entryId = storedAssetInfo.entryId)

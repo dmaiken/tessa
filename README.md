@@ -130,3 +130,18 @@ This project uses Ktlint to enforce a code style. To run:
  ./gradlew ktlintFormat
 ```
 
+### JOOQ
+This project used [JOOQ](https://www.jooq.org/) as it's interface to the database. JOOQ generates the code based on the database schema.
+This is done within the `codegen` module. Running the code generator will:
+1. Spin up a Postgres testcontainer
+2. Run r2dbc-migrate against the database to apply the schema
+3. Run the code generator against the constructed schema
+4. Dump generated code into the `jooq-generated` module
+
+To run this (which must be done if you make a schema change):
+
+```shell
+./gradlew generateJooq
+```
+**Note**: Linting is disabled for the `jooq-generated` module.
+

@@ -13,6 +13,7 @@ import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.writeToOutputStream
+import io.asset.AssetAndVariants
 import io.ktor.util.logging.KtorSimpleLogger
 import java.io.OutputStream
 import java.util.UUID
@@ -44,7 +45,6 @@ class S3Service(
         return PersistResult(
             key = key,
             bucket = BUCKET,
-            url = createS3Url(key),
         )
     }
 
@@ -107,5 +107,8 @@ class S3Service(
         }
     }
 
-    private fun createS3Url(key: String) = "https://${awsProperties.host}/$BUCKET/$key"
+    override fun generateObjectUrl(assetAndVariant: AssetAndVariants): String {
+        return "https://${awsProperties.host}/${assetAndVariant.getOriginalVariant().objectStoreBucket}" +
+            "/${assetAndVariant.getOriginalVariant().objectStoreKey}"
+    }
 }

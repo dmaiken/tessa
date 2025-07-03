@@ -13,12 +13,15 @@ kotest-version = "5.9.1"
 photofix-libvips-version = "1.5.2"
 mockk-version = "1.14.2"
 tika-version = "3.1.0"
+postgres-version = "42.7.2"
 
 [libraries]
 jooq = { module = "org.jooq:jooq", version.ref = "jooq-version" }
 jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq-version" }
 jooq-kotlin-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "jooq-version" }
 jooq-postgres-extensions = { module = "org.jooq:jooq-postgres-extensions", version.ref = "jooq-version" }
+jooq-codegen = { module = "org.jooq:jooq-codegen", version.ref = "jooq-version" }
+jooq-codegen-meta-extensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq-version" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin-version" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin-version" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -39,6 +42,7 @@ kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika-version" }
 
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers-version" }
+testcontainers-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers-version" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
 testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers-version" }
 
@@ -46,6 +50,9 @@ kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 kotest-assertions = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest-version" }
 
 libvips-ffm = { module = "app.photofox.vips-ffm:vips-ffm-core", version.ref = "photofix-libvips-version" }
+
+# JDBC
+postresql = { module = "org.postgresql:postgresql", version.ref = "postgres-version" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
