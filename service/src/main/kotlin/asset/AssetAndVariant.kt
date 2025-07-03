@@ -25,7 +25,6 @@ data class AssetAndVariant(
 
     fun toResponse(): AssetResponse =
         AssetResponse(
-            id = asset.id,
             `class` = AssetClass.IMAGE,
             alt = asset.alt,
             entryId = asset.entryId,
@@ -88,7 +87,6 @@ data class AssetAndVariants(
 
     fun toResponse(): AssetResponse =
         AssetResponse(
-            id = asset.id,
             `class` = AssetClass.IMAGE,
             alt = asset.alt,
             entryId = asset.entryId,

@@ -3,6 +3,7 @@ package util
 import BaseTestcontainerTest.Companion.BOUNDARY
 import asset.AssetResponse
 import asset.StoreAssetRequest
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
@@ -59,8 +60,9 @@ suspend fun storeAsset(
         response.status shouldBe expectedStatus
         if (response.status == HttpStatusCode.Created) {
             response.body<AssetResponse>().apply {
-                id shouldNotBe null
+                entryId shouldNotBe null
                 createdAt shouldNotBe null
+                variants shouldHaveSize 1 // original variant
             }
         } else {
             null

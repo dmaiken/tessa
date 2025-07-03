@@ -65,16 +65,14 @@ class DeleteAssetTest {
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    id shouldBe secondAsset!!.id
-                    entryId shouldBe secondAsset.entryId
+                    entryId shouldBe secondAsset?.entryId
                 }
             }
             client.delete("/assets/profile").status shouldBe HttpStatusCode.NoContent
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    id shouldBe firstAsset!!.id
-                    entryId shouldBe firstAsset.entryId
+                    entryId shouldBe firstAsset?.entryId
                 }
             }
         }
@@ -97,8 +95,7 @@ class DeleteAssetTest {
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    id shouldBe secondAsset!!.id
-                    entryId shouldBe secondAsset.entryId
+                    entryId shouldBe secondAsset?.entryId
                 }
             }
             client.get("/assets/profile?format=metadata&entryId=${firstAsset.entryId}").apply {

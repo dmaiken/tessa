@@ -23,17 +23,17 @@ class FetchAssetInfoTest {
                     type = "image/png",
                     alt = "an image",
                 )
-            val ids = mutableListOf<UUID>()
+            val entryIds = mutableListOf<Long>()
             repeat(2) {
                 storeAsset(client, image, request, path = "profile")?.apply {
-                    ids.add(id)
+                    entryIds.add(entryId)
                 }
             }
-            ids shouldHaveSize 2
+            entryIds shouldHaveSize 2
             client.get("/assets/profile?format=metadata").apply {
                 status shouldBe HttpStatusCode.OK
                 body<AssetResponse>().apply {
-                    ids[1] shouldBe id
+                    entryIds[1] shouldBe entryId
                 }
             }
 
@@ -41,8 +41,8 @@ class FetchAssetInfoTest {
                 status shouldBe HttpStatusCode.OK
                 body<List<AssetResponse>>().apply {
                     size shouldBe 2
-                    get(0).id shouldBe ids[1]
-                    get(1).id shouldBe ids[0]
+                    get(0).entryId shouldBe entryIds[1]
+                    get(1).entryId shouldBe entryIds[0]
                 }
             }
         }

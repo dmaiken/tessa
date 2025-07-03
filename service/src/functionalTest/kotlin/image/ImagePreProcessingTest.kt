@@ -66,7 +66,6 @@ class ImagePreProcessingTest {
                     alt = "an image",
                 )
             storeAsset(client, image, request)!!.apply {
-                id shouldNotBe null
                 createdAt shouldNotBe null
                 alt shouldBe "an image"
                 `class` shouldBe AssetClass.IMAGE
@@ -116,7 +115,6 @@ class ImagePreProcessingTest {
                 )
             val storedAssetInfo =
                 storeAsset(client, image, request)!!.apply {
-                    id shouldNotBe null
                     createdAt shouldNotBe null
                     alt shouldBe "an image"
                     `class` shouldBe AssetClass.IMAGE
@@ -170,7 +168,6 @@ class ImagePreProcessingTest {
             )
         val storedAssetInfo =
             storeAsset(client, image, request)!!.apply {
-                id shouldNotBe null
                 createdAt shouldNotBe null
                 alt shouldBe "an image"
                 `class` shouldBe AssetClass.IMAGE
@@ -222,7 +219,6 @@ class ImagePreProcessingTest {
             )
         val storedAssetInfo =
             storeAsset(client, image, request)!!.apply {
-                id shouldNotBe null
                 createdAt shouldNotBe null
                 alt shouldBe "an image"
                 `class` shouldBe AssetClass.IMAGE
@@ -279,7 +275,6 @@ class ImagePreProcessingTest {
                 )
             val storedAssetInfo =
                 storeAsset(client, image, request, path = "users/123/profile")!!.apply {
-                    id shouldNotBe null
                     createdAt shouldNotBe null
                     alt shouldBe "an image"
                     `class` shouldBe AssetClass.IMAGE
