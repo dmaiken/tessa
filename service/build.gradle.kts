@@ -70,14 +70,6 @@ java {
     }
 }
 
-// sourceSets {
-//    val functionalTest by creating {
-//        kotlin.srcDir("src/functionalTest/kotlin")
-//        resources.srcDir("src/functionalTest/resources")
-//        compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
-//        runtimeClasspath += output + compileClasspath
-//    }
-// }
 sourceSets {
     create("functionalTest") {
         java.srcDir("src/functionalTest/kotlin")
