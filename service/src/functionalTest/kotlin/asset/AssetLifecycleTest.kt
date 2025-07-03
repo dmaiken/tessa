@@ -26,9 +26,10 @@ class AssetLifecycleTest {
                 )
             val storeAssetResponse = storeAsset(client, image, request)
             storeAssetResponse!!.createdAt shouldNotBe null
-            storeAssetResponse.bucket shouldBe "bucket"
-            storeAssetResponse.storeKey shouldNotBe null
-            storeAssetResponse.type shouldBe "image/png"
+            storeAssetResponse.variants.first().bucket shouldBe "bucket"
+            storeAssetResponse.variants.first().storeKey shouldNotBe null
+            storeAssetResponse.variants.first().imageAttributes.mimeType shouldBe "image/png"
+            storeAssetResponse.`class` shouldBe AssetClass.IMAGE
             storeAssetResponse.alt shouldBe "an image"
             storeAssetResponse.entryId shouldBe 0
             client.get("/assets/profile?format=metadata").apply {

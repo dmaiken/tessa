@@ -20,17 +20,17 @@ abstract class AssetRepositoryTest {
         runTest {
             val repository = createRepository()
             val dto = createAssetDto("root.users.123")
-            val assetAndVariant = repository.store(dto)
-            val fetched = repository.fetchOriginalVariant(assetAndVariant.asset.id)
+            val assetAndVariants = repository.store(dto)
+            val fetched = repository.fetchByPath(assetAndVariants.asset.path, assetAndVariants.asset.entryId, null)
 
-            fetched shouldBe assetAndVariant
+            fetched shouldBe assetAndVariants
         }
 
     @Test
     fun `fetching asset that does not exist returns null`() =
         runTest {
             val repository = createRepository()
-            repository.fetchOriginalVariant(UUID.randomUUID()) shouldBe null
+            repository.fetchByPath("root.doesNotExist", null, null) shouldBe null
         }
 
     @Test
@@ -51,10 +51,10 @@ abstract class AssetRepositoryTest {
         runTest {
             val repository = createRepository()
             val dto = createAssetDto("root.users.123")
-            val assetAndVariant = repository.store(dto)
-            val fetched = repository.fetchOriginalVariant(assetAndVariant.asset.id)
+            val assetAndVariants = repository.store(dto)
+            val fetched = repository.fetchByPath(assetAndVariants.asset.path, assetAndVariants.asset.entryId, null)
 
-            fetched shouldBe assetAndVariant
+            fetched shouldBe assetAndVariants
         }
 
     @Test
@@ -132,10 +132,10 @@ abstract class AssetRepositoryTest {
         runTest {
             val repository = createRepository()
             val dto = createAssetDto("root.users.123")
-            val assetAndVariant = repository.store(dto)
+            val assetAndVariants = repository.store(dto)
             repository.deleteAssetByPath("root.users.123")
 
-            repository.fetchOriginalVariant(assetAndVariant.asset.id) shouldBe null
+            repository.fetchByPath(assetAndVariants.asset.path, assetAndVariants.asset.entryId, null) shouldBe null
             repository.fetchByPath("root.users.123", entryId = null, imageAttributes = null) shouldBe null
         }
 
@@ -153,13 +153,13 @@ abstract class AssetRepositoryTest {
         runTest {
             val repository = createRepository()
             val dto = createAssetDto("root.users.123")
-            val assetAndVariant = repository.store(dto)
+            val assetAndVariants = repository.store(dto)
             shouldNotThrowAny {
                 repository.deleteAssetByPath("root.users.123", entryId = 1)
             }
 
-            repository.fetchOriginalVariant(assetAndVariant.asset.id) shouldBe assetAndVariant
-            repository.fetchAllByPath("root.users.123") shouldBe listOf(assetAndVariant)
+            repository.fetchByPath(assetAndVariants.asset.path, assetAndVariants.asset.entryId, null) shouldBe assetAndVariants
+            repository.fetchAllByPath("root.users.123") shouldBe listOf(assetAndVariants)
         }
 
     @Test
@@ -173,8 +173,8 @@ abstract class AssetRepositoryTest {
 
             repository.deleteAssetsByPath("root.users.123", recursive = false)
 
-            repository.fetchOriginalVariant(assetAndVariant1.asset.id) shouldBe null
-            repository.fetchOriginalVariant(assetAndVariant2.asset.id) shouldBe null
+            repository.fetchByPath(assetAndVariant1.asset.path, assetAndVariant1.asset.entryId, null) shouldBe null
+            repository.fetchByPath(assetAndVariant2.asset.path, assetAndVariant2.asset.entryId, null) shouldBe null
             repository.fetchAllByPath("root.users.123") shouldBe emptyList()
         }
 
@@ -185,14 +185,15 @@ abstract class AssetRepositoryTest {
             val dto1 = createAssetDto("root.users.123")
             val dto2 = createAssetDto("root.users.123")
             val dto3 = createAssetDto("root.users.123.profile")
-            val assetAndVariant1 = repository.store(dto1)
-            val assetAndVariant2 = repository.store(dto2)
-            val assetAndVariant3 = repository.store(dto3)
+            val assetAndVariants1 = repository.store(dto1)
+            val assetAndVariants2 = repository.store(dto2)
+            val assetAndVariants3 = repository.store(dto3)
 
             repository.deleteAssetsByPath("root.users.123", recursive = true)
-            repository.fetchOriginalVariant(assetAndVariant1.asset.id) shouldBe null
-            repository.fetchOriginalVariant(assetAndVariant2.asset.id) shouldBe null
-            repository.fetchOriginalVariant(assetAndVariant3.asset.id) shouldBe null
+
+            repository.fetchByPath(assetAndVariants1.asset.path, assetAndVariants1.asset.entryId, null) shouldBe null
+            repository.fetchByPath(assetAndVariants2.asset.path, assetAndVariants2.asset.entryId, null) shouldBe null
+            repository.fetchByPath(assetAndVariants3.asset.path, assetAndVariants3.asset.entryId, null) shouldBe null
             repository.fetchAllByPath("root.users.123") shouldBe emptyList()
             repository.fetchAllByPath("root.users.123.profile") shouldBe emptyList()
         }
@@ -208,20 +209,25 @@ abstract class AssetRepositoryTest {
         }
 
     @Test
-    fun `entryId always increases`() =
+    fun `entryId is always the next highest value`() =
         runTest {
             val repository = createRepository()
             val dto1 = createAssetDto("root.users.123")
             val dto2 = createAssetDto("root.users.123")
-            val assetAndVariant1 = repository.store(dto1)
-            val assetAndVariant2 = repository.store(dto2)
-            assetAndVariant1.asset.entryId shouldBe 0
-            assetAndVariant2.asset.entryId shouldBe 1
+            val assetAndVariants1 = repository.store(dto1)
+            val assetAndVariants2 = repository.store(dto2)
+            assetAndVariants1.asset.entryId shouldBe 0
+            assetAndVariants2.asset.entryId shouldBe 1
             repository.deleteAssetByPath("root.users.123")
 
             val dto3 = createAssetDto("root.users.123")
-            val assetAndVariant3 = repository.store(dto3)
-            assetAndVariant3.asset.entryId shouldBe 2
+            val assetAndVariants3 = repository.store(dto3)
+            assetAndVariants3.asset.entryId shouldBe 1
+
+            repository.deleteAssetByPath("root.users.123", entryId = 0)
+            val dto4 = createAssetDto("root.users.123")
+            val assetAndVariants4 = repository.store(dto4)
+            assetAndVariants4.asset.entryId shouldBe 2
         }
 
     private fun createAssetDto(treePath: String): StoreAssetDto {

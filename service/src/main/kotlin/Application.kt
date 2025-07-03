@@ -19,15 +19,6 @@ fun main(args: Array<String>) {
 fun Application.module() {
     logger.info("Initializing Vips")
     Vips.init()
-    Runtime.getRuntime().addShutdownHook(
-        object : Thread() {
-            override fun run() {
-                logger.info("Shutting down Vips")
-                Vips.shutdown()
-                logger.info("Vips has shutdown")
-            }
-        },
-    )
 
     val inMemoryObjectStoreEnabled = environment.config.tryGetString("object-store.in-memory")?.toBoolean() ?: false
     if (environment.config.tryGetString("database.in-memory")?.toBoolean() == true) {

@@ -10,14 +10,19 @@ import java.util.UUID
 data class AssetResponse(
     @Serializable(with = UUIDSerializer::class)
     val id: UUID,
-    val bucket: String,
-    val storeKey: String,
     val `class`: AssetClass,
     val alt: String?,
     val entryId: Long,
-    val imageAttributes: ImageAttributeResponse,
+    val variants: List<AssetVariantResponse>,
     @Serializable(with = LocalDateTimeSerializer::class)
     val createdAt: LocalDateTime,
+)
+
+@Serializable
+data class AssetVariantResponse(
+    val bucket: String,
+    val storeKey: String,
+    val imageAttributes: ImageAttributeResponse,
 )
 
 @Serializable

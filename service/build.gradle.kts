@@ -70,11 +70,19 @@ java {
     }
 }
 
+// sourceSets {
+//    val functionalTest by creating {
+//        kotlin.srcDir("src/functionalTest/kotlin")
+//        resources.srcDir("src/functionalTest/resources")
+//        compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+//        runtimeClasspath += output + compileClasspath
+//    }
+// }
 sourceSets {
-    val functionalTest by creating {
-        kotlin.srcDir("src/functionalTest/kotlin")
+    create("functionalTest") {
+        java.srcDir("src/functionalTest/kotlin")
         resources.srcDir("src/functionalTest/resources")
-        compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"]
+        compileClasspath += sourceSets["main"].output + sourceSets["test"].output
         runtimeClasspath += output + compileClasspath
     }
 }
@@ -94,5 +102,13 @@ tasks.register<Test>("functionalTest") {
     testClassesDirs = sourceSets["functionalTest"].output.classesDirs
     classpath = sourceSets["functionalTest"].runtimeClasspath
 
-    shouldRunAfter("test")
+    shouldRunAfter(tasks.test)
+}
+
+tasks.named<ProcessResources>("processFunctionalTestResources") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named("check") {
+    dependsOn("functionalTest")
 }

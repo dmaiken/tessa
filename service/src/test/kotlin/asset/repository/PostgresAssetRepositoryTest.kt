@@ -1,6 +1,5 @@
 package io.asset.repository
 
-import io.asset.store.InMemoryObjectStore
 import io.asset.variant.VariantParameterGenerator
 import io.database.configureJOOQ
 import io.database.migrateSchema
@@ -14,6 +13,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions.PORT
 import io.r2dbc.spi.ConnectionFactoryOptions.USER
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -38,6 +38,19 @@ class PostgresAssetRepositoryTest : AssetRepositoryTest() {
         }
     }
 
+    @BeforeEach
+    fun clearTables() {
+        postgres.execInContainer(
+            "psql",
+            "-U",
+            postgres.username,
+            "-d",
+            postgres.databaseName,
+            "-c",
+            "TRUNCATE TABLE asset_tree, asset_variant;",
+        )
+    }
+
     override fun createRepository(): AssetRepository {
         val options =
             ConnectionFactoryOptions.builder()
@@ -53,7 +66,6 @@ class PostgresAssetRepositoryTest : AssetRepositoryTest() {
         migrateSchema(connectionFactory)
         return PostgresAssetRepository(
             dslContext = configureJOOQ(connectionFactory),
-            objectStore = InMemoryObjectStore(),
             variantParameterGenerator = VariantParameterGenerator(),
         )
     }

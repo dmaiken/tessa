@@ -1,7 +1,7 @@
 package asset.store
 
 import asset.StoreAssetRequest
-import io.asset.AssetAndVariant
+import io.asset.AssetAndVariants
 import java.io.OutputStream
 
 interface ObjectStore {
@@ -29,7 +29,7 @@ interface ObjectStore {
         keys: List<String>,
     )
 
-    fun generateObjectUrl(assetAndVariant: AssetAndVariant): String
+    fun generateObjectUrl(assetAndVariant: AssetAndVariants): String
 }
 
 data class PersistResult(

@@ -19,7 +19,7 @@ fun assetModule(connectionFactory: ConnectionFactory?): Module =
 
         single<AssetRepository> {
             connectionFactory?.let {
-                PostgresAssetRepository(get(), get(), get())
+                PostgresAssetRepository(get(), get())
             } ?: InMemoryAssetRepository(get())
         }
 

@@ -1,30 +1,28 @@
 package io.asset.repository
 
-import io.asset.AssetAndVariant
+import io.asset.AssetAndVariants
+import io.asset.VariantBucketAndKey
 import io.asset.handler.StoreAssetDto
 import io.image.ImageAttributes
-import java.util.UUID
 
 interface AssetRepository {
-    suspend fun store(asset: StoreAssetDto): AssetAndVariant
-
-    suspend fun fetchOriginalVariant(id: UUID): AssetAndVariant?
+    suspend fun store(asset: StoreAssetDto): AssetAndVariants
 
     suspend fun fetchByPath(
         treePath: String,
         entryId: Long?,
         imageAttributes: ImageAttributes?,
-    ): AssetAndVariant?
+    ): AssetAndVariants?
 
-    suspend fun fetchAllByPath(treePath: String): List<AssetAndVariant>
+    suspend fun fetchAllByPath(treePath: String): List<AssetAndVariants>
 
     suspend fun deleteAssetByPath(
         treePath: String,
         entryId: Long? = null,
-    )
+    ): List<VariantBucketAndKey>
 
     suspend fun deleteAssetsByPath(
         treePath: String,
         recursive: Boolean,
-    )
+    ): List<VariantBucketAndKey>
 }
