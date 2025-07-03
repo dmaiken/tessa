@@ -10,41 +10,6 @@ import org.jooq.Record
 import tessa.jooq.tables.records.AssetTreeRecord
 import tessa.jooq.tables.records.AssetVariantRecord
 
-data class AssetAndVariant(
-    val asset: Asset,
-    val variant: AssetVariant,
-) {
-    companion object Factory {
-        fun from(record: Record): AssetAndVariant {
-            return AssetAndVariant(
-                asset = Asset.from(record),
-                variant = AssetVariant.from(record),
-            )
-        }
-    }
-
-    fun toResponse(): AssetResponse =
-        AssetResponse(
-            `class` = AssetClass.IMAGE,
-            alt = asset.alt,
-            entryId = asset.entryId,
-            variants =
-                listOf(
-                    AssetVariantResponse(
-                        bucket = variant.objectStoreBucket,
-                        storeKey = variant.objectStoreKey,
-                        imageAttributes =
-                            ImageAttributeResponse(
-                                height = variant.attributes.height,
-                                width = variant.attributes.width,
-                                mimeType = variant.attributes.mimeType,
-                            ),
-                    ),
-                ),
-            createdAt = asset.createdAt,
-        )
-}
-
 data class AssetAndVariants(
     val asset: Asset,
     val variants: List<AssetVariant>,
