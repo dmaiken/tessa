@@ -1,11 +1,11 @@
 package asset.store
 
-import asset.model.StoreAssetRequest
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 
@@ -17,10 +17,9 @@ abstract class ObjectStoreTest {
     @Test
     fun `can persist and fetch an object`() =
         runTest {
-            val request = createStoreAssetRequest()
             val bytes = UUID.randomUUID().toString().toByteArray()
 
-            val result = store.persist(request, bytes)
+            val result = store.persist(ByteArrayInputStream(bytes))
             result.bucket shouldBe InMemoryObjectStore.BUCKET
 
             val stream = ByteArrayOutputStream()
@@ -47,9 +46,8 @@ abstract class ObjectStoreTest {
     @Test
     fun `can delete an object`() =
         runTest {
-            val request = createStoreAssetRequest()
             val bytes = UUID.randomUUID().toString().toByteArray()
-            val result = store.persist(request, bytes)
+            val result = store.persist(ByteArrayInputStream(bytes))
 
             store.delete(result.bucket, result.key)
 
@@ -73,17 +71,14 @@ abstract class ObjectStoreTest {
     @Test
     fun `deleteAll deletes supplied objects in bucket`() =
         runTest {
-            val request1 = createStoreAssetRequest()
             val bytes1 = UUID.randomUUID().toString().toByteArray()
-            val result1 = store.persist(request1, bytes1)
+            val result1 = store.persist(ByteArrayInputStream(bytes1))
 
-            val request2 = createStoreAssetRequest()
             val bytes2 = UUID.randomUUID().toString().toByteArray()
-            val result2 = store.persist(request2, bytes2)
+            val result2 = store.persist(ByteArrayInputStream(bytes2))
 
-            val request3 = createStoreAssetRequest()
             val bytes3 = UUID.randomUUID().toString().toByteArray()
-            val result3 = store.persist(request3, bytes3)
+            val result3 = store.persist(ByteArrayInputStream(bytes3))
 
             result1.bucket shouldBe result2.bucket shouldBe result3.bucket
             store.deleteAll(result1.bucket, listOf(result1.key, result2.key, result3.key))
@@ -117,9 +112,8 @@ abstract class ObjectStoreTest {
     @Test
     fun `deleteAll does nothing if wrong bucket is supplied`() =
         runTest {
-            val request = createStoreAssetRequest()
             val bytes = UUID.randomUUID().toString().toByteArray()
-            val result = store.persist(request, bytes)
+            val result = store.persist(ByteArrayInputStream(bytes))
 
             store.deleteAll("somethingelse", listOf(result.key))
 
@@ -136,9 +130,8 @@ abstract class ObjectStoreTest {
     @Test
     fun `can deleteAll if keys do not exist in bucket`() =
         runTest {
-            val request = createStoreAssetRequest()
             val bytes = UUID.randomUUID().toString().toByteArray()
-            val result = store.persist(request, bytes)
+            val result = store.persist(ByteArrayInputStream(bytes))
 
             store.deleteAll(result.bucket, listOf(UUID.randomUUID().toString()))
 
@@ -151,11 +144,4 @@ abstract class ObjectStoreTest {
                 }
             }
         }
-
-    private fun createStoreAssetRequest(): StoreAssetRequest =
-        StoreAssetRequest(
-            fileName = "${UUID.randomUUID()}.jpeg",
-            type = "image/jpeg",
-            alt = "an image",
-        )
 }

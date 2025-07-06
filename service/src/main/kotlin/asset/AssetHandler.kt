@@ -5,14 +5,19 @@ import asset.model.AssetAndVariants
 import asset.model.StoreAssetRequest
 import asset.repository.AssetRepository
 import asset.store.ObjectStore
-import io.image.ImageProcessor
-import io.image.InvalidImageException
+import image.ImageProcessor
+import image.InvalidImageException
+import image.model.RequestedImageAttributes
+import io.asset.ImageAttributeAdapter
+import io.ktor.http.Parameters
 import io.ktor.util.logging.KtorSimpleLogger
 import io.path.PathAdapter
 import io.path.PathModifierOption
 import io.path.configuration.PathConfiguration
 import io.path.configuration.PathConfigurationService
 import java.io.OutputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 
 class AssetHandler(
     private val mimeTypeDetector: MimeTypeDetector,
@@ -21,6 +26,7 @@ class AssetHandler(
     private val imageProcessor: ImageProcessor,
     private val objectStore: ObjectStore,
     private val pathConfigurationService: PathConfigurationService,
+    private val imageAttributeAdapter: ImageAttributeAdapter,
 ) {
     private val logger = KtorSimpleLogger("asset")
 
@@ -33,7 +39,7 @@ class AssetHandler(
         val pathConfiguration = validatePathConfiguration(uriPath, mimeType)
         val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
         val preProcessed = imageProcessor.preprocess(content, mimeType, pathConfiguration)
-        val persistResult = objectStore.persist(request, preProcessed.image)
+        val persistResult = objectStore.persist(PipedInputStream(preProcessed.output))
         val assetAndVariants =
             assetRepository.store(
                 StoreAssetDto(
@@ -54,13 +60,42 @@ class AssetHandler(
     suspend fun fetchAssetByPath(
         uriPath: String,
         entryId: Long?,
+        parameters: Parameters,
     ): String? {
-        return fetchAssetInfoByPath(uriPath, entryId)?.let {
-            objectStore.generateObjectUrl(it)
+        val requestedAttributes = imageAttributeAdapter.fromParameters(parameters)
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
+        logger.info("Fetching asset by path: $treePath")
+
+        val assetAndVariants = assetRepository.fetchByPath(treePath, entryId, requestedAttributes)
+        if (assetAndVariants == null) {
+            return null
+        }
+        return if (assetAndVariants.variants.isEmpty()) {
+            cacheVariant(
+                treePath = assetAndVariants.asset.path,
+                entryId = assetAndVariants.asset.entryId,
+                requestedAttributes = requestedAttributes,
+            )?.let {
+                objectStore.generateObjectUrl(it.variants.first())
+            }
+        } else {
+            objectStore.generateObjectUrl(assetAndVariants.variants.first())
         }
     }
 
-    suspend fun fetchAssetInfoByPath(
+    suspend fun fetchAssetMetadataByPath(
+        uriPath: String,
+        entryId: Long?,
+        parameters: Parameters,
+    ): AssetAndVariants? {
+        val treePath = pathGenerator.toTreePathFromUriPath(uriPath)
+        val imageAttributes = imageAttributeAdapter.fromParameters(parameters)
+        logger.info("Fetching asset info by path: $treePath with attributes: $imageAttributes")
+
+        return assetRepository.fetchByPath(treePath, entryId, imageAttributes)
+    }
+
+    suspend fun fetchAssetMetadataByPath(
         uriPath: String,
         entryId: Long?,
     ): AssetAndVariants? {
@@ -134,6 +169,35 @@ class AssetHandler(
                 }
             }
         }
+    }
+
+    private suspend fun cacheVariant(
+        treePath: String,
+        entryId: Long,
+        requestedAttributes: RequestedImageAttributes,
+    ): AssetAndVariants? {
+        val original = assetRepository.fetchByPath(treePath, entryId, RequestedImageAttributes.originalVariant())
+        // Defense
+        if (original == null) {
+            return null
+        }
+        val originalVariant = original.getOriginalVariant()
+        val outputStream = PipedOutputStream()
+        val found = objectStore.fetch(originalVariant.objectStoreBucket, originalVariant.objectStoreKey, outputStream)
+        if (!found.found) {
+            throw IllegalStateException(
+                "Cannot locate object with bucket: ${originalVariant.objectStoreBucket} key: ${originalVariant.objectStoreKey}",
+            )
+        }
+        val newVariant =
+            imageProcessor.generateFrom(
+                from = PipedInputStream(outputStream),
+                requestedAttributes = requestedAttributes,
+                generatedFromAttributes = originalVariant.attributes,
+            )
+        val persistResult = objectStore.persist(PipedInputStream(newVariant.output))
+
+        return assetRepository.storeVariant(original.asset.path, original.asset.entryId, persistResult, newVariant.attributes)
     }
 }
 

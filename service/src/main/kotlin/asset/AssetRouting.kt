@@ -1,6 +1,8 @@
 package asset
 
 import asset.model.StoreAssetRequest
+import io.asset.ContentParameters.ALL
+import io.asset.ContentParameters.RETURN
 import io.getEntryId
 import io.getPathModifierOption
 import io.ktor.http.ContentType
@@ -34,13 +36,13 @@ fun Application.configureAssetRouting() {
     routing {
         get("$ASSET_PATH_PREFIX/{...}") {
             val route = call.request.path().removePrefix(ASSET_PATH_PREFIX)
-            val returnFormat = AssetReturnFormat.fromQueryParam(call.request.queryParameters["format"])
-            val all = call.request.queryParameters["all"]?.toBoolean() ?: false
+            val returnFormat = AssetReturnFormat.fromQueryParam(call.request.queryParameters[RETURN])
+            val all = call.request.queryParameters[ALL]?.toBoolean() ?: false
             val suppliedEntryId = getEntryId(call.request)
 
             if (returnFormat == AssetReturnFormat.METADATA && !all) {
                 logger.info("Navigating to asset info with path: $route")
-                assetHandler.fetchAssetInfoByPath(route, suppliedEntryId)?.let {
+                assetHandler.fetchAssetMetadataByPath(route, suppliedEntryId)?.let {
                     logger.info("Found asset info: $it with path: $route")
                     call.respond(HttpStatusCode.OK, it.toResponse())
                 } ?: call.respond(HttpStatusCode.NotFound)
@@ -55,7 +57,7 @@ fun Application.configureAssetRouting() {
                 }
             } else if (returnFormat == AssetReturnFormat.REDIRECT) {
                 logger.info("Navigating to asset with path: $route")
-                assetHandler.fetchAssetByPath(route, suppliedEntryId)?.let { url ->
+                assetHandler.fetchAssetByPath(route, suppliedEntryId, call.request.queryParameters)?.let { url ->
                     logger.info("Found asset with url: $url and route: $route")
                     call.response.headers.append(HttpHeaders.Location, url)
                     call.respond(HttpStatusCode.TemporaryRedirect)
@@ -63,7 +65,7 @@ fun Application.configureAssetRouting() {
             } else {
                 // Content
                 logger.info("Navigating to asset content with path: $route")
-                assetHandler.fetchAssetInfoByPath(route, suppliedEntryId)?.let { asset ->
+                assetHandler.fetchAssetMetadataByPath(route, suppliedEntryId, call.request.queryParameters)?.let { asset ->
                     logger.info("Found asset content with path: $route")
                     call.respondOutputStream(
                         contentType = ContentType.parse(asset.getOriginalVariant().attributes.mimeType),

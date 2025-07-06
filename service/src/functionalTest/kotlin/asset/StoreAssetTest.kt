@@ -3,7 +3,7 @@ package asset
 import BaseTestcontainerTest.Companion.BOUNDARY
 import asset.model.StoreAssetRequest
 import config.testInMemory
-import io.image.ImageFormat
+import image.ImageFormat
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData

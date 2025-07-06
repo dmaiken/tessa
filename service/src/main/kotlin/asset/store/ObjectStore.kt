@@ -1,14 +1,11 @@
 package asset.store
 
-import asset.model.AssetAndVariants
-import asset.model.StoreAssetRequest
+import asset.variant.AssetVariant
+import java.io.InputStream
 import java.io.OutputStream
 
 interface ObjectStore {
-    suspend fun persist(
-        data: StoreAssetRequest,
-        image: ByteArray,
-    ): PersistResult
+    suspend fun persist(asset: InputStream): PersistResult
 
     suspend fun fetch(
         bucket: String,
@@ -29,7 +26,7 @@ interface ObjectStore {
         keys: List<String>,
     )
 
-    fun generateObjectUrl(assetAndVariant: AssetAndVariants): String
+    fun generateObjectUrl(variant: AssetVariant): String
 }
 
 data class PersistResult(

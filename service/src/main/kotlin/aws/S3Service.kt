@@ -1,10 +1,9 @@
 package io.aws
 
-import asset.model.AssetAndVariants
-import asset.model.StoreAssetRequest
 import asset.store.FetchResult
 import asset.store.ObjectStore
 import asset.store.PersistResult
+import asset.variant.AssetVariant
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.Delete
 import aws.sdk.kotlin.services.s3.model.DeleteObjectRequest
@@ -14,8 +13,10 @@ import aws.sdk.kotlin.services.s3.model.NoSuchKey
 import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
+import aws.smithy.kotlin.runtime.content.fromInputStream
 import aws.smithy.kotlin.runtime.content.writeToOutputStream
 import io.ktor.util.logging.KtorSimpleLogger
+import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
@@ -29,17 +30,14 @@ class S3Service(
 
     private val logger = KtorSimpleLogger(this::class.qualifiedName!!)
 
-    override suspend fun persist(
-        data: StoreAssetRequest,
-        image: ByteArray,
-    ): PersistResult {
+    override suspend fun persist(asset: InputStream): PersistResult {
         val key = UUID.randomUUID().toString()
         s3Client.putObject(
             input =
                 PutObjectRequest {
                     bucket = BUCKET
                     this.key = key
-                    body = ByteStream.fromBytes(image)
+                    body = ByteStream.fromInputStream(asset)
                 },
         )
 
@@ -113,8 +111,8 @@ class S3Service(
         }
     }
 
-    override fun generateObjectUrl(assetAndVariant: AssetAndVariants): String {
-        return "https://${awsProperties.host}/${assetAndVariant.getOriginalVariant().objectStoreBucket}" +
-            "/${assetAndVariant.getOriginalVariant().objectStoreKey}"
+    override fun generateObjectUrl(variant: AssetVariant): String {
+        return "https://${awsProperties.host}/${variant.objectStoreBucket}" +
+            "/${variant.objectStoreKey}"
     }
 }

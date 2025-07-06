@@ -4,6 +4,7 @@ import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.CreateBucketRequest
 import aws.smithy.kotlin.runtime.auth.awscredentials.Credentials
+import aws.smithy.kotlin.runtime.client.config.RequestHttpChecksumConfig
 import aws.smithy.kotlin.runtime.net.url.Url
 import io.aws.AWSProperties
 import io.aws.S3Service
@@ -22,7 +23,8 @@ class S3ObjectStoreTest : ObjectStoreTest() {
         @JvmStatic
         @Container
         private val localstack =
-            LocalStackContainer(DockerImageName.parse("localstack/localstack:3.5.0"))
+            LocalStackContainer(DockerImageName.parse("localstack/localstack:4.6.0"))
+                .withEnv("LOCALSTACK_DISABLE_CHECKSUM_VALIDATION", "1") // Localstack does not like performing a checksum
                 .withServices(LocalStackContainer.Service.S3)
 
         @JvmStatic
@@ -49,6 +51,7 @@ class S3ObjectStoreTest : ObjectStoreTest() {
                     )
                 endpointUrl = Url.parse(localstack.endpoint.toString())
                 region = localstack.region
+                requestChecksumCalculation = RequestHttpChecksumConfig.WHEN_SUPPORTED
             }
         createImageBucket(s3Client)
         // Create bucket for test

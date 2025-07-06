@@ -4,12 +4,15 @@ import asset.Asset
 import asset.handler.StoreAssetDto
 import asset.model.AssetAndVariants
 import asset.model.VariantBucketAndKey
+import asset.store.PersistResult
 import asset.variant.AssetVariant
 import asset.variant.ImageVariantAttributes
 import asset.variant.VariantParameterGenerator
-import io.image.ImageAttributes
+import image.model.ImageAttributes
+import image.model.RequestedImageAttributes
 import io.ktor.util.logging.KtorSimpleLogger
 import java.time.LocalDateTime
+import java.util.Base64
 import java.util.UUID
 
 class InMemoryAssetRepository(
@@ -50,7 +53,10 @@ class InMemoryAssetRepository(
             )
         return assetAndVariants.also {
             val originalVariantAttributeKey =
-                variantParameterGenerator.generateImageVariantAttributes(asset.imageAttributes)
+                variantParameterGenerator.generateImageVariantAttributes(asset.imageAttributes.toRequestedAttributes()).key
+                    .let { bytes ->
+                        Base64.getEncoder().encodeToString(bytes)
+                    }
             store.computeIfAbsent(asset.treePath) { mutableListOf() }.add(
                 InMemoryAssetAndVariants(
                     asset = it.asset,
@@ -65,18 +71,70 @@ class InMemoryAssetRepository(
         }
     }
 
+    override suspend fun storeVariant(
+        treePath: String,
+        entryId: Long,
+        persistResult: PersistResult,
+        imageAttributes: ImageAttributes,
+    ): AssetAndVariants {
+        return store[treePath]?.let { assets ->
+            val asset = assets.first { it.asset.entryId == entryId }
+            val key =
+                variantParameterGenerator.generateImageVariantAttributes(imageAttributes.toRequestedAttributes()).key
+                    .let {
+                        Base64.getEncoder().encodeToString(it)
+                    }
+            if (asset.variants.containsKey(key)) {
+                throw IllegalArgumentException(
+                    "Variant already exists for asset with entry_id: $entryId at path: $treePath with attributes: $imageAttributes",
+                )
+            }
+            asset.variants[key] =
+                AssetVariant(
+                    objectStoreBucket = persistResult.bucket,
+                    objectStoreKey = persistResult.key,
+                    attributes =
+                        ImageVariantAttributes(
+                            height = imageAttributes.height,
+                            width = imageAttributes.width,
+                            mimeType = imageAttributes.mimeType,
+                        ),
+                    isOriginalVariant = false,
+                    createdAt = LocalDateTime.now(),
+                )
+
+            AssetAndVariants(
+                asset = asset.asset,
+                variants = listOf(asset.variants[key]!!),
+            )
+        } ?: throw IllegalArgumentException("Asset with path: $treePath and entry id: $entryId not found in database")
+    }
+
     override suspend fun fetchByPath(
         treePath: String,
         entryId: Long?,
-        imageAttributes: ImageAttributes?,
+        requestedImageAttributes: RequestedImageAttributes?,
     ): AssetAndVariants? {
         return store[treePath]?.let { assets ->
             val resolvedEntryId = entryId ?: assets.maxByOrNull { it.asset.createdAt }?.asset?.entryId
             val asset = assets.firstOrNull { it.asset.entryId == resolvedEntryId }
             asset?.let {
+                val variants =
+                    if (requestedImageAttributes == null) {
+                        it.variants.values.toList()
+                    } else if (requestedImageAttributes.isOriginalVariant()) {
+                        listOf(it.variants[it.originalVariantAttributeKey]!!)
+                    } else {
+                        val key =
+                            variantParameterGenerator.generateImageVariantAttributes(requestedImageAttributes).key
+                                .let { bytes -> Base64.getEncoder().encodeToString(bytes) }
+                        it.variants[key]?.let { variant ->
+                            listOf(variant)
+                        } ?: emptyList()
+                    }
                 AssetAndVariants(
                     asset = it.asset,
-                    variants = it.variants.values.toList(),
+                    variants = variants,
                 )
             }
         }
@@ -168,6 +226,10 @@ class InMemoryAssetRepository(
     private data class InMemoryAssetAndVariants(
         val asset: Asset,
         val originalVariantAttributeKey: String,
+        /**
+         * Variants keyed by the attributeKey that is Base64-encoded. HashMaps operate strangely if they
+         * are keyed by a [ByteArray]
+         */
         val variants: MutableMap<String, AssetVariant> = mutableMapOf(),
     )
 }

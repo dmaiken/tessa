@@ -1,7 +1,7 @@
 package asset.store
 
-import asset.model.AssetAndVariants
-import asset.model.StoreAssetRequest
+import asset.variant.AssetVariant
+import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
@@ -13,12 +13,9 @@ class InMemoryObjectStore() : ObjectStore {
 
     private val store = mutableMapOf<String, ByteArray>()
 
-    override suspend fun persist(
-        data: StoreAssetRequest,
-        image: ByteArray,
-    ): PersistResult {
+    override suspend fun persist(asset: InputStream): PersistResult {
         val key = UUID.randomUUID().toString()
-        store.put(key, image)
+        store.put(key, asset.readAllBytes())
 
         return PersistResult(
             key = key,
@@ -69,9 +66,9 @@ class InMemoryObjectStore() : ObjectStore {
         keys.forEach { delete(bucket, it) }
     }
 
-    override fun generateObjectUrl(assetAndVariant: AssetAndVariants): String {
-        return "http://localhost:$DEFAULT_PORT/objectStore/${assetAndVariant.getOriginalVariant().objectStoreBucket}" +
-            "/${assetAndVariant.getOriginalVariant().objectStoreKey}"
+    override fun generateObjectUrl(variant: AssetVariant): String {
+        return "http://localhost:$DEFAULT_PORT/objectStore/${variant.objectStoreBucket}" +
+            "/${variant.objectStoreKey}"
     }
 
     fun clearObjectStore() {
