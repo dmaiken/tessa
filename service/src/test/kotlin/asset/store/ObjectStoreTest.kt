@@ -1,7 +1,6 @@
-package io.asset.store
+package asset.store
 
-import asset.StoreAssetRequest
-import asset.store.ObjectStore
+import asset.model.StoreAssetRequest
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe

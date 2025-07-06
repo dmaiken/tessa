@@ -1,10 +1,7 @@
-package io.asset.store
+package asset.store
 
-import asset.StoreAssetRequest
-import asset.store.FetchResult
-import asset.store.ObjectStore
-import asset.store.PersistResult
-import io.asset.AssetAndVariants
+import asset.model.AssetAndVariants
+import asset.model.StoreAssetRequest
 import java.io.OutputStream
 import java.util.UUID
 

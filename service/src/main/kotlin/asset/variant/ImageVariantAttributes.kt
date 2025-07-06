@@ -1,4 +1,4 @@
-package io.asset.variant
+package asset.variant
 
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package io.asset.repository
+package asset.repository
 
 import org.jooq.Field
 import org.jooq.Record

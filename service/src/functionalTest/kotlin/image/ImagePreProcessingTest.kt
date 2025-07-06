@@ -1,7 +1,7 @@
 package image
 
-import asset.AssetClass
-import asset.StoreAssetRequest
+import asset.model.AssetClass
+import asset.model.StoreAssetRequest
 import config.testInMemory
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

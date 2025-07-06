@@ -1,8 +1,8 @@
-package io.asset.repository
+package asset.repository
 
-import io.asset.AssetAndVariants
-import io.asset.VariantBucketAndKey
-import io.asset.handler.StoreAssetDto
+import asset.handler.StoreAssetDto
+import asset.model.AssetAndVariants
+import asset.model.VariantBucketAndKey
 import io.image.ImageAttributes
 
 interface AssetRepository {

@@ -1,6 +1,6 @@
-package io.asset.repository
+package asset.repository
 
-import io.asset.variant.VariantParameterGenerator
+import asset.variant.VariantParameterGenerator
 
 class InMemoryAssetRepositoryTest : AssetRepositoryTest() {
     override fun createRepository(): AssetRepository {

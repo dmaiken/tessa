@@ -1,6 +1,6 @@
-package io.asset.repository
+package asset.repository
 
-import io.asset.variant.VariantParameterGenerator
+import asset.variant.VariantParameterGenerator
 import io.database.configureJOOQ
 import io.database.migrateSchema
 import io.r2dbc.spi.ConnectionFactories

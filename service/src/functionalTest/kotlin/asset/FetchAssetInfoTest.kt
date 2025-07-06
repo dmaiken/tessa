@@ -1,5 +1,7 @@
 package asset
 
+import asset.model.AssetResponse
+import asset.model.StoreAssetRequest
 import config.testInMemory
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe

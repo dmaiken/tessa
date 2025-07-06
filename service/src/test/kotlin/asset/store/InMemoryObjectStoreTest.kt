@@ -1,6 +1,4 @@
-package io.asset.store
-
-import asset.store.ObjectStore
+package asset.store
 
 class InMemoryObjectStoreTest : ObjectStoreTest() {
     override fun createObjectStore(): ObjectStore {

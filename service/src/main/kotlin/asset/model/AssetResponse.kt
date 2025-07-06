@@ -1,4 +1,4 @@
-package asset
+package asset.model
 
 import io.serializers.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable

@@ -1,8 +1,8 @@
-package io.asset.repository
+package asset.repository
 
-import asset.StoreAssetRequest
+import asset.handler.StoreAssetDto
+import asset.model.StoreAssetRequest
 import asset.store.PersistResult
-import io.asset.handler.StoreAssetDto
 import io.image.ImageAttributes
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.shouldBe

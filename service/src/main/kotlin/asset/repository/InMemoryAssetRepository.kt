@@ -1,12 +1,12 @@
-package io.asset.repository
+package asset.repository
 
 import asset.Asset
-import io.asset.AssetAndVariants
-import io.asset.VariantBucketAndKey
-import io.asset.handler.StoreAssetDto
-import io.asset.variant.AssetVariant
-import io.asset.variant.ImageVariantAttributes
-import io.asset.variant.VariantParameterGenerator
+import asset.handler.StoreAssetDto
+import asset.model.AssetAndVariants
+import asset.model.VariantBucketAndKey
+import asset.variant.AssetVariant
+import asset.variant.ImageVariantAttributes
+import asset.variant.VariantParameterGenerator
 import io.image.ImageAttributes
 import io.ktor.util.logging.KtorSimpleLogger
 import java.time.LocalDateTime

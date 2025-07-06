@@ -1,7 +1,7 @@
 package asset.store
 
-import asset.StoreAssetRequest
-import io.asset.AssetAndVariants
+import asset.model.AssetAndVariants
+import asset.model.StoreAssetRequest
 import java.io.OutputStream
 
 interface ObjectStore {

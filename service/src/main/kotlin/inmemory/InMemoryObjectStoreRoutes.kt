@@ -1,7 +1,7 @@
 package io.inmemory
 
+import asset.store.InMemoryObjectStore
 import asset.store.ObjectStore
-import io.asset.store.InMemoryObjectStore
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application

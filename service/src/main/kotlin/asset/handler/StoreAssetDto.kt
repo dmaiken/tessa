@@ -1,6 +1,6 @@
-package io.asset.handler
+package asset.handler
 
-import asset.StoreAssetRequest
+import asset.model.StoreAssetRequest
 import asset.store.PersistResult
 import io.image.ImageAttributes
 

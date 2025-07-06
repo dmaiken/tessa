@@ -1,7 +1,7 @@
 package io
 
 import app.photofox.vipsffm.Vips
-import io.asset.configureAssetRouting
+import asset.configureAssetRouting
 import io.database.connectToPostgres
 import io.database.migrateSchema
 import io.inmemory.configureInMemoryObjectStoreRouting

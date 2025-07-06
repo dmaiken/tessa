@@ -1,6 +1,7 @@
 package io.aws
 
-import asset.StoreAssetRequest
+import asset.model.AssetAndVariants
+import asset.model.StoreAssetRequest
 import asset.store.FetchResult
 import asset.store.ObjectStore
 import asset.store.PersistResult
@@ -14,7 +15,6 @@ import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.writeToOutputStream
-import io.asset.AssetAndVariants
 import io.ktor.util.logging.KtorSimpleLogger
 import java.io.OutputStream
 import java.util.UUID

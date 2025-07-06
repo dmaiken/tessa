@@ -1,4 +1,4 @@
-package io.asset
+package asset.model
 
 data class VariantBucketAndKey(
     val bucket: String,

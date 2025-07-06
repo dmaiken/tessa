@@ -1,6 +1,6 @@
 package io
 
-import io.asset.assetModule
+import asset.assetModule
 import io.aws.awsModule
 import io.database.dbModule
 import io.image.imageModule

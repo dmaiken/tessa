@@ -1,6 +1,5 @@
-package io.asset.store
+package asset.store
 
-import asset.store.ObjectStore
 import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.CreateBucketRequest

@@ -1,6 +1,6 @@
 package asset
 
-import io.asset.repository.getNonNull
+import asset.repository.getNonNull
 import org.jooq.Record
 import tessa.jooq.tables.AssetTree.Companion.ASSET_TREE
 import java.time.LocalDateTime

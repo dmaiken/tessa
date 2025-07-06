@@ -1,8 +1,8 @@
 package util
 
 import BaseTestcontainerTest.Companion.BOUNDARY
-import asset.AssetResponse
-import asset.StoreAssetRequest
+import asset.model.AssetResponse
+import asset.model.StoreAssetRequest
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

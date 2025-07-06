@@ -1,6 +1,7 @@
 package asset
 
 import BaseTestcontainerTest.Companion.BOUNDARY
+import asset.model.StoreAssetRequest
 import config.testInMemory
 import io.image.ImageFormat
 import io.kotest.matchers.shouldBe

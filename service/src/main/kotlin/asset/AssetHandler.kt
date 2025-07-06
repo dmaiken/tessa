@@ -1,9 +1,10 @@
-package io.asset
+package asset
 
-import asset.StoreAssetRequest
+import asset.handler.StoreAssetDto
+import asset.model.AssetAndVariants
+import asset.model.StoreAssetRequest
+import asset.repository.AssetRepository
 import asset.store.ObjectStore
-import io.asset.handler.StoreAssetDto
-import io.asset.repository.AssetRepository
 import io.image.ImageProcessor
 import io.image.InvalidImageException
 import io.ktor.util.logging.KtorSimpleLogger
@@ -21,7 +22,7 @@ class AssetHandler(
     private val objectStore: ObjectStore,
     private val pathConfigurationService: PathConfigurationService,
 ) {
-    private val logger = KtorSimpleLogger("io.asset")
+    private val logger = KtorSimpleLogger("asset")
 
     suspend fun storeNewAsset(
         request: StoreAssetRequest,

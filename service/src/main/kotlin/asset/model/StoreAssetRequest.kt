@@ -1,4 +1,4 @@
-package asset
+package asset.model
 
 import kotlinx.serialization.Serializable
 

@@ -1,5 +1,6 @@
 package asset
 
+import asset.model.StoreAssetRequest
 import config.testInMemory
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain

@@ -1,11 +1,7 @@
-package io.asset
+package asset.model
 
 import asset.Asset
-import asset.AssetClass
-import asset.AssetResponse
-import asset.AssetVariantResponse
-import asset.ImageAttributeResponse
-import io.asset.variant.AssetVariant
+import asset.variant.AssetVariant
 import org.jooq.Record
 import tessa.jooq.tables.records.AssetTreeRecord
 import tessa.jooq.tables.records.AssetVariantRecord

@@ -1,4 +1,4 @@
-package io.asset
+package asset
 
 import org.apache.tika.Tika
 

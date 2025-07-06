@@ -1,4 +1,4 @@
-package io.asset
+package asset
 
 enum class AssetReturnFormat {
     CONTENT,

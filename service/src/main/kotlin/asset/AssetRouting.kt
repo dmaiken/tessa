@@ -1,6 +1,6 @@
-package io.asset
+package asset
 
-import asset.StoreAssetRequest
+import asset.model.StoreAssetRequest
 import io.getEntryId
 import io.getPathModifierOption
 import io.ktor.http.ContentType
@@ -24,7 +24,7 @@ import io.ktor.utils.io.toByteArray
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
-private val logger = KtorSimpleLogger("io.asset")
+private val logger = KtorSimpleLogger("asset")
 
 const val ASSET_PATH_PREFIX = "/assets"
 
